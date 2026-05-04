@@ -1,0 +1,1330 @@
+{
+  "rating_system": "anchored_bt",
+  "anchors": {
+    "random": 1000.0,
+    "heuristic": 2500.0,
+    "net:real30_v8b:0": 2491.8208777701425,
+    "net:real30_v9:25": 2602.146486151828,
+    "net:real30_v9:121": 2634.5710990790712,
+    "net:real30_v9:460": 2685.7695172691488,
+    "net:real30_v9:601": 2709.2852110844,
+    "heuristic_opus": 2645.0,
+    "net:real30_v9:896": 2756.329734082829
+  },
+  "results": [
+    {
+      "a": "human",
+      "b": "net:real30_v8b:0",
+      "wins_a": 9.0,
+      "wins_b": 4.0,
+      "ties": 0.0,
+      "games": 13.0
+    },
+    {
+      "a": "human",
+      "b": "net:real30_v9:25",
+      "wins_a": 2.0,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 2.0
+    },
+    {
+      "a": "human",
+      "b": "net:real30_v9:121",
+      "wins_a": 7.0,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 7.0
+    },
+    {
+      "a": "human",
+      "b": "net:real30_v9:460",
+      "wins_a": 3.0,
+      "wins_b": 2.0,
+      "ties": 0.0,
+      "games": 5.0
+    },
+    {
+      "a": "human",
+      "b": "net:real30_v9:601",
+      "wins_a": 2.0,
+      "wins_b": 1.0,
+      "ties": 0.0,
+      "games": 3.0
+    },
+    {
+      "a": "heuristic_opus",
+      "b": "human",
+      "wins_a": 0.0,
+      "wins_b": 2.0,
+      "ties": 0.0,
+      "games": 2.0
+    },
+    {
+      "a": "human",
+      "b": "net:real30_v9:896",
+      "wins_a": 1.0,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 1.0
+    }
+  ],
+  "history": [
+    {
+      "timestamp": "2026-04-25T16:27:35",
+      "seed": 1777159577,
+      "human_seat": 0,
+      "human_rank": 0,
+      "ranks": [
+        0,
+        1
+      ],
+      "final_scores": [
+        {
+          "points": 17,
+          "cards": 26,
+          "nobles": 1
+        },
+        {
+          "points": 1,
+          "cards": 4,
+          "nobles": 0
+        }
+      ],
+      "old_rating": 1500.0,
+      "new_rating": 1619.582005629164,
+      "delta": 119.58200562916409,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v8b:0",
+          "model_id": "net:real30_v8b:0",
+          "label": "real30_v8b/i5 (rating 2497)",
+          "opp_rating": 2496.6653974901706,
+          "score": 1.0
+        }
+      ],
+      "meta": {
+        "game_id": "b5a7e4790039"
+      }
+    },
+    {
+      "timestamp": "2026-04-25T16:33:58",
+      "seed": 1777159677,
+      "human_seat": 0,
+      "human_rank": 0,
+      "ranks": [
+        0,
+        1
+      ],
+      "final_scores": [
+        {
+          "points": 16,
+          "cards": 19,
+          "nobles": 1
+        },
+        {
+          "points": 14,
+          "cards": 24,
+          "nobles": 2
+        }
+      ],
+      "old_rating": 1619.582005629164,
+      "new_rating": 1773.2833058253423,
+      "delta": 153.70130019617818,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v8b:0",
+          "model_id": "net:real30_v8b:0",
+          "label": "real30_v8b/i5 (rating 2497)",
+          "opp_rating": 2496.6653974901706,
+          "score": 1.0
+        }
+      ],
+      "meta": {
+        "game_id": "d416bfa5559c"
+      }
+    },
+    {
+      "timestamp": "2026-04-25T16:38:42",
+      "seed": 1777160061,
+      "human_seat": 0,
+      "human_rank": 1,
+      "ranks": [
+        1,
+        0
+      ],
+      "final_scores": [
+        {
+          "points": 6,
+          "cards": 15,
+          "nobles": 0
+        },
+        {
+          "points": 16,
+          "cards": 22,
+          "nobles": 3
+        }
+      ],
+      "old_rating": 1773.2833058253423,
+      "new_rating": 1770.2639268812072,
+      "delta": -3.019378944135042,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v8b:0",
+          "model_id": "net:real30_v8b:0",
+          "label": "real30_v8b/i5 (rating 2497)",
+          "opp_rating": 2495.12986893696,
+          "score": 0.0
+        }
+      ],
+      "meta": {
+        "game_id": "919c91f949b4"
+      }
+    },
+    {
+      "timestamp": "2026-04-25T16:46:46",
+      "seed": 1777160336,
+      "human_seat": 0,
+      "human_rank": 0,
+      "ranks": [
+        0,
+        1
+      ],
+      "final_scores": [
+        {
+          "points": 15,
+          "cards": 17,
+          "nobles": 1
+        },
+        {
+          "points": 1,
+          "cards": 3,
+          "nobles": 0
+        }
+      ],
+      "old_rating": 1770.2639268812072,
+      "new_rating": 2034.805351039552,
+      "delta": 264.54142415834485,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v8b:0",
+          "model_id": "net:real30_v8b:0",
+          "label": "real30_v8b/i5 (rating 2495)",
+          "opp_rating": 2495.12986893696,
+          "score": 1.0
+        }
+      ],
+      "meta": {
+        "game_id": "205379f120ac"
+      }
+    },
+    {
+      "timestamp": "2026-04-25T16:53:38",
+      "seed": 1777160821,
+      "human_seat": 0,
+      "human_rank": 1,
+      "ranks": [
+        1,
+        0
+      ],
+      "final_scores": [
+        {
+          "points": 6,
+          "cards": 16,
+          "nobles": 0
+        },
+        {
+          "points": 16,
+          "cards": 21,
+          "nobles": 3
+        }
+      ],
+      "old_rating": 2034.805351039552,
+      "new_rating": 2014.3055395894971,
+      "delta": -20.49981145005495,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v8b:0",
+          "model_id": "net:real30_v8b:0",
+          "label": "real30_v8b/i5 (rating 2495)",
+          "opp_rating": 2495.12986893696,
+          "score": 0.0
+        }
+      ],
+      "meta": {
+        "game_id": "de08c6ec6522"
+      }
+    },
+    {
+      "timestamp": "2026-04-25T16:57:40",
+      "seed": 1777161231,
+      "human_seat": 0,
+      "human_rank": 0,
+      "ranks": [
+        0,
+        1
+      ],
+      "final_scores": [
+        {
+          "points": 17,
+          "cards": 18,
+          "nobles": 2
+        },
+        {
+          "points": 1,
+          "cards": 2,
+          "nobles": 0
+        }
+      ],
+      "old_rating": 2014.3055395894971,
+      "new_rating": 2233.0682664169535,
+      "delta": 218.7627268274564,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v8b:0",
+          "model_id": "net:real30_v8b:0",
+          "label": "real30_v8b/i5 (rating 2495)",
+          "opp_rating": 2495.12986893696,
+          "score": 1.0
+        }
+      ],
+      "meta": {
+        "game_id": "b90806fbf977"
+      }
+    },
+    {
+      "timestamp": "2026-04-25T17:02:15",
+      "seed": 1777161467,
+      "human_seat": 0,
+      "human_rank": 1,
+      "ranks": [
+        1,
+        0
+      ],
+      "final_scores": [
+        {
+          "points": 9,
+          "cards": 22,
+          "nobles": 0
+        },
+        {
+          "points": 17,
+          "cards": 22,
+          "nobles": 2
+        }
+      ],
+      "old_rating": 2233.0682664169535,
+      "new_rating": 2197.7319255920856,
+      "delta": -35.336340824867875,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v8b:0",
+          "model_id": "net:real30_v8b:0",
+          "label": "real30_v8b/i5 (rating 2495)",
+          "opp_rating": 2488.359262017273,
+          "score": 0.0
+        }
+      ],
+      "meta": {
+        "game_id": "a188c6030bf1"
+      }
+    },
+    {
+      "timestamp": "2026-04-25T17:07:44",
+      "seed": 1777161741,
+      "human_seat": 0,
+      "human_rank": 0,
+      "ranks": [
+        0,
+        1
+      ],
+      "final_scores": [
+        {
+          "points": 16,
+          "cards": 24,
+          "nobles": 2
+        },
+        {
+          "points": 0,
+          "cards": 2,
+          "nobles": 0
+        }
+      ],
+      "old_rating": 2197.7319255920856,
+      "new_rating": 2304.1657098089217,
+      "delta": 106.4337842168361,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v8b:0",
+          "model_id": "net:real30_v8b:0",
+          "label": "real30_v8b/i5 (rating 2488)",
+          "opp_rating": 2488.359262017273,
+          "score": 1.0
+        }
+      ],
+      "meta": {
+        "game_id": "daec897ccf5a"
+      }
+    },
+    {
+      "timestamp": "2026-04-25T17:12:05",
+      "seed": 1777162073,
+      "human_seat": 0,
+      "human_rank": 0,
+      "ranks": [
+        0,
+        1
+      ],
+      "final_scores": [
+        {
+          "points": 16,
+          "cards": 22,
+          "nobles": 2
+        },
+        {
+          "points": 7,
+          "cards": 19,
+          "nobles": 1
+        }
+      ],
+      "old_rating": 2304.1657098089217,
+      "new_rating": 2371.3690944014324,
+      "delta": 67.2033845925107,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v8b:0",
+          "model_id": "net:real30_v8b:0",
+          "label": "real30_v8b/i5 (rating 2488)",
+          "opp_rating": 2488.359262017273,
+          "score": 1.0
+        }
+      ],
+      "meta": {
+        "game_id": "448b83080c28"
+      }
+    },
+    {
+      "timestamp": "2026-04-25T17:14:37",
+      "seed": 1777162341,
+      "human_seat": 0,
+      "human_rank": 0,
+      "ranks": [
+        0,
+        1
+      ],
+      "final_scores": [
+        {
+          "points": 16,
+          "cards": 22,
+          "nobles": 1
+        },
+        {
+          "points": 1,
+          "cards": 4,
+          "nobles": 0
+        }
+      ],
+      "old_rating": 2371.3690944014324,
+      "new_rating": 2420.084814218115,
+      "delta": 48.715719816682395,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v8b:0",
+          "model_id": "net:real30_v8b:0",
+          "label": "real30_v8b/i5 (rating 2488)",
+          "opp_rating": 2488.359262017273,
+          "score": 1.0
+        }
+      ],
+      "meta": {
+        "game_id": "30a7a90d6ff5"
+      }
+    },
+    {
+      "timestamp": "2026-04-25T17:17:37",
+      "seed": 1777162485,
+      "human_seat": 0,
+      "human_rank": 1,
+      "ranks": [
+        1,
+        0
+      ],
+      "final_scores": [
+        {
+          "points": 12,
+          "cards": 21,
+          "nobles": 0
+        },
+        {
+          "points": 15,
+          "cards": 17,
+          "nobles": 3
+        }
+      ],
+      "old_rating": 2420.084814218115,
+      "new_rating": 2393.516015978029,
+      "delta": -26.568798240085925,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v8b:0",
+          "model_id": "net:real30_v8b:0",
+          "label": "real30_v8b/i5 (rating 2488)",
+          "opp_rating": 2488.359262017273,
+          "score": 0.0
+        }
+      ],
+      "meta": {
+        "game_id": "6948365e1d49"
+      }
+    },
+    {
+      "timestamp": "2026-04-25T17:21:35",
+      "seed": 1777162681,
+      "human_seat": 0,
+      "human_rank": 0,
+      "ranks": [
+        0,
+        1
+      ],
+      "final_scores": [
+        {
+          "points": 16,
+          "cards": 21,
+          "nobles": 2
+        },
+        {
+          "points": 9,
+          "cards": 20,
+          "nobles": 1
+        }
+      ],
+      "old_rating": 2393.516015978029,
+      "new_rating": 2435.003731462388,
+      "delta": 41.48771548435889,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v8b:0",
+          "model_id": "net:real30_v8b:0",
+          "label": "real30_v8b/i5 (rating 2488)",
+          "opp_rating": 2491.8208777701425,
+          "score": 1.0
+        }
+      ],
+      "meta": {
+        "game_id": "252d0d805e11"
+      }
+    },
+    {
+      "timestamp": "2026-04-25T17:32:23",
+      "seed": 1777162903,
+      "human_seat": 0,
+      "human_rank": 0,
+      "ranks": [
+        0,
+        1
+      ],
+      "final_scores": [
+        {
+          "points": 17,
+          "cards": 14,
+          "nobles": 1
+        },
+        {
+          "points": 0,
+          "cards": 1,
+          "nobles": 0
+        }
+      ],
+      "old_rating": 2435.003731462388,
+      "new_rating": 2466.2758877573624,
+      "delta": 31.272156294974593,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v8b:0",
+          "model_id": "net:real30_v8b:0",
+          "label": "real30_v8b/i5 (rating 2492)",
+          "opp_rating": 2491.8208777701425,
+          "score": 1.0
+        }
+      ],
+      "meta": {
+        "game_id": "b7f4bf801461"
+      }
+    },
+    {
+      "timestamp": "2026-04-26T14:14:42",
+      "seed": 1777237809,
+      "human_seat": 0,
+      "human_rank": 0,
+      "ranks": [
+        0,
+        1
+      ],
+      "final_scores": [
+        {
+          "points": 15,
+          "cards": 19,
+          "nobles": 3
+        },
+        {
+          "points": 9,
+          "cards": 18,
+          "nobles": 0
+        }
+      ],
+      "old_rating": 2466.2758877573624,
+      "new_rating": 2500.438675315764,
+      "delta": 34.16278755840176,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v9:25",
+          "model_id": "net:real30_v9:25",
+          "label": "real30_v9/i135 (rating 2602)",
+          "opp_rating": 2602.146486151828,
+          "score": 1.0
+        }
+      ],
+      "meta": {
+        "game_id": "8f01abb978b6"
+      }
+    },
+    {
+      "timestamp": "2026-04-26T14:19:06",
+      "seed": 1777238096,
+      "human_seat": 0,
+      "human_rank": 0,
+      "ranks": [
+        0,
+        1
+      ],
+      "final_scores": [
+        {
+          "points": 17,
+          "cards": 20,
+          "nobles": 2
+        },
+        {
+          "points": 12,
+          "cards": 19,
+          "nobles": 1
+        }
+      ],
+      "old_rating": 2500.438675315764,
+      "new_rating": 2530.4326538426194,
+      "delta": 29.993978526855244,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v9:25",
+          "model_id": "net:real30_v9:25",
+          "label": "real30_v9/i135 (rating 2602)",
+          "opp_rating": 2602.146486151828,
+          "score": 1.0
+        }
+      ],
+      "meta": {
+        "game_id": "d4d60f3ecbc5"
+      }
+    },
+    {
+      "timestamp": "2026-04-27T22:03:45",
+      "seed": 1777352356,
+      "human_seat": 0,
+      "human_rank": 0,
+      "ranks": [
+        0,
+        1
+      ],
+      "final_scores": [
+        {
+          "points": 19,
+          "cards": 20,
+          "nobles": 2
+        },
+        {
+          "points": 1,
+          "cards": 1,
+          "nobles": 0
+        }
+      ],
+      "old_rating": 2530.4326538426194,
+      "new_rating": 2559.202602470382,
+      "delta": 28.76994862776246,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v9:121",
+          "model_id": "net:real30_v9:121",
+          "label": "real30_v9/i615 (rating 2636)",
+          "opp_rating": 2635.886899103125,
+          "score": 1.0
+        }
+      ],
+      "meta": {
+        "game_id": "0d8a939ea247"
+      }
+    },
+    {
+      "timestamp": "2026-04-27T22:09:08",
+      "seed": 1777352653,
+      "human_seat": 0,
+      "human_rank": 0,
+      "ranks": [
+        0,
+        1
+      ],
+      "final_scores": [
+        {
+          "points": 15,
+          "cards": 21,
+          "nobles": 2
+        },
+        {
+          "points": 6,
+          "cards": 17,
+          "nobles": 0
+        }
+      ],
+      "old_rating": 2559.202602470382,
+      "new_rating": 2585.1609894555286,
+      "delta": 25.958386985146717,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v9:121",
+          "model_id": "net:real30_v9:121",
+          "label": "real30_v9/i615 (rating 2636)",
+          "opp_rating": 2635.886899103125,
+          "score": 1.0
+        }
+      ],
+      "meta": {
+        "game_id": "a34c2499cb35"
+      }
+    },
+    {
+      "timestamp": "2026-04-27T22:13:14",
+      "seed": 1777352967,
+      "human_seat": 0,
+      "human_rank": 0,
+      "ranks": [
+        0,
+        1
+      ],
+      "final_scores": [
+        {
+          "points": 17,
+          "cards": 20,
+          "nobles": 3
+        },
+        {
+          "points": 7,
+          "cards": 16,
+          "nobles": 0
+        }
+      ],
+      "old_rating": 2585.1609894555286,
+      "new_rating": 2608.338009326005,
+      "delta": 23.177019870476215,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v9:121",
+          "model_id": "net:real30_v9:121",
+          "label": "real30_v9/i615 (rating 2636)",
+          "opp_rating": 2633.7045502087763,
+          "score": 1.0
+        }
+      ],
+      "meta": {
+        "game_id": "96921563a432"
+      }
+    },
+    {
+      "timestamp": "2026-04-27T22:16:43",
+      "seed": 1777353204,
+      "human_seat": 0,
+      "human_rank": 0,
+      "ranks": [
+        0,
+        1
+      ],
+      "final_scores": [
+        {
+          "points": 16,
+          "cards": 19,
+          "nobles": 3
+        },
+        {
+          "points": 5,
+          "cards": 16,
+          "nobles": 0
+        }
+      ],
+      "old_rating": 2608.338009326005,
+      "new_rating": 2630.0368812886973,
+      "delta": 21.698871962692465,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v9:121",
+          "model_id": "net:real30_v9:121",
+          "label": "real30_v9/i615 (rating 2634)",
+          "opp_rating": 2635.0162476507676,
+          "score": 1.0
+        }
+      ],
+      "meta": {
+        "game_id": "4b22abf88825"
+      }
+    },
+    {
+      "timestamp": "2026-04-27T22:22:06",
+      "seed": 1777353418,
+      "human_seat": 0,
+      "human_rank": 0,
+      "ranks": [
+        0,
+        1
+      ],
+      "final_scores": [
+        {
+          "points": 15,
+          "cards": 19,
+          "nobles": 3
+        },
+        {
+          "points": 6,
+          "cards": 18,
+          "nobles": 0
+        }
+      ],
+      "old_rating": 2630.0368812886973,
+      "new_rating": 2648.8962480950313,
+      "delta": 18.859366806334037,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v9:121",
+          "model_id": "net:real30_v9:121",
+          "label": "real30_v9/i615 (rating 2635)",
+          "opp_rating": 2632.1032960466614,
+          "score": 1.0
+        }
+      ],
+      "meta": {
+        "game_id": "a950151bb868"
+      }
+    },
+    {
+      "timestamp": "2026-04-27T22:28:19",
+      "seed": 1777353789,
+      "human_seat": 1,
+      "human_rank": 0,
+      "ranks": [
+        1,
+        0
+      ],
+      "final_scores": [
+        {
+          "points": 14,
+          "cards": 18,
+          "nobles": 1
+        },
+        {
+          "points": 15,
+          "cards": 20,
+          "nobles": 2
+        }
+      ],
+      "old_rating": 2648.8962480950313,
+      "new_rating": 2667.6306429720626,
+      "delta": 18.734394877031264,
+      "opponents": [
+        {
+          "seat": 0,
+          "entity_id": "net:real30_v9:121",
+          "model_id": "net:real30_v9:121",
+          "label": "real30_v9/i615 (rating 2632)",
+          "opp_rating": 2634.3506626922426,
+          "score": 1.0
+        }
+      ],
+      "meta": {
+        "game_id": "c3e121d52bb1"
+      }
+    },
+    {
+      "timestamp": "2026-04-27T22:33:18",
+      "seed": 1777354113,
+      "human_seat": 1,
+      "human_rank": 0,
+      "ranks": [
+        1,
+        0
+      ],
+      "final_scores": [
+        {
+          "points": 7,
+          "cards": 18,
+          "nobles": 1
+        },
+        {
+          "points": 17,
+          "cards": 22,
+          "nobles": 2
+        }
+      ],
+      "old_rating": 2667.6306429720626,
+      "new_rating": 2684.4512310885266,
+      "delta": 16.820588116464023,
+      "opponents": [
+        {
+          "seat": 0,
+          "entity_id": "net:real30_v9:121",
+          "model_id": "net:real30_v9:121",
+          "label": "real30_v9/i615 (rating 2634)",
+          "opp_rating": 2634.5710990790712,
+          "score": 1.0
+        }
+      ],
+      "meta": {
+        "game_id": "3082725a528e"
+      }
+    },
+    {
+      "timestamp": "2026-04-29T22:58:36",
+      "seed": 1777528428,
+      "human_seat": 0,
+      "human_rank": 1,
+      "ranks": [
+        1,
+        0
+      ],
+      "final_scores": [
+        {
+          "points": 15,
+          "cards": 20,
+          "nobles": 1
+        },
+        {
+          "points": 15,
+          "cards": 16,
+          "nobles": 2
+        }
+      ],
+      "old_rating": 2684.4512310885266,
+      "new_rating": 2667.7682223666516,
+      "delta": -16.683008721875012,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v9:460",
+          "model_id": "net:real30_v9:460",
+          "label": "real30_v9/i2310 (rating 2699)",
+          "opp_rating": 2702.1519216236807,
+          "score": 0.0
+        }
+      ],
+      "meta": {
+        "game_id": "59a09a452b2f"
+      }
+    },
+    {
+      "timestamp": "2026-04-29T23:04:19",
+      "seed": 1777528731,
+      "human_seat": 0,
+      "human_rank": 0,
+      "ranks": [
+        0,
+        1
+      ],
+      "final_scores": [
+        {
+          "points": 16,
+          "cards": 22,
+          "nobles": 3
+        },
+        {
+          "points": 15,
+          "cards": 20,
+          "nobles": 0
+        }
+      ],
+      "old_rating": 2667.7682223666516,
+      "new_rating": 2685.730429097417,
+      "delta": 17.9622067307655,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v9:460",
+          "model_id": "net:real30_v9:460",
+          "label": "real30_v9/i2310 (rating 2702)",
+          "opp_rating": 2697.537031921925,
+          "score": 1.0
+        }
+      ],
+      "meta": {
+        "game_id": "abc6de8b91fb"
+      }
+    },
+    {
+      "timestamp": "2026-04-29T23:12:01",
+      "seed": 1777529083,
+      "human_seat": 0,
+      "human_rank": 1,
+      "ranks": [
+        1,
+        0
+      ],
+      "final_scores": [
+        {
+          "points": 6,
+          "cards": 18,
+          "nobles": 0
+        },
+        {
+          "points": 17,
+          "cards": 16,
+          "nobles": 1
+        }
+      ],
+      "old_rating": 2685.730429097417,
+      "new_rating": 2669.4399109832084,
+      "delta": -16.29051811420868,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v9:460",
+          "model_id": "net:real30_v9:460",
+          "label": "real30_v9/i2310 (rating 2698)",
+          "opp_rating": 2691.497912016399,
+          "score": 0.0
+        }
+      ],
+      "meta": {
+        "game_id": "4135aa6903a9"
+      }
+    },
+    {
+      "timestamp": "2026-04-29T23:18:29",
+      "seed": 1777529553,
+      "human_seat": 0,
+      "human_rank": 0,
+      "ranks": [
+        0,
+        1
+      ],
+      "final_scores": [
+        {
+          "points": 17,
+          "cards": 17,
+          "nobles": 2
+        },
+        {
+          "points": 0,
+          "cards": 4,
+          "nobles": 0
+        }
+      ],
+      "old_rating": 2669.4399109832084,
+      "new_rating": 2685.495388378199,
+      "delta": 16.055477394990703,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v9:460",
+          "model_id": "net:real30_v9:460",
+          "label": "real30_v9/i2310 (rating 2691)",
+          "opp_rating": 2690.313590087162,
+          "score": 1.0
+        }
+      ],
+      "meta": {
+        "game_id": "4b04f3197c2b"
+      }
+    },
+    {
+      "timestamp": "2026-04-29T23:22:21",
+      "seed": 1777529937,
+      "human_seat": 0,
+      "human_rank": 0,
+      "ranks": [
+        0,
+        1
+      ],
+      "final_scores": [
+        {
+          "points": 15,
+          "cards": 21,
+          "nobles": 2
+        },
+        {
+          "points": 9,
+          "cards": 17,
+          "nobles": 1
+        }
+      ],
+      "old_rating": 2685.495388378199,
+      "new_rating": 2699.7185143799043,
+      "delta": 14.223126001705168,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v9:460",
+          "model_id": "net:real30_v9:460",
+          "label": "real30_v9/i2310 (rating 2690)",
+          "opp_rating": 2685.7695172691488,
+          "score": 1.0
+        }
+      ],
+      "meta": {
+        "game_id": "837793fe8140"
+      }
+    },
+    {
+      "timestamp": "2026-04-30T12:52:28",
+      "seed": 1777578466,
+      "human_seat": 0,
+      "human_rank": 1,
+      "ranks": [
+        1,
+        0
+      ],
+      "final_scores": [
+        {
+          "points": 9,
+          "cards": 22,
+          "nobles": 1
+        },
+        {
+          "points": 15,
+          "cards": 18,
+          "nobles": 2
+        }
+      ],
+      "old_rating": 2699.7185143799043,
+      "new_rating": 2685.8622043967343,
+      "delta": -13.856309983169922,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v9:601",
+          "model_id": "net:real30_v9:601",
+          "label": "real30_v9/i3015 (rating 2712)",
+          "opp_rating": 2712.409456742727,
+          "score": 0.0
+        }
+      ],
+      "meta": {
+        "game_id": "a81d878569f7"
+      }
+    },
+    {
+      "timestamp": "2026-04-30T12:57:05",
+      "seed": 1777578757,
+      "human_seat": 0,
+      "human_rank": 0,
+      "ranks": [
+        0,
+        1
+      ],
+      "final_scores": [
+        {
+          "points": 16,
+          "cards": 18,
+          "nobles": 3
+        },
+        {
+          "points": 7,
+          "cards": 15,
+          "nobles": 0
+        }
+      ],
+      "old_rating": 2685.8622043967343,
+      "new_rating": 2701.1244645278084,
+      "delta": 15.262260131074072,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v9:601",
+          "model_id": "net:real30_v9:601",
+          "label": "real30_v9/i3015 (rating 2712)",
+          "opp_rating": 2717.2088457459204,
+          "score": 1.0
+        }
+      ],
+      "meta": {
+        "game_id": "92417c56ae6f"
+      }
+    },
+    {
+      "timestamp": "2026-04-30T13:02:50",
+      "seed": 1777579043,
+      "human_seat": 0,
+      "human_rank": 0,
+      "ranks": [
+        0,
+        1
+      ],
+      "final_scores": [
+        {
+          "points": 17,
+          "cards": 21,
+          "nobles": 2
+        },
+        {
+          "points": 12,
+          "cards": 17,
+          "nobles": 1
+        }
+      ],
+      "old_rating": 2701.1244645278084,
+      "new_rating": 2714.4168834816555,
+      "delta": 13.292418953847118,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v9:601",
+          "model_id": "net:real30_v9:601",
+          "label": "real30_v9/i3015 (rating 2717)",
+          "opp_rating": 2709.2852110844,
+          "score": 1.0
+        }
+      ],
+      "meta": {
+        "game_id": "381a6b955cb4"
+      }
+    },
+    {
+      "timestamp": "2026-05-02T19:02:15",
+      "seed": 1777773441,
+      "human_seat": 1,
+      "human_rank": 0,
+      "ranks": [
+        1,
+        0
+      ],
+      "final_scores": [
+        {
+          "points": 6,
+          "cards": 17,
+          "nobles": 0
+        },
+        {
+          "points": 15,
+          "cards": 20,
+          "nobles": 3
+        }
+      ],
+      "old_rating": 2714.4168834816555,
+      "new_rating": 2725.1458791564282,
+      "delta": 10.728995674772705,
+      "opponents": [
+        {
+          "seat": 0,
+          "entity_id": "heuristic_opus",
+          "model_id": "heuristic_opus",
+          "label": "Heuristic-opus V15 (rating 2645)",
+          "opp_rating": 2645.0,
+          "score": 1.0
+        }
+      ],
+      "meta": {
+        "game_id": "b85665a064ed"
+      }
+    },
+    {
+      "timestamp": "2026-05-02T19:10:07",
+      "seed": 1777773764,
+      "human_seat": 0,
+      "human_rank": 0,
+      "ranks": [
+        0,
+        1
+      ],
+      "final_scores": [
+        {
+          "points": 16,
+          "cards": 17,
+          "nobles": 2
+        },
+        {
+          "points": 12,
+          "cards": 17,
+          "nobles": 0
+        }
+      ],
+      "old_rating": 2725.1458791564282,
+      "new_rating": 2735.305018582774,
+      "delta": 10.159139426345973,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "heuristic_opus",
+          "model_id": "heuristic_opus",
+          "label": "Heuristic-opus V15 (rating 2645)",
+          "opp_rating": 2645.0,
+          "score": 1.0
+        }
+      ],
+      "meta": {
+        "game_id": "68a77a4bad5a"
+      }
+    },
+    {
+      "timestamp": "2026-05-02T19:16:58",
+      "seed": 1777774280,
+      "human_seat": 0,
+      "human_rank": 0,
+      "ranks": [
+        0,
+        1
+      ],
+      "final_scores": [
+        {
+          "points": 15,
+          "cards": 16,
+          "nobles": 0
+        },
+        {
+          "points": 14,
+          "cards": 15,
+          "nobles": 2
+        }
+      ],
+      "old_rating": 2735.305018582774,
+      "new_rating": 2749.0351434154572,
+      "delta": 13.730124832683032,
+      "opponents": [
+        {
+          "seat": 1,
+          "entity_id": "net:real30_v9:896",
+          "model_id": "net:real30_v9:896",
+          "label": "real30_v9/i4490 (rating 2757)",
+          "opp_rating": 2756.329734082829,
+          "score": 1.0
+        }
+      ],
+      "meta": {
+        "game_id": "ffa033143453"
+      }
+    }
+  ],
+  "rating": 2749.0351434154572,
+  "games": 33
+}

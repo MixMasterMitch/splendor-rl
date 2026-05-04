@@ -1,0 +1,7 @@
+{
+  "iter": 5286,
+  "last_checkpoint": "/home/mloeppky/.cursor/worktrees/driving__SSH__svdi-u12q-016.vdi.zooxlabs.com_/splendor/experimental/mloeppky/splendor/agent/runs/real30_v9/checkpoints/latest_resume.pt",
+  "last_archive_checkpoint": "/home/mloeppky/.cursor/worktrees/driving__SSH__svdi-u12q-016.vdi.zooxlabs.com_/splendor/experimental/mloeppky/splendor/agent/runs/real30_v9/checkpoints/iter_005286.pt",
+  "decision": "continue",
+  "finished_burst": true
+}

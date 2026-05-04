@@ -1,0 +1,32 @@
+# OS
+.DS_Store
+
+# Editor
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+*.egg-info/
+
+# Node
+node_modules/
+
+# ---------- Training runs ----------
+# Archive checkpoints (keep only league/ checkpoints + latest_resume.pt)
+agent/runs/*/checkpoints/iter_*.pt
+
+# Ephemeral run artifacts
+agent/runs/*/commands/
+agent/runs/*/heartbeat.json
+agent/runs/*/replay/
+agent/runs/*/samples/
+*.log
+
+# Validation experiments (one-off, not needed for continued training)
+agent/runs_validation_abs/
+
+# Heuristic-opus tournament caches (final bot code lives in agent/eval/)
+agent/runs_heuristic_opus/
