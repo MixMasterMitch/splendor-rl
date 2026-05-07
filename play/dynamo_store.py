@@ -41,7 +41,8 @@ class DynamoPlayStore:
         item = resp.get("Item")
         if item is None:
             return None
-        return json.loads(item["data"])
+        data = item["data"]
+        return data if isinstance(data, dict) else json.loads(data)
 
     def save_game(self, record: dict[str, Any]) -> None:
         """Save a game record using unconditional PutItem (last-writer-wins)."""
@@ -75,7 +76,8 @@ class DynamoPlayStore:
         for item in items:
             if want is not None and item.get("status") not in want:
                 continue
-            results.append(json.loads(item["data"]))
+            data = item["data"]
+            results.append(data if isinstance(data, dict) else json.loads(data))
         return results
 
     def put_game_if_not_exists(self, record: dict[str, Any]) -> bool:
@@ -116,7 +118,11 @@ class DynamoPlayStore:
         item = resp.get("Item")
         if item is None:
             return None
-        return json.loads(item["data"])
+        data = item["data"]
+        # Handle both JSON string (normal) and raw dict (legacy/DynamoDB map)
+        if isinstance(data, dict):
+            return data
+        return json.loads(data)
 
     def save_user_rating_blob(self, username: str, data: dict[str, Any]) -> None:
         """Save a user's rating blob using unconditional PutItem."""
@@ -132,14 +138,16 @@ class DynamoPlayStore:
         results: list[dict[str, Any]] = []
         resp = self._users_table.scan()
         for item in resp.get("Items", []):
-            results.append(json.loads(item["data"]))
+            data = item["data"]
+            results.append(data if isinstance(data, dict) else json.loads(data))
         # Handle pagination for large tables
         while "LastEvaluatedKey" in resp:
             resp = self._users_table.scan(
                 ExclusiveStartKey=resp["LastEvaluatedKey"]
             )
             for item in resp.get("Items", []):
-                results.append(json.loads(item["data"]))
+                data = item["data"]
+                results.append(data if isinstance(data, dict) else json.loads(data))
         return results
 
     # ── Delete operations ─────────────────────────────────────────────

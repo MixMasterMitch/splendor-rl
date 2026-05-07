@@ -59,6 +59,13 @@ class League:
             return p
         return self.root / p
 
+    def _entry_available(self, entry: dict) -> bool:
+        """Return True if the entry's checkpoint file exists on disk."""
+        path_str = entry.get("path", "")
+        if not path_str:
+            return False
+        return self._resolve_path(path_str).exists()
+
     def _to_relative_path(self, p: pathlib.Path | str) -> str:
         """Convert an absolute path to a relative path from the league root.
 
@@ -177,6 +184,13 @@ class League:
         ]
 
     def _prune_entries(self) -> None:
+        """Prune checkpoint *files* from disk to save space, but keep all
+        entries and results in the manifest for comprehensive rating history.
+
+        Only the most recent ``keep_recent`` plus the best-rated older entries
+        (up to ``max_entries`` total) retain their files on disk. Pruned entries
+        remain in the JSON so their pairwise results continue to inform ratings.
+        """
         if self.max_entries is None:
             return
         entries = list(self.manifest["entries"])
@@ -189,14 +203,11 @@ class League:
         best = sorted(older, key=self._entry_strength_key, reverse=True)[:keep_best]
         keep_paths = {entry["path"] for entry in recent}
         keep_paths.update(entry["path"] for entry in best)
-        new_entries: list[dict] = []
+        # Delete checkpoint files for entries we no longer need on disk,
+        # but keep the entries themselves in the manifest for rating history.
         for entry in entries:
-            if entry["path"] in keep_paths:
-                new_entries.append(entry)
-            else:
+            if entry["path"] not in keep_paths:
                 self._drop_entry(entry)
-        self.manifest["entries"] = new_entries
-        self._prune_results()
 
     def add_checkpoint(
         self,
@@ -272,10 +283,13 @@ class League:
             return None
         if rng is None:
             rng = random.Random()
+        # Only consider entries whose checkpoint files still exist on disk.
+        entries = [e for e in self.manifest["entries"] if self._entry_available(e)]
+        if not entries:
+            return None
         # Weight by recency (newer = heavier) times a softened rating factor.
         # Ratings are anchored at random=1000, heuristic=2500, so we center the
         # sampling weights around the heuristic anchor rather than absolute 0.
-        entries = self.manifest["entries"]
         weights = []
         for i, e in enumerate(entries):
             recency = 1.0 + i
@@ -294,10 +308,12 @@ class League:
     def rating_candidates(self, exclude_idx: int | None = None, limit: int = 4) -> List[dict]:
         if limit <= 0:
             return []
+        # Only consider entries whose checkpoint files still exist on disk.
         entries = [
             entry
             for entry in self.manifest["entries"]
-            if exclude_idx is None or int(entry["idx"]) != exclude_idx
+            if (exclude_idx is None or int(entry["idx"]) != exclude_idx)
+            and self._entry_available(entry)
         ]
         if not entries:
             return []

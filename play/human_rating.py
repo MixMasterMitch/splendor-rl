@@ -45,7 +45,7 @@ from typing import Any, Iterable
 
 RANDOM_ANCHOR_RATING: float = 1000.0
 HEURISTIC_ANCHOR_RATING: float = 2500.0
-RATING_SCALE: float = 400.0
+RATING_SCALE: float = 1000.0
 HUMAN_ENTITY: str = "human"
 DEFAULT_INITIAL_RATING: float = 1500.0
 
@@ -65,7 +65,7 @@ PLACEMENT_WINS_REQUIRED: int = 5
 
 
 def _expected_score(r_a: float, r_b: float) -> float:
-    """Probability that A beats B under Bradley-Terry with scale 400."""
+    """Probability that A beats B under Bradley-Terry with scale 1000."""
     return 1.0 / (1.0 + math.pow(10.0, (r_b - r_a) / RATING_SCALE))
 
 

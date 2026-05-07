@@ -4,7 +4,7 @@
       "idx": 1801,
       "tag": "i3010",
       "path": "ckpt_01801_i3010.pt",
-      "rating": 2506.8366985903576,
+      "rating": 2545.5825567687275,
       "games": 440,
       "hidden": 192,
       "arch": "attn"
@@ -13,7 +13,7 @@
       "idx": 1803,
       "tag": "i3020",
       "path": "ckpt_01803_i3020.pt",
-      "rating": 2530.254999801916,
+      "rating": 2603.1725387012466,
       "games": 320,
       "hidden": 192,
       "arch": "attn"
@@ -22,7 +22,7 @@
       "idx": 1805,
       "tag": "i3030",
       "path": "ckpt_01805_i3030.pt",
-      "rating": 2499.8720014446076,
+      "rating": 2527.884678098723,
       "games": 376,
       "hidden": 192,
       "arch": "attn"
@@ -31,7 +31,7 @@
       "idx": 1842,
       "tag": "i3215",
       "path": "ckpt_01842_i3215.pt",
-      "rating": 2527.920813339269,
+      "rating": 2597.786603276067,
       "games": 294,
       "hidden": 192,
       "arch": "attn"
@@ -40,7 +40,7 @@
       "idx": 1869,
       "tag": "i3350",
       "path": "ckpt_01869_i3350.pt",
-      "rating": 2505.996977506715,
+      "rating": 2543.181744497364,
       "games": 339,
       "hidden": 192,
       "arch": "attn"
@@ -49,7 +49,7 @@
       "idx": 1876,
       "tag": "i3385",
       "path": "ckpt_01876_i3385.pt",
-      "rating": 2537.43485303957,
+      "rating": 2622.5254021703195,
       "games": 308,
       "hidden": 192,
       "arch": "attn"
@@ -58,7 +58,7 @@
       "idx": 1877,
       "tag": "i3390",
       "path": "ckpt_01877_i3390.pt",
-      "rating": 2511.669912402458,
+      "rating": 2557.8235131919832,
       "games": 295,
       "hidden": 192,
       "arch": "attn"
@@ -67,7 +67,7 @@
       "idx": 1894,
       "tag": "i3475",
       "path": "ckpt_01894_i3475.pt",
-      "rating": 2508.8369189806494,
+      "rating": 2550.4080259046086,
       "games": 269,
       "hidden": 192,
       "arch": "attn"
@@ -76,7 +76,7 @@
       "idx": 1895,
       "tag": "i3480",
       "path": "ckpt_01895_i3480.pt",
-      "rating": 2589.4419310995836,
+      "rating": 2751.867255856598,
       "games": 312,
       "hidden": 192,
       "arch": "attn"
@@ -85,7 +85,7 @@
       "idx": 1912,
       "tag": "i3565",
       "path": "ckpt_01912_i3565.pt",
-      "rating": 2516.7629212248085,
+      "rating": 2572.1923726803298,
       "games": 275,
       "hidden": 192,
       "arch": "attn"
@@ -94,7 +94,7 @@
       "idx": 1922,
       "tag": "i3615",
       "path": "ckpt_01922_i3615.pt",
-      "rating": 2498.6197551452947,
+      "rating": 2526.5939061780496,
       "games": 331,
       "hidden": 192,
       "arch": "attn"
@@ -103,7 +103,7 @@
       "idx": 1923,
       "tag": "i3620",
       "path": "ckpt_01923_i3620.pt",
-      "rating": 2485.9440476683717,
+      "rating": 2494.432655185026,
       "games": 246,
       "hidden": 192,
       "arch": "attn"
@@ -112,7 +112,7 @@
       "idx": 1926,
       "tag": "i3635",
       "path": "ckpt_01926_i3635.pt",
-      "rating": 2531.771588318287,
+      "rating": 2607.9783405008275,
       "games": 265,
       "hidden": 192,
       "arch": "attn"
@@ -121,7 +121,7 @@
       "idx": 2494,
       "tag": "i2820",
       "path": "ckpt_02494_i2820.pt",
-      "rating": 2616.4292810383245,
+      "rating": 2819.547043470507,
       "games": 316,
       "hidden": 192,
       "arch": "attn"
@@ -130,7 +130,7 @@
       "idx": 2495,
       "tag": "i2825",
       "path": "ckpt_02495_i2825.pt",
-      "rating": 2586.0803025706473,
+      "rating": 2743.651627008004,
       "games": 410,
       "hidden": 192,
       "arch": "attn"
@@ -139,7 +139,7 @@
       "idx": 2496,
       "tag": "i2830",
       "path": "ckpt_02496_i2830.pt",
-      "rating": 2633.4524651648953,
+      "rating": 2862.3324748093737,
       "games": 476,
       "hidden": 192,
       "arch": "attn"
@@ -148,7 +148,7 @@
       "idx": 2497,
       "tag": "i2835",
       "path": "ckpt_02497_i2835.pt",
-      "rating": 2616.6975425694645,
+      "rating": 2820.6328553562166,
       "games": 472,
       "hidden": 192,
       "arch": "attn"
@@ -157,7 +157,7 @@
       "idx": 2498,
       "tag": "i2840",
       "path": "ckpt_02498_i2840.pt",
-      "rating": 2620.8080020033813,
+      "rating": 2831.3363495300805,
       "games": 458,
       "hidden": 192,
       "arch": "attn"
@@ -166,7 +166,7 @@
       "idx": 2499,
       "tag": "i2845",
       "path": "ckpt_02499_i2845.pt",
-      "rating": 2639.2624443522955,
+      "rating": 2876.2896314442514,
       "games": 479,
       "hidden": 192,
       "arch": "attn"
@@ -175,7 +175,7 @@
       "idx": 2500,
       "tag": "i2850",
       "path": "ckpt_02500_i2850.pt",
-      "rating": 2632.6366589728023,
+      "rating": 2859.6625063890283,
       "games": 439,
       "hidden": 192,
       "arch": "attn"
@@ -184,7 +184,7 @@
       "idx": 2501,
       "tag": "i2875",
       "path": "ckpt_02501_i2875.pt",
-      "rating": 2700.326568765236,
+      "rating": 3029.3385996440056,
       "games": 403,
       "hidden": 192,
       "arch": "attn"
@@ -193,7 +193,7 @@
       "idx": 2502,
       "tag": "i2900",
       "path": "ckpt_02502_i2900.pt",
-      "rating": 2634.886176043533,
+      "rating": 2866.2024476370807,
       "games": 340,
       "hidden": 192,
       "arch": "attn"
@@ -202,7 +202,7 @@
       "idx": 2503,
       "tag": "i2925",
       "path": "ckpt_02503_i2925.pt",
-      "rating": 2659.070318162935,
+      "rating": 2925.154884499793,
       "games": 341,
       "hidden": 192,
       "arch": "attn"
@@ -211,7 +211,7 @@
       "idx": 2504,
       "tag": "i2950",
       "path": "ckpt_02504_i2950.pt",
-      "rating": 2723.390563041945,
+      "rating": 3086.914744238864,
       "games": 420,
       "hidden": 192,
       "arch": "attn"
@@ -240,8 +240,17 @@
       "idx": 2507,
       "tag": "i3025",
       "path": "ckpt_02507_i3025.pt",
-      "rating": 2397.7418057405253,
-      "games": 9,
+      "rating": 2323.294707553875,
+      "games": 13,
+      "hidden": 192,
+      "arch": "attn"
+    },
+    {
+      "idx": 2508,
+      "tag": "i3050",
+      "path": "ckpt_02508_i3050.pt",
+      "rating": 2500.0,
+      "games": 0,
       "hidden": 192,
       "arch": "attn"
     }
@@ -2474,26 +2483,26 @@
     {
       "a": "bedrock_claude_sonnet",
       "b": "random",
-      "wins_a": 8.0,
-      "wins_b": 5.0,
+      "wins_a": 9.333333333333334,
+      "wins_b": 5.333333333333333,
       "ties": 0.0,
-      "games": 13.0
+      "games": 14.666666666666668
     },
     {
       "a": "bedrock_claude_sonnet",
       "b": "heuristic",
-      "wins_a": 5.0,
-      "wins_b": 7.0,
+      "wins_a": 5.833333333333333,
+      "wins_b": 9.166666666666668,
       "ties": 0.0,
-      "games": 12.0
+      "games": 15.000000000000002
     },
     {
       "a": "bedrock_claude_sonnet",
       "b": "heuristic_opus",
-      "wins_a": 4.0,
-      "wins_b": 10.0,
+      "wins_a": 4.333333333333333,
+      "wins_b": 12.000000000000002,
       "ties": 0.0,
-      "games": 14.0
+      "games": 16.333333333333332
     },
     {
       "a": "bedrock_claude_sonnet",
@@ -2506,10 +2515,10 @@
     {
       "a": "bedrock_claude_sonnet",
       "b": "ckpt:2507",
-      "wins_a": 3.0,
-      "wins_b": 6.0,
+      "wins_a": 4.5,
+      "wins_b": 8.5,
       "ties": 0.0,
-      "games": 9.0
+      "games": 13.0
     }
   ],
   "anchors": {
@@ -2519,12 +2528,12 @@
   "rating_system": "anchored_bt",
   "floating_entities": {
     "bedrock_claude_sonnet": {
-      "rating": 2277.329867140312,
-      "games": 53
+      "rating": 2047.0888754039495,
+      "games": 64
     },
     "heuristic_opus": {
-      "rating": 2584.0565041585455,
-      "games": 100
+      "rating": 2747.6496791207137,
+      "games": 102
     }
   }
 }

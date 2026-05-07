@@ -160,10 +160,15 @@ def test_league_prune_keeps_recent_and_strong_entries(tmp_path: pathlib.Path) ->
             metadata={"score_hint": score},
         )
     entries = league.list_entries()
-    kept = {entry["tag"] for entry in entries}
-    assert len(entries) == 3
-    assert "a" in kept
-    assert "d" in kept
+    # All entries are preserved in the manifest for rating history.
+    assert len(entries) == 4
+    # Only max_entries (3) checkpoint files remain on disk: keep_recent=1 (d)
+    # plus the 2 best-rated older entries (a, c).
+    available = [e for e in entries if league._entry_available(e)]
+    available_tags = {e["tag"] for e in available}
+    assert len(available) == 3
+    assert "a" in available_tags  # best score_hint
+    assert "d" in available_tags  # most recent
 
 
 def test_fit_anchored_ratings_is_order_invariant() -> None:
