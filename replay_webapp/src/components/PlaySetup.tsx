@@ -46,13 +46,8 @@ export function PlaySetup({
   }, [models]);
 
   const pickableModels = useMemo(() => {
-    return sortedModels.filter((m) => {
-      if (m.kind === "human") return false;
-      if (numPlayers > 2 && m.kind === "net") return false;
-      if (numPlayers > 2 && m.kind === "llm_bedrock") return false;
-      return true;
-    });
-  }, [sortedModels, numPlayers]);
+    return sortedModels.filter((m) => m.kind !== "human");
+  }, [sortedModels]);
 
   const validIds = useMemo(
     () => new Set(pickableModels.map((m) => m.id)),
@@ -91,9 +86,21 @@ export function PlaySetup({
     });
   }, [numPlayers, humanSeat, pickableModels, validIds]);
 
+  const sonnetCount = useMemo(() => {
+    const sonnetIds = new Set(
+      models.filter((m) => m.kind === "llm_bedrock").map((m) => m.id),
+    );
+    return Object.entries(seatModels)
+      .filter(([s]) => Number(s) !== humanSeat)
+      .filter(([, id]) => sonnetIds.has(id)).length;
+  }, [seatModels, humanSeat, models]);
+
+  const tooManySonnets = sonnetCount > 1;
+
   const canStart =
     !starting &&
     !loadingModels &&
+    !tooManySonnets &&
     pickableModels.length > 0 &&
     Array.from({ length: numPlayers }, (_, i) => i)
       .filter((s) => s !== humanSeat)
@@ -165,8 +172,7 @@ export function PlaySetup({
 
       {numPlayers > 2 && (
         <div style={{ fontSize: 12, color: "#7a94b8" }}>
-          3 or 4 player games exclude trained net checkpoints; use built-in bots
-          only.
+          Only one Claude Sonnet agent is allowed per game.
         </div>
       )}
 
@@ -216,6 +222,12 @@ export function PlaySetup({
             </label>
           ))}
       </div>
+
+      {tooManySonnets && (
+        <div style={{ color: "#ef5350", fontSize: 13 }}>
+          Only one Claude Sonnet agent is allowed per game.
+        </div>
+      )}
 
       {startError && <div style={{ color: "#ef5350" }}>{startError}</div>}
 

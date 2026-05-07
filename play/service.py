@@ -367,16 +367,19 @@ class PlayService:
 
         all_models = self.list_models()
         seat_models: dict[int, dict[str, Any]] = {}
+        llm_count = 0
         for seat, model_id in opponents.items():
             m = MD.model_by_id(all_models, model_id)
             if m is None:
                 raise ValueError(f"unknown model_id: {model_id!r}")
             if m["kind"] == "human":
                 raise ValueError("human-vs-human games are not supported")
-            if num_players > 2 and m["kind"] == "net":
-                raise ValueError("net checkpoints are only allowed in 2-player games")
-            if num_players > 2 and m["kind"] == "llm_bedrock":
-                raise ValueError("LLM Bedrock agents are only available in 2-player games")
+            if m["kind"] == "llm_bedrock":
+                llm_count += 1
+                if llm_count > 1:
+                    raise ValueError(
+                        "only one Claude Sonnet agent is allowed per game"
+                    )
             seat_models[seat] = m
             try:
                 build_policy_cached(
