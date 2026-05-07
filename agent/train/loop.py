@@ -155,7 +155,10 @@ def _cleanup_old_checkpoints(ckpt_dir: pathlib.Path, keep: int, run: Run) -> Non
 
 def _get_league_opponent_paths(league: League, count: int, seed: int) -> list[str]:
     """Sample `count` random league checkpoint paths for unified eval."""
-    entries = league.list_entries()
+    # Only consider entries whose checkpoint files still exist on disk.
+    # Pruned entries remain in the manifest for rating history but their
+    # .pt files are deleted, so we must filter them out here.
+    entries = [e for e in league.list_entries() if league._entry_available(e)]
     if not entries:
         return []
     rng = stdlib_random.Random(seed)

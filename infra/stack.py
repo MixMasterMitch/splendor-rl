@@ -21,9 +21,35 @@ from aws_cdk import (
 )
 from constructs import Construct
 
-from infra.models_config import DEPLOYED_CHECKPOINTS
-
 _PROJECT_ROOT = pathlib.Path(__file__).resolve().parent.parent
+
+
+def _load_league_checkpoints() -> list[dict]:
+    """Read league.json and return entries whose checkpoint files exist on disk."""
+    import json
+
+    league_json = _PROJECT_ROOT / "agent" / "runs" / "league" / "league.json"
+    if not league_json.exists():
+        return []
+
+    with open(league_json) as f:
+        data = json.load(f)
+
+    league_dir = league_json.parent
+    entries = []
+    for entry in data.get("entries", []):
+        ckpt_path = league_dir / entry["path"]
+        if ckpt_path.exists():
+            entries.append({
+                "idx": entry["idx"],
+                "tag": entry.get("tag", f"idx{entry['idx']}"),
+                "path": str(ckpt_path),
+                "filename": entry["path"],
+                "rating": float(entry.get("rating", 2500.0)),
+                "hidden": entry.get("hidden"),
+                "arch": entry.get("arch"),
+            })
+    return entries
 
 
 class SplendorStack(Stack):
@@ -190,41 +216,38 @@ class SplendorStack(Stack):
             distribution_paths=["/*"],
         )
 
-        # --- Model Checkpoint Upload (Task 8.4) ---
+        # --- Model Checkpoint Upload ---
+        # Reads league.json at synth time and uploads all checkpoints that
+        # exist on disk (the league maintains a rolling window of ~24).
 
         import json
 
+        league_checkpoints = _load_league_checkpoints()
+
         manifest_entries = []
-        for ckpt in DEPLOYED_CHECKPOINTS:
-            s3_key = f"checkpoints/{ckpt['run']}/{pathlib.Path(ckpt['relative_path']).name}"
-            manifest_entries.append(
-                {
-                    "run": ckpt["run"],
-                    "tag": ckpt["tag"],
-                    "idx": ckpt["idx"],
-                    "s3_key": s3_key,
-                    "rating": ckpt.get("rating", 2500.0),
-                    "s3_bucket": models_bucket.bucket_name,
-                }
-            )
+        for ckpt in league_checkpoints:
+            s3_key = f"checkpoints/league/{ckpt['filename']}"
+            manifest_entries.append({
+                "run": "league",
+                "tag": ckpt["tag"],
+                "idx": ckpt["idx"],
+                "s3_key": s3_key,
+                "rating": ckpt["rating"],
+                "hidden": ckpt.get("hidden"),
+                "arch": ckpt.get("arch"),
+                "s3_bucket": models_bucket.bucket_name,
+            })
 
-        # Upload checkpoint files to models bucket
-        checkpoint_sources = []
-        for ckpt in DEPLOYED_CHECKPOINTS:
-            ckpt_path = _PROJECT_ROOT / ckpt["relative_path"]
-            s3_key_prefix = f"checkpoints/{ckpt['run']}"
-            checkpoint_sources.append(
-                (str(ckpt_path.parent), ckpt_path.name, s3_key_prefix)
-            )
-
-        # Deploy each checkpoint to its S3 prefix
-        for i, (source_dir, filename, prefix) in enumerate(checkpoint_sources):
+        # Deploy each checkpoint file to S3
+        for i, ckpt in enumerate(league_checkpoints):
+            ckpt_dir = str(pathlib.Path(ckpt["path"]).parent)
+            filename = ckpt["filename"]
             s3deploy.BucketDeployment(
                 self,
                 f"CheckpointDeployment{i}",
-                sources=[s3deploy.Source.asset(source_dir, exclude=["*", f"!{filename}"])],
+                sources=[s3deploy.Source.asset(ckpt_dir, exclude=["*", f"!{filename}"])],
                 destination_bucket=models_bucket,
-                destination_key_prefix=prefix,
+                destination_key_prefix="checkpoints/league",
                 prune=False,
             )
 
