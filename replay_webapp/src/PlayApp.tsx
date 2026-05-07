@@ -229,6 +229,7 @@ function PlayAppLoggedIn({ username }: { username: string }) {
 
   const [games, setGames] = useState<GameListItem[]>([]);
   const [gamesError, setGamesError] = useState<string | null>(null);
+  const [lobbyLoading, setLobbyLoading] = useState(true);
 
   const [leaderboard, setLeaderboard] = useState<LeaderboardResponse | null>(null);
   const [leaderboardLoading, setLeaderboardLoading] = useState(true);
@@ -349,9 +350,9 @@ function PlayAppLoggedIn({ username }: { username: string }) {
   }, []);
 
   useEffect(() => {
-    void refreshMe();
-    void refreshGames();
-    void refreshLeaderboard();
+    void Promise.all([refreshMe(), refreshGames(), refreshLeaderboard()]).finally(() => {
+      setLobbyLoading(false);
+    });
   }, [refreshGames, refreshLeaderboard, refreshMe]);
 
   useEffect(() => {
@@ -654,6 +655,10 @@ function PlayAppLoggedIn({ username }: { username: string }) {
         </div>
       ) : (
         <div style={{ overflow: "auto", flex: 1, padding: 16 }}>
+          {lobbyLoading ? (
+            <LoadingSpinner text="Loading lobby..." />
+          ) : (
+          <>
           <h3 style={{ color: "#e8c848", marginTop: 0, marginBottom: 28 }}>Games</h3>
           {!hasInFlightGame ? (
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
@@ -779,6 +784,8 @@ function PlayAppLoggedIn({ username }: { username: string }) {
               )}
             </tbody>
           </table>
+          </>
+          )}
         </div>
       )}
     </div>

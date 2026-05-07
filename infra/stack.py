@@ -14,6 +14,7 @@ from aws_cdk import (
     aws_cloudfront as cloudfront,
     aws_cloudfront_origins as origins,
     aws_dynamodb as dynamodb,
+    aws_iam as iam,
     aws_lambda as lambda_,
     aws_s3 as s3,
     aws_s3_deployment as s3deploy,
@@ -108,6 +109,7 @@ class SplendorStack(Stack):
                 "USERS_TABLE": users_table.table_name,
                 "MODELS_BUCKET": models_bucket.bucket_name,
                 "MODELS_MANIFEST": "checkpoints/manifest.json",
+                "LEAGUE_DATA_KEY": "league/league.json",
             },
         )
 
@@ -115,6 +117,14 @@ class SplendorStack(Stack):
         games_table.grant_read_write_data(api_function)
         users_table.grant_read_write_data(api_function)
         models_bucket.grant_read(api_function)
+
+        # Grant Lambda access to Bedrock for LLM-based opponents
+        api_function.add_to_role_policy(
+            iam.PolicyStatement(
+                actions=["bedrock:InvokeModel"],
+                resources=["*"],
+            )
+        )
 
         # --- API Gateway HTTP API ---
 
@@ -225,6 +235,22 @@ class SplendorStack(Stack):
             sources=[s3deploy.Source.data("checkpoints/manifest.json", manifest_json)],
             destination_bucket=models_bucket,
         )
+
+        # --- League Data Upload ---
+        # Upload league.json so the Lambda can compute unified ratings
+        # matching the local server's combined_ratings() logic.
+        league_json_path = _PROJECT_ROOT / "agent" / "runs" / "league" / "league.json"
+        if league_json_path.exists():
+            s3deploy.BucketDeployment(
+                self,
+                "LeagueDataDeployment",
+                sources=[s3deploy.Source.asset(
+                    str(league_json_path.parent),
+                    exclude=["*", "!league.json"],
+                )],
+                destination_bucket=models_bucket,
+                destination_key_prefix="league",
+            )
 
         # --- Outputs ---
 

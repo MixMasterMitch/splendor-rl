@@ -56,8 +56,8 @@ DEFAULT_INITIAL_RATING: float = 1500.0
 # rating, because Gaussians don't scale with the logistic likelihood). With
 # 6 ghost games, a single real win against heuristic (2500) settles the
 # rating around the mid-1700s instead of running off to +infinity.
-PRIOR_MEAN_RATING: float = 1500.0
-PRIOR_GHOST_GAMES: float = 0.0
+PRIOR_MEAN_RATING: float = 2500.0
+PRIOR_GHOST_GAMES: float = 4.0
 
 # Minimum number of wins required before the human is "placed" and their
 # rating is shown on the leaderboard.

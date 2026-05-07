@@ -123,6 +123,136 @@ def _load_manifest() -> list[dict[str, Any]]:
     return []
 
 
+_league_data_cache: dict[str, Any] | None = None
+
+
+def _load_league_data() -> dict[str, Any]:
+    """Load league.json from S3 for unified rating computation.
+
+    Cached after first load (league data doesn't change during a Lambda
+    invocation lifecycle).
+    """
+    global _league_data_cache
+    if _league_data_cache is not None:
+        return _league_data_cache
+
+    bucket = os.environ.get("MODELS_BUCKET", "")
+    league_key = os.environ.get("LEAGUE_DATA_KEY", "")
+    if bucket and league_key:
+        try:
+            import boto3
+            s3 = boto3.client("s3")
+            resp = s3.get_object(Bucket=bucket, Key=league_key)
+            data = json.loads(resp["Body"].read().decode("utf-8"))
+            logger.info(f"Loaded league data from s3://{bucket}/{league_key}")
+            _league_data_cache = data
+            return data
+        except Exception as e:
+            logger.warning(f"Failed to load league data from S3: {e}")
+
+    _league_data_cache = {}
+    return {}
+
+
+_unified_ratings_cache: dict[str, float] | None = None
+
+
+def _compute_unified_ratings() -> dict[str, float]:
+    """Compute unified ratings from league data + human game results.
+
+    Cached for the Lambda container lifecycle. Used to enrich model ratings
+    across all endpoints (agents list, game views, etc.).
+    """
+    global _unified_ratings_cache
+    if _unified_ratings_cache is not None:
+        return _unified_ratings_cache
+
+    from play.ratings import _add_eval_results, _normalize_entity
+    from agent.train import ranking as R
+
+    league_data = _load_league_data()
+    anchors: dict[str, float] = dict(R.DEFAULT_ANCHORS)
+    all_results: list[dict[str, Any]] = []
+
+    if league_data:
+        all_results.extend(league_data.get("results", []))
+        for entry in league_data.get("entries", []):
+            idx = int(entry.get("idx", -1))
+            entity = f"ckpt:{idx}"
+            _add_eval_results(all_results, entity, entry)
+
+    store = _get_dynamo_store()
+    for blob in store.list_all_user_rating_blobs():
+        uname = str(blob.get("username") or blob.get("google_sub") or "")
+        if not uname:
+            continue
+        for r in blob.get("results", []):
+            normalized = dict(r)
+            normalized["a"] = _normalize_entity(normalized["a"])
+            normalized["b"] = _normalize_entity(normalized["b"])
+            all_results.append(normalized)
+
+    unified: dict[str, float] = dict(anchors)
+    if all_results:
+        initial: dict[str, float] = {}
+        if league_data:
+            for entry in league_data.get("entries", []):
+                idx = int(entry.get("idx", -1))
+                entity = f"ckpt:{idx}"
+                rating = entry.get("rating")
+                if rating is not None:
+                    initial[entity] = float(rating)
+        try:
+            unified = R.fit_anchored_ratings(
+                all_results, anchors=anchors, initial=initial
+            )
+        except Exception:
+            logger.warning("Failed to compute unified ratings", exc_info=True)
+
+    _unified_ratings_cache = unified
+    return unified
+
+
+def _enrich_models_with_ratings(models: list[dict[str, Any]]) -> None:
+    """Enrich a list of model dicts with unified ratings in-place."""
+    from play.models import model_entity_id
+    from play.ratings import _normalize_entity
+
+    unified = _compute_unified_ratings()
+    for m in models:
+        entity_id = model_entity_id(m)
+        lookup_id = _normalize_entity(entity_id)
+        if lookup_id in unified:
+            m["rating"] = unified[lookup_id]
+
+
+def _enrich_game_view_ratings(view: dict[str, Any]) -> None:
+    """Enrich player ratings in a game view dict with unified ratings.
+
+    Fixes ratings for games that were persisted with hardcoded defaults
+    (e.g. bedrock_claude_sonnet at 2500).
+    """
+    from play.ratings import _normalize_entity
+
+    unified = _compute_unified_ratings()
+    players = view.get("players")
+    if not players:
+        return
+    for p in players:
+        if p.get("kind") == "human":
+            continue
+        model_id = p.get("model_id", "")
+        bot_kind = p.get("kind", "")
+        # Derive entity_id the same way model_entity_id does
+        if bot_kind in ("random", "heuristic", "heuristic_opus"):
+            entity_id = bot_kind
+        else:
+            entity_id = model_id
+        lookup_id = _normalize_entity(entity_id)
+        if lookup_id in unified:
+            p["rating"] = unified[lookup_id]
+
+
 def _make_manifest_list_models():
     """Create list_models (all agents) and list_models_for_display (best only).
 
@@ -132,45 +262,10 @@ def _make_manifest_list_models():
     list_models_for_display() returns built-ins + only the single highest-rated
     net model (used for the /api/agents endpoint and leaderboard).
     """
-    from play.models import (
-        HEURISTIC_ANCHOR_RATING,
-        HEURISTIC_OPUS_RATING,
-        RANDOM_ANCHOR_RATING,
-    )
+    from play.models import _builtins as _models_builtins
 
     _cached_all: list[dict[str, Any]] | None = None
     _cached_display: list[dict[str, Any]] | None = None
-
-    def _builtins() -> list[dict[str, Any]]:
-        return [
-            {
-                "id": "heuristic_opus",
-                "label": "Heuristic Opus Bot",
-                "kind": "heuristic_opus",
-                "run": None, "tag": None, "ckpt": None,
-                "rating": HEURISTIC_OPUS_RATING,
-                "games": 0, "hidden": None, "arch": None,
-                "score_hint": None, "winrate_vs_heuristic": None,
-            },
-            {
-                "id": "heuristic",
-                "label": "Heuristic Bot",
-                "kind": "heuristic",
-                "run": None, "tag": None, "ckpt": None,
-                "rating": HEURISTIC_ANCHOR_RATING,
-                "games": 0, "hidden": None, "arch": None,
-                "score_hint": None, "winrate_vs_heuristic": None,
-            },
-            {
-                "id": "random",
-                "label": "Random Bot",
-                "kind": "random",
-                "run": None, "tag": None, "ckpt": None,
-                "rating": RANDOM_ANCHOR_RATING,
-                "games": 0, "hidden": None, "arch": None,
-                "score_hint": None, "winrate_vs_heuristic": None,
-            },
-        ]
 
     def _net_models() -> list[dict[str, Any]]:
         from play.models import HEURISTIC_ANCHOR_RATING as _HAR
@@ -201,8 +296,9 @@ def _make_manifest_list_models():
         nonlocal _cached_all
         if _cached_all is not None:
             return _cached_all
-        models = _builtins()
+        models = _models_builtins()
         models.extend(_net_models())
+        _enrich_models_with_ratings(models)
         _cached_all = models
         return models
 
@@ -211,11 +307,12 @@ def _make_manifest_list_models():
         nonlocal _cached_display
         if _cached_display is not None:
             return _cached_display
-        models = _builtins()
+        models = _models_builtins()
         nets = _net_models()
         if nets:
             best_net = max(nets, key=lambda m: m["rating"])
             models.append(best_net)
+        _enrich_models_with_ratings(models)
         _cached_display = models
         return models
 
@@ -325,46 +422,86 @@ def _lambda_me(identity) -> dict[str, Any]:
 
 
 def _lambda_leaderboard() -> dict[str, Any]:
-    """Handle /leaderboard endpoint using DynamoDB directly."""
-    from play import human_elo as HE
+    """Handle /leaderboard endpoint using DynamoDB directly.
+
+    Loads league.json from S3 and combines it with user rating blobs to
+    compute unified ratings — matching the local server's combined_ratings()
+    logic exactly.
+    """
     from play import models as MD
+    from play.ratings import _add_eval_results, _normalize_entity, human_leaderboard_rows
 
     store = _get_dynamo_store()
     svc = _get_service()
     all_models = svc.list_models_for_display()
 
-    # Agent rows from manifest models
-    agents: list[dict[str, Any]] = []
-    for m in all_models:
-        agents.append({
-            "kind": "agent",
-            "entity_id": MD.model_entity_id(m),
-            "label": str(m["label"]),
-            "model_id": str(m["id"]),
-            "bot_kind": str(m["kind"]),
-            "rating": float(m.get("rating", 0.0)),
-            "games": int(m.get("games", 0)),
-        })
+    # Load league data from S3 (cached in module-level dict).
+    league_data = _load_league_data()
 
-    # Human rows from DynamoDB
-    humans: list[dict[str, Any]] = []
+    # Build unified results pool — same as combined_ratings() in ratings.py.
+    from agent.train import ranking as R
+    anchors: dict[str, float] = dict(R.DEFAULT_ANCHORS)
+    all_results: list[dict[str, Any]] = []
+
+    # 1. League results (checkpoint vs checkpoint, checkpoint vs bots)
+    if league_data:
+        all_results.extend(league_data.get("results", []))
+        for entry in league_data.get("entries", []):
+            idx = int(entry.get("idx", -1))
+            entity = f"ckpt:{idx}"
+            _add_eval_results(all_results, entity, entry)
+
+    # 2. Human game results from DynamoDB user rating blobs
     for blob in store.list_all_user_rating_blobs():
         uname = str(blob.get("username") or blob.get("google_sub") or "")
         if not uname:
             continue
-        wins = int(blob.get("wins", 0))
-        if wins < HE.PLACEMENT_WINS_REQUIRED:
-            continue
-        rating = float(blob.get("rating", blob.get("elo", HE.DEFAULT_INITIAL_RATING)))
-        games = int(blob.get("games", 0))
-        humans.append({
-            "kind": "human",
-            "entity_id": f"human:{uname}",
-            "label": uname,
-            "username": uname,
+        for r in blob.get("results", []):
+            normalized = dict(r)
+            normalized["a"] = _normalize_entity(normalized["a"])
+            normalized["b"] = _normalize_entity(normalized["b"])
+            all_results.append(normalized)
+
+    # Compute unified ratings.
+    unified_ratings: dict[str, float] = dict(anchors)
+    if all_results:
+        # Collect initial guesses from league entries for faster convergence.
+        initial: dict[str, float] = {}
+        if league_data:
+            for entry in league_data.get("entries", []):
+                idx = int(entry.get("idx", -1))
+                entity = f"ckpt:{idx}"
+                rating = entry.get("rating")
+                if rating is not None:
+                    initial[entity] = float(rating)
+        try:
+            unified_ratings = R.fit_anchored_ratings(
+                all_results, anchors=anchors, initial=initial
+            )
+        except Exception:
+            logger.warning("Failed to compute unified ratings", exc_info=True)
+
+    # Agent rows — use unified ratings when available, else static default.
+    agents: list[dict[str, Any]] = []
+    for m in all_models:
+        label = str(m["label"])
+        if m["kind"] == "net":
+            label = "ML Bot"
+        entity_id = MD.model_entity_id(m)
+        lookup_id = _normalize_entity(entity_id)
+        rating = unified_ratings.get(lookup_id, float(m.get("rating", 0.0)))
+        agents.append({
+            "kind": "agent",
+            "entity_id": entity_id,
+            "label": label,
+            "model_id": str(m["id"]),
+            "bot_kind": str(m["kind"]),
             "rating": rating,
-            "games": games,
+            "games": int(m.get("games", 0)),
         })
+
+    # Human rows — reuse the same logic as the local server.
+    humans = human_leaderboard_rows(store)
 
     combined = humans + agents
     combined.sort(key=lambda r: float(r.get("rating", 0.0)), reverse=True)
@@ -484,7 +621,9 @@ def _dispatch(method: str, path: str, headers: dict[str, str], query_params: dic
                         if model_info.get("kind") == "net" and model_id not in available_ids:
                             store.delete_game(game_id)
                             raise KeyError(game_id)
-            return _json_response(200, svc.get_view(identity, game_id))
+            view = svc.get_view(identity, game_id)
+            _enrich_game_view_ratings(view)
+            return _json_response(200, view)
 
         return _json_response(404, {"error": f"not found: {path}"})
 
@@ -496,7 +635,9 @@ def _dispatch(method: str, path: str, headers: dict[str, str], query_params: dic
         if path == "/api/games":
             session = svc.create_game(identity, parsed_body)
             with session.lock:
-                return _json_response(201, session.view())
+                view = session.view()
+            _enrich_game_view_ratings(view)
+            return _json_response(201, view)
 
         parts = path.strip("/").split("/")
         if len(parts) == 4 and parts[0] == "api" and parts[1] == "games" and parts[3] == "action":
@@ -505,12 +646,16 @@ def _dispatch(method: str, path: str, headers: dict[str, str], query_params: dic
                 raise ValueError("body must include integer 'action'")
             session = svc.apply_human_action(identity, parts[2], action)
             with session.lock:
-                return _json_response(200, session.view())
+                view = session.view()
+            _enrich_game_view_ratings(view)
+            return _json_response(200, view)
 
         if len(parts) == 4 and parts[0] == "api" and parts[1] == "games" and parts[3] == "step-ai":
             session = svc.step_ai(identity, parts[2])
             with session.lock:
-                return _json_response(200, session.view())
+                view = session.view()
+            _enrich_game_view_ratings(view)
+            return _json_response(200, view)
 
         return _json_response(404, {"error": f"not found: {path}"})
 

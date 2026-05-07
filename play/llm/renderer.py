@@ -57,23 +57,23 @@ def _card_detail(card: C.Card) -> str:
 
 
 def _card_detail_with_buyability(card: C.Card, bonuses: list[int], tokens: list[int]) -> str:
-    """Format a card's details including net cost and buyability tag."""
+    """Format a card's details including tokens to pay and buyability tag."""
     base_str = _format_cost(card.cost)
     net_str = _net_cost(card, bonuses, tokens)
     buyable = _is_buyable(card, bonuses, tokens)
     tag = "[BUYABLE]" if buyable else "[CANNOT AFFORD]"
     return (
-        f"[Card {card.card_id}] Base: {base_str} | Net Cost: {net_str} "
+        f"[Card {card.card_id}] Base: {base_str} | Tokens To Pay: {net_str} "
         f"| Points: {card.points} | Bonus: {_COLOR_FULL[card.bonus]} {tag}"
     )
 
 
 def _card_detail_with_net(card: C.Card, bonuses: list[int]) -> str:
-    """Format a card's details including the net cost after bonuses."""
+    """Format a card's details including the tokens to pay after bonuses."""
     base_str = _format_cost(card.cost)
     net_str = _net_cost(card, bonuses, [])
     return (
-        f"[Card {card.card_id}] Base: {base_str} | Net Cost: {net_str} "
+        f"[Card {card.card_id}] Base: {base_str} | Tokens To Pay: {net_str} "
         f"| Points: {card.points} | Bonus: {_COLOR_FULL[card.bonus]}"
     )
 
@@ -322,11 +322,16 @@ class GameStateRenderer:
         - take3 actions are deduplicated: if multiple combos yield the same
           actual gem set, only the one with the most gems is shown; dominated
           actions (subset of another's yield) are dropped.
+        - take actions that would push over 10 gems are tagged with a warning
         """
         b = batch_idx
         mask = engine.legal_action_mask()
         legal = mask[b].tolist()
         pool = engine.gem_pool[b].tolist()
+
+        # Current player's total gem count for discard warnings
+        seat = int(engine.current_player[b])
+        current_gems = int(engine.tokens[b, seat].sum())
 
         lines: list[str] = []
         lines.append("=== LEGAL ACTIONS ===")
@@ -361,20 +366,24 @@ class GameStateRenderer:
             actual = [c for c in combo if pool[c] > 0]
             short = [_COLOR_SHORT[c] for c in actual]
             colors = [_COLOR_FULL[c] for c in actual]
+            gems_gained = len(actual)
+            discard_warn = ""
+            if current_gems + gems_gained > 10:
+                discard_warn = " [WILL FORCE DISCARD]"
             if len(actual) == 3:
                 lines.append(
                     f"{action_idx}: take3({','.join(short)}) - "
-                    f"Take 1 {' + 1 '.join(colors)} token"
+                    f"Take 1 {' + 1 '.join(colors)} token{discard_warn}"
                 )
             elif len(actual) == 2:
                 lines.append(
                     f"{action_idx}: take_gems({','.join(short)}) - "
-                    f"Take 1 {' + 1 '.join(colors)} token (only {len(actual)} available)"
+                    f"Take 1 {' + 1 '.join(colors)} token (only {len(actual)} available){discard_warn}"
                 )
             else:
                 lines.append(
                     f"{action_idx}: take_gems({short[0]}) - "
-                    f"Take 1 {colors[0]} token (only color available)"
+                    f"Take 1 {colors[0]} token (only color available){discard_warn}"
                 )
 
         # --- Render all other legal actions normally ---
@@ -405,7 +414,10 @@ class GameStateRenderer:
 
         if A.TAKE2_BASE <= action_idx < A.TAKE2_BASE + A.TAKE2_COUNT:
             c = action_idx - A.TAKE2_BASE
-            return f"take2({_COLOR_SHORT[c]}) - Take 2 {_COLOR_FULL[c]} tokens"
+            seat = int(engine.current_player[b])
+            current_gems = int(engine.tokens[b, seat].sum())
+            discard_warn = " [WILL FORCE DISCARD]" if current_gems + 2 > 10 else ""
+            return f"take2({_COLOR_SHORT[c]}) - Take 2 {_COLOR_FULL[c]} tokens{discard_warn}"
 
         if A.RESERVE_GRID_BASE <= action_idx < A.RESERVE_GRID_BASE + A.RESERVE_GRID_COUNT:
             x = action_idx - A.RESERVE_GRID_BASE
