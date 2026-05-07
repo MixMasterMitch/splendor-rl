@@ -225,6 +225,7 @@ class SplendorStack(Stack):
                 sources=[s3deploy.Source.asset(source_dir, exclude=["*", f"!{filename}"])],
                 destination_bucket=models_bucket,
                 destination_key_prefix=prefix,
+                prune=False,
             )
 
         # Generate and upload the manifest JSON
@@ -234,6 +235,7 @@ class SplendorStack(Stack):
             "ManifestDeployment",
             sources=[s3deploy.Source.data("checkpoints/manifest.json", manifest_json)],
             destination_bucket=models_bucket,
+            prune=False,
         )
 
         # --- League Data Upload ---
@@ -250,6 +252,7 @@ class SplendorStack(Stack):
                 )],
                 destination_bucket=models_bucket,
                 destination_key_prefix="league",
+                prune=False,
             )
 
         # --- Outputs ---

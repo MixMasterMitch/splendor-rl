@@ -148,6 +148,57 @@ The client calls #1, immediately updates the UI with the result (human sees thei
 
 **Do NOT collapse these back into a single call or introduce polling.** The split ensures the human's action is visually confirmed instantly, even when AI takes seconds. Both calls work correctly on Lambda (synchronous, no background threads, no persistent state between invocations).
 
+## Fetching Game Data from DynamoDB
+
+Games played on the deployed Lambda app are stored in DynamoDB (not locally).
+
+### Quick lookup by game_id
+
+```bash
+aws dynamodb get-item \
+  --table-name "SplendorStack-GamesTableB32AB610-1C9JML169FTJT" \
+  --key '{"game_id": {"S": "<GAME_ID>"}}' \
+  --region us-west-2 --output json \
+  | python3 -c "import json,sys; item=json.load(sys.stdin)['Item']; print(json.dumps(json.loads(item['data']['S']), indent=2))"
+```
+
+### Save to local file for analysis
+
+```bash
+aws dynamodb get-item \
+  --table-name "SplendorStack-GamesTableB32AB610-1C9JML169FTJT" \
+  --key '{"game_id": {"S": "<GAME_ID>"}}' \
+  --region us-west-2 --output json \
+  | python3 -c "
+import json, sys
+data = json.loads(json.load(sys.stdin)['Item']['data']['S'])
+with open('play/play_data/games/<GAME_ID>.json', 'w') as f:
+    json.dump(data, f, indent=2)
+print(f'Saved. Steps: {len(data[\"steps\"])}, Status: {data[\"status\"]}')
+"
+```
+
+### Game record structure
+
+The `data` field (JSON string) contains:
+- `game_id`, `num_players`, `human_seat`, `seed`, `num_sims`
+- `seat_models`: `{"<seat>": {"id", "label", "kind", "ckpt", "rating", ...}}`
+- `steps[]`: each has `step`, `player`, `phase`, `action`, `action_name`, `action_detail`, `legal_actions`, `state_after`
+- `initial_state`: full board snapshot at game start
+- `rating_update`: `{old_rating, new_rating, delta, per_opponent[]}`
+- `status`: `"completed"` | `"human_turn"` | `"ai_thinking"` | `"aborted"`
+- `user_sub`: username who owns the game
+
+### Replaying a game locally
+
+To recreate a DDB game with the local server, you need:
+1. The `seed` (determines deck permutation)
+2. The `initial_state` (full board snapshot)
+3. The `seat_models` (which checkpoint was used)
+4. The `num_sims` setting
+
+The `GameSession` constructor accepts `initial_state_override` to reproduce the exact same board. The checkpoint must be available locally (check `agent/runs/league/` or download from S3 bucket in `seat_models._s3_bucket`/`_s3_key`).
+
 ## Known Issues
 
 - **Token hoarding**: The agent sometimes takes tokens when at 10, forcing a discard. This is a training data gap — the agent rarely sees 10-token states in selfplay. Flagging bad games via replay injection helps.

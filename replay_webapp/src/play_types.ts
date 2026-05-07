@@ -147,6 +147,7 @@ export interface PlayView {
   seed: number;
   elo_update: EloUpdateResult | null;
   aborted: boolean;
+  abort_reason?: string | null;
   ai_thinking_since?: string | null;
 }
 

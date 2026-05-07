@@ -253,6 +253,15 @@
       "games": 0,
       "hidden": 192,
       "arch": "attn"
+    },
+    {
+      "idx": 2509,
+      "tag": "i3075",
+      "path": "ckpt_02509_i3075.pt",
+      "rating": 2500.0,
+      "games": 0,
+      "hidden": 192,
+      "arch": "attn"
     }
   ],
   "results": [

@@ -77,11 +77,17 @@ def _get_service():
             if local_path:
                 model = {**model, "ckpt": local_path}
             else:
-                # Checkpoint unavailable (e.g., viewing a completed game
-                # whose model was removed). Return a dummy policy that
-                # won't be called for completed games.
-                from replay import players as POL
-                return POL.RandomPolicy(seed=seed)
+                model_id = model.get("id", "unknown")
+                s3_key = model.get("_s3_key", "")
+                logger.error(
+                    "Checkpoint download failed for model %s (s3_key=%s).",
+                    model_id, s3_key,
+                )
+                raise FileNotFoundError(
+                    f"ML checkpoint unavailable for model {model_id!r} "
+                    f"(S3 key: {s3_key!r}). The checkpoint may have been "
+                    f"removed from the models bucket."
+                )
         return _original_build_policy(model, num_sims, seed, device)
 
     _play_service.build_policy_cached = _lambda_build_policy_cached

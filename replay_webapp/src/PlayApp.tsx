@@ -460,7 +460,15 @@ function PlayAppLoggedIn({ username }: { username: string }) {
           {},
         );
         updateView(afterAi);
-        if (afterAi.status === "ended" && afterAi.elo_update) {
+        if (afterAi.aborted && afterAi.abort_reason) {
+          // Game was cancelled (e.g. ML model became unavailable mid-game).
+          // Redirect to lobby with the error message.
+          setActionError(afterAi.abort_reason);
+          writeActiveGameId(null);
+          setView(null);
+          navigate("lobby");
+          void refreshGames();
+        } else if (afterAi.status === "ended" && afterAi.elo_update) {
           void refreshMe();
           void refreshLeaderboard();
         }
@@ -506,13 +514,21 @@ function PlayAppLoggedIn({ username }: { username: string }) {
           {},
         );
         if (!cancelled) {
-          setView(data);
-          if (data.status === "ended") {
+          if (data.aborted && data.abort_reason) {
+            setActionError(data.abort_reason);
             writeActiveGameId(null);
-            void refreshMe();
-            void refreshLeaderboard();
+            setView(null);
+            navigate("lobby");
+            void refreshGames();
+          } else {
+            setView(data);
+            if (data.status === "ended") {
+              writeActiveGameId(null);
+              void refreshMe();
+              void refreshLeaderboard();
+            }
+            void refreshGames();
           }
-          void refreshGames();
         }
       } catch {
         // Ignore errors; user can reload.
@@ -520,7 +536,7 @@ function PlayAppLoggedIn({ username }: { username: string }) {
     };
     void recover();
     return () => { cancelled = true; };
-  }, [view?.status, view?.game_id, busy, username, refreshGames, refreshMe, refreshLeaderboard]);
+  }, [view?.status, view?.game_id, busy, username, refreshGames, refreshMe, refreshLeaderboard, navigate]);
 
   const activeGames = games.filter(
     (g) => g.status === "human_turn" || g.status === "ai_thinking",

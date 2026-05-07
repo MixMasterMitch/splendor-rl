@@ -264,11 +264,20 @@ class PlayService:
         seed = int(record["seed"])
         num_sims = int(record.get("num_sims", 64))
         seat_models = _seat_models_from_json(record)
+        is_ended = record.get("status") in ("completed", "aborted")
         seat_policies: dict[int, POL.PlayerPolicy] = {}
         for seat, m in seat_models.items():
-            seat_policies[seat] = build_policy_cached(
-                m, num_sims=num_sims, seed=seed + seat, device=self.device
-            )
+            try:
+                seat_policies[seat] = build_policy_cached(
+                    m, num_sims=num_sims, seed=seed + seat, device=self.device
+                )
+            except FileNotFoundError:
+                if is_ended:
+                    # Game is already over — policy will never be called.
+                    # Use a placeholder so the session can still be viewed.
+                    seat_policies[seat] = POL.RandomPolicy(seed=seed + seat)
+                else:
+                    raise
         session = GameSession(
             game_id=str(record["game_id"]),
             num_players=num_players,
@@ -405,7 +414,16 @@ class PlayService:
 
         # After session creation, step AI if needed
         if session.current_seat() != human_seat:
-            self._step_ai_sync(session, identity)
+            try:
+                self._step_ai_sync(session, identity)
+            except FileNotFoundError as e:
+                logger.error(
+                    "Game creation failed: ML checkpoint unavailable: %s", e,
+                )
+                raise ValueError(
+                    "Cannot start game: the ML model checkpoint is unavailable. "
+                    "It may have been removed during a deployment update."
+                ) from e
 
         record_full = {
             **self._record_from_session_views(session),
@@ -519,7 +537,22 @@ class PlayService:
                 # Already human's turn — nothing to do.
                 return session
 
-            self._step_ai_sync(session, identity)
+            try:
+                self._step_ai_sync(session, identity)
+            except FileNotFoundError as e:
+                # ML checkpoint unavailable mid-game — abort gracefully.
+                logger.error(
+                    "Aborting game %s: ML checkpoint unavailable: %s",
+                    game_id, e,
+                )
+                session.aborted = True
+                session.abort_reason = (
+                    "Game cancelled: the ML model is no longer available. "
+                    "This can happen when a new model is deployed during a game."
+                )
+                self._touch_session_save(identity, session, "aborted")
+                return session
+
             self._finalize_rating_if_needed(session, identity)
             self._touch_session_save(identity, session, self._infer_status(session))
         return session

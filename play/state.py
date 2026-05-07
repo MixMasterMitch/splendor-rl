@@ -54,6 +54,7 @@ class GameSession:
         )
         self.steps: list[dict[str, Any]] = [] if steps is None else list(steps)
         self.aborted = aborted
+        self.abort_reason: str | None = None
         self.rating_update = rating_update
         self.ai_thinking_since: str | None = None
 
@@ -227,4 +228,6 @@ class GameSession:
         }
         if status == "ai_thinking" and self.ai_thinking_since is not None:
             result["ai_thinking_since"] = self.ai_thinking_since
+        if self.abort_reason is not None:
+            result["abort_reason"] = self.abort_reason
         return result
