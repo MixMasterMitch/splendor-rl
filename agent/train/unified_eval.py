@@ -126,6 +126,10 @@ def extract_pairwise_results(
             if p == winner_idx:
                 continue
             loser_name = seat_names[b][p]
+            # Skip self-play: in multiplayer games the same entity can
+            # occupy multiple seats; recording X-beats-X is meaningless.
+            if loser_name == winner_name:
+                continue
             results.append(PairwiseResult(
                 winner=winner_name,
                 loser=loser_name,

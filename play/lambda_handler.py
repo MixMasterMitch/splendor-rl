@@ -214,16 +214,25 @@ def _compute_unified_ratings() -> dict[str, float]:
 
 
 def _enrich_models_with_ratings(models: list[dict[str, Any]]) -> None:
-    """Enrich a list of model dicts with unified ratings in-place."""
+    """Enrich a list of model dicts with unified ratings and game counts in-place."""
     from play.models import model_entity_id
     from play.ratings import _normalize_entity
 
     unified = _compute_unified_ratings()
+    league_data = _load_league_data()
+    floating: dict[str, dict] = league_data.get("floating_entities", {}) if league_data else {}
+
     for m in models:
         entity_id = model_entity_id(m)
         lookup_id = _normalize_entity(entity_id)
         if lookup_id in unified:
             m["rating"] = unified[lookup_id]
+        # Pull game count from floating_entities (e.g. bedrock_claude_sonnet)
+        fe = floating.get(entity_id)
+        if fe is not None:
+            m["games"] = int(fe.get("games", m.get("games", 0)))
+            if lookup_id not in unified:
+                m["rating"] = float(fe.get("rating", m.get("rating", 2500.0)))
 
 
 def _enrich_game_view_ratings(view: dict[str, Any]) -> None:
@@ -482,6 +491,9 @@ def _lambda_leaderboard() -> dict[str, Any]:
             logger.warning("Failed to compute unified ratings", exc_info=True)
 
     # Agent rows — use unified ratings when available, else static default.
+    # Load floating entities from league data for game counts (e.g. bedrock_claude_sonnet).
+    floating: dict[str, dict] = league_data.get("floating_entities", {}) if league_data else {}
+
     agents: list[dict[str, Any]] = []
     for m in all_models:
         label = str(m["label"])
@@ -490,6 +502,16 @@ def _lambda_leaderboard() -> dict[str, Any]:
         entity_id = MD.model_entity_id(m)
         lookup_id = _normalize_entity(entity_id)
         rating = unified_ratings.get(lookup_id, float(m.get("rating", 0.0)))
+
+        # For game count, prefer floating_entities (from league.json) which
+        # tracks games played via llm_rating_games.py.
+        games = int(m.get("games", 0))
+        fe = floating.get(entity_id)
+        if fe is not None:
+            games = int(fe.get("games", games))
+            if lookup_id not in unified_ratings:
+                rating = float(fe.get("rating", rating))
+
         agents.append({
             "kind": "agent",
             "entity_id": entity_id,
@@ -497,7 +519,7 @@ def _lambda_leaderboard() -> dict[str, Any]:
             "model_id": str(m["id"]),
             "bot_kind": str(m["kind"]),
             "rating": rating,
-            "games": int(m.get("games", 0)),
+            "games": games,
         })
 
     # Human rows — reuse the same logic as the local server.

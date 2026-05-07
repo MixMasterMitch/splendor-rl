@@ -53,6 +53,10 @@ def add_match_result(
     wins_b: float,
     ties: float,
 ) -> None:
+    # Drop self-play results — they carry no rating information and can
+    # arise in multiplayer games where the same entity occupies multiple seats.
+    if a == b:
+        return
     match = canonical_match(a, b, wins_a, wins_b, ties)
     if match.total_games <= 0:
         return
@@ -92,9 +96,14 @@ def fit_anchored_ratings(
     participants: set[str] = set(anchors_map)
     clean_results: list[MatchResult] = []
     for row in results:
+        a_str = str(row["a"])
+        b_str = str(row["b"])
+        # Skip self-play rows (same entity on both sides)
+        if a_str == b_str:
+            continue
         match = canonical_match(
-            str(row["a"]),
-            str(row["b"]),
+            a_str,
+            b_str,
             float(row.get("wins_a", 0.0)),
             float(row.get("wins_b", 0.0)),
             float(row.get("ties", 0.0)),

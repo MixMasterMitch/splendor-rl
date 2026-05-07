@@ -125,6 +125,11 @@ def combined_ratings(
                 rating = entry.get("rating")
                 if rating is not None:
                     initial[entity] = float(rating)
+            # Also use floating entity ratings as initial guesses
+            for entity, fe in league.manifest.get("floating_entities", {}).items():
+                rating = fe.get("rating")
+                if rating is not None:
+                    initial[entity] = float(rating)
         except Exception:
             pass
 
@@ -141,6 +146,20 @@ def combined_ratings(
 league_ratings = combined_ratings
 
 
+def _load_floating_entities(workspace_root: pathlib.Path) -> dict[str, dict[str, Any]]:
+    """Load floating_entities from league.json (e.g. bedrock_claude_sonnet, heuristic_opus)."""
+    from agent.train import league as LG
+
+    league_root = workspace_root / "agent" / "runs" / "league"
+    if not league_root.exists():
+        return {}
+    try:
+        league = LG.League(league_root)
+        return league.manifest.get("floating_entities", {})
+    except Exception:
+        return {}
+
+
 def agent_leaderboard_rows(
     workspace_root: pathlib.Path, store: JsonPlayStore
 ) -> list[dict[str, Any]]:
@@ -149,6 +168,9 @@ def agent_leaderboard_rows(
 
     # Single unified rating fit from all match data.
     ratings = combined_ratings(workspace_root, store)
+
+    # Load floating entities from league.json for game counts and fallback ratings.
+    floating = _load_floating_entities(workspace_root)
 
     # For ML (net) models, only include the highest-rated one.
     net_models = [m for m in all_models if m["kind"] == "net"]
@@ -172,6 +194,17 @@ def agent_leaderboard_rows(
         # Normalize the entity ID to match the league format used in the fit.
         lookup_id = _normalize_entity(entity_id)
         rating = ratings.get(lookup_id, float(m.get("rating", 0.0)))
+
+        # For game count, prefer floating_entities (from league.json) which
+        # tracks games played via llm_rating_games.py. Fall back to model def.
+        games = int(m.get("games", 0))
+        fe = floating.get(entity_id)
+        if fe is not None:
+            games = int(fe.get("games", games))
+            # Also use floating entity rating as fallback if not in unified fit
+            if lookup_id not in ratings:
+                rating = float(fe.get("rating", rating))
+
         rows.append(
             {
                 "kind": "agent",
@@ -180,7 +213,7 @@ def agent_leaderboard_rows(
                 "model_id": str(m["id"]),
                 "bot_kind": str(m["kind"]),
                 "rating": rating,
-                "games": int(m.get("games", 0)),
+                "games": games,
             }
         )
     return rows

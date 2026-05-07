@@ -126,11 +126,19 @@ class PlayService:
         # Enrich with unified ratings computed from all match data
         # (league eval games + human interactive games).
         ratings = RT.combined_ratings(self.workspace_root, self.play_store)
+        # Load floating entities from league.json for game counts.
+        floating = RT._load_floating_entities(self.workspace_root)
         for m in builtins:
             entity_id = MD.model_entity_id(m)
             lookup_id = RT._normalize_entity(entity_id)
             if lookup_id in ratings:
                 m["rating"] = ratings[lookup_id]
+            # Pull game count from floating_entities (e.g. bedrock_claude_sonnet)
+            fe = floating.get(entity_id)
+            if fe is not None:
+                m["games"] = int(fe.get("games", m.get("games", 0)))
+                if lookup_id not in ratings:
+                    m["rating"] = float(fe.get("rating", m.get("rating", 2500.0)))
         return builtins
 
     def human_rating_store(self, identity: AU.UserIdentity) -> HE.HumanRatingStore:
@@ -322,6 +330,10 @@ class PlayService:
                 raise ValueError(f"unknown model_id: {model_id!r}")
             if m["kind"] == "human":
                 raise ValueError("human-vs-human games are not supported")
+            if m["kind"] == "net" and num_players > 2:
+                raise ValueError(
+                    "net checkpoints are trained for 2-player games only"
+                )
             if m["kind"] == "llm_bedrock":
                 llm_count += 1
                 if llm_count > 1:

@@ -44,21 +44,30 @@ OPPONENT_SPECS: dict[str, dict[str, Any]] = {
 }
 
 
-def _find_top_ml_bot(league: LG.League) -> dict[str, Any] | None:
-    """Find the highest-rated ML bot in the league (min index 2489, file must exist)."""
+def _find_latest_ml_bot(league: LG.League) -> dict[str, Any] | None:
+    """Find the ML bot with the largest index whose checkpoint file exists.
+
+    Re-reads the league manifest each call so training can add new checkpoints
+    in parallel and they'll be picked up for the next game.
+    """
+    # Reload manifest from disk to pick up new checkpoints from training
+    if league.manifest_path.exists():
+        with open(league.manifest_path) as f:
+            league.manifest = json.load(f)
+        league.manifest.setdefault("entries", [])
+        league.manifest.setdefault("results", [])
     entries = league.list_entries()
     if not entries:
         return None
-    # Only consider checkpoints from multi-player training onwards
-    # and whose checkpoint file actually exists on disk
+    # Only consider checkpoints whose file actually exists on disk
     eligible = [
         e for e in entries
-        if int(e.get("idx", 0)) >= 2489
-        and league._resolve_path(e["path"]).exists()
+        if league._resolve_path(e["path"]).exists()
     ]
     if not eligible:
         return None
-    return max(eligible, key=lambda e: float(e.get("rating", 0)))
+    # Always use the largest index (most recent checkpoint)
+    return max(eligible, key=lambda e: int(e.get("idx", 0)))
 
 
 def _make_ml_policy(league: LG.League, entry: dict) -> POL.PlayerPolicy:
@@ -241,9 +250,9 @@ def main() -> int:
 
     # Load league
     league = LG.League(LEAGUE_ROOT)
-    ml_entry = _find_top_ml_bot(league)
+    ml_entry = _find_latest_ml_bot(league)
     if ml_entry:
-        print(f"Top ML bot: idx={ml_entry['idx']}, rating={ml_entry['rating']:.1f}")
+        print(f"Latest ML bot: idx={ml_entry['idx']}, rating={ml_entry.get('rating', '?')}")
     else:
         print("No ML bot found in league")
     print()
@@ -264,6 +273,10 @@ def main() -> int:
     total_time = 0.0
 
     for game_num in range(args.games):
+        # Re-find the latest ML bot before each game so new checkpoints
+        # from parallel training are picked up immediately.
+        ml_entry = _find_latest_ml_bot(league)
+
         # Random player count: 2, 3, or 4
         num_players = rng.choice([2, 3, 4])
         # Random LLM seat
@@ -332,22 +345,30 @@ def main() -> int:
                 f"game_time={game_time:.0f}s"
             )
 
-        # Record pairwise results into the league immediately after each game
+        # Record pairwise results into the league immediately after each game.
+        # Normalize by (num_players - 1) so each game contributes equal total
+        # weight regardless of player count.
+        weight = 1.0 / (num_players - 1)
         for opp_entity in opponent_entities:
             if opp_entity not in results_by_opponent:
                 results_by_opponent[opp_entity] = {"wins": 0, "losses": 0, "ties": 0}
 
             if result["tied"]:
                 results_by_opponent[opp_entity]["ties"] += 1
-                league.record_result(llm_entity, opp_entity, 0.0, 0.0, 1.0)
+                league.record_result(llm_entity, opp_entity, 0.0, 0.0, weight)
             elif result["llm_won"]:
                 results_by_opponent[opp_entity]["wins"] += 1
-                league.record_result(llm_entity, opp_entity, 1.0, 0.0, 0.0)
+                league.record_result(llm_entity, opp_entity, weight, 0.0, 0.0)
             else:
                 results_by_opponent[opp_entity]["losses"] += 1
-                league.record_result(llm_entity, opp_entity, 0.0, 1.0, 0.0)
+                league.record_result(llm_entity, opp_entity, 0.0, weight, 0.0)
 
-    # Recompute ratings
+        # Recompute ratings after each game so the floating entity rating
+        # stays current (and results survive crashes).
+        league.recompute_ratings()
+
+    # Recompute ratings — this fits all entities and persists the LLM agent
+    # as a floating entity in league.json (with rating + game count).
     print("\n--- Final results ---")
     for opp_entity, counts in results_by_opponent.items():
         print(f"  vs {opp_entity}: W={int(counts['wins'])} L={int(counts['losses'])} T={int(counts['ties'])}")
@@ -364,6 +385,10 @@ def main() -> int:
     print(f"Win rate: {total_wins / max(args.games, 1):.1%}")
     print(f"Total time: {total_time:.0f}s ({total_time / max(args.games, 1):.0f}s/game avg)")
     print(f"\nLLM Rating ({args.model}): {llm_rating:.1f}")
+    floating = league.manifest.get("floating_entities", {})
+    if llm_entity in floating:
+        fe = floating[llm_entity]
+        print(f"  (stored in league.json floating_entities: rating={fe['rating']:.1f}, games={fe['games']})")
     print(f"\nAll ratings after update:")
     for name, rating in sorted(ratings.items(), key=lambda kv: -kv[1]):
         print(f"  {name:>30s}: {rating:.1f}")
