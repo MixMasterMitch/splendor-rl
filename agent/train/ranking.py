@@ -12,7 +12,7 @@ DEFAULT_ANCHORS = {
     "random": RANDOM_ANCHOR_RATING,
     "heuristic": HEURISTIC_ANCHOR_RATING,
 }
-ELO_SCALE = 400.0
+RATING_SCALE = 400.0
 _MIN_PROB = 1e-9
 
 
@@ -76,7 +76,7 @@ def add_match_result(
 
 
 def expected_score(rating_a: torch.Tensor, rating_b: torch.Tensor) -> torch.Tensor:
-    logits = (rating_a - rating_b) * (math.log(10.0) / ELO_SCALE)
+    logits = (rating_a - rating_b) * (math.log(10.0) / RATING_SCALE)
     return torch.sigmoid(logits)
 
 

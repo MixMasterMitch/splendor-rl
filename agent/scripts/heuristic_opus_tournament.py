@@ -1,7 +1,7 @@
 """CLI to run a candidate tournament for the heuristic-opus agent.
 
 Plays every selected candidate plus the existing reference bots
-(``random`` and ``heuristic``) against each other, fits anchored ELO
+(``random`` and ``heuristic``) against each other, fits anchored
 ratings (random=1000, heuristic=2500), and writes the result to a JSON
 report. The output directory is independent from the training league JSON,
 so candidate tournament games never enter the main rating system.
@@ -222,7 +222,7 @@ def main(argv: list[str] | None = None) -> None:
         help=(
             "Comma-separated list of player counts to evaluate "
             "(e.g. '2,3,4'). When set, the tournament fits one anchored "
-            "ELO across all player counts plus per-count breakdowns. "
+            "rating across all player counts plus per-count breakdowns. "
             "Overrides --num-players."
         ),
     )
@@ -257,12 +257,12 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument(
         "--no-random",
         action="store_true",
-        help="Skip the random anchor in the tournament (still anchored in ELO).",
+        help="Skip the random anchor in the tournament (still anchored in rating).",
     )
     parser.add_argument(
         "--no-heuristic",
         action="store_true",
-        help="Skip the heuristic anchor in the tournament (still anchored in ELO).",
+        help="Skip the heuristic anchor in the tournament (still anchored in rating).",
     )
     parser.add_argument(
         "--output",

@@ -586,7 +586,7 @@ function PlayAppLoggedIn({ username }: { username: string }) {
         <span style={{ fontSize: 12, color: "#7a94b8" }}>
           {meUser?.username ?? username}
           {meUser?.placed
-            ? ` (${(meUser.rating ?? 0).toFixed(0)} Elo)`
+            ? ` (${(meUser.rating ?? 0).toFixed(0)} rating)`
             : meUser
               ? ` (Unplaced · ${meUser.wins}/5 wins)`
               : ""}

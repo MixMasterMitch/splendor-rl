@@ -36,7 +36,7 @@ def main(argv: list[str] | None = None) -> int:
     entries = list(manifest.get("entries", []))
     entries.sort(
         key=lambda e: (
-            float(e.get("rating", e.get("elo", 0.0))),
+            float(e.get("rating", 0.0)),
             float(e.get("score_hint", 0.0)),
             int(e.get("idx", -1)),
         ),
@@ -58,7 +58,7 @@ def main(argv: list[str] | None = None) -> int:
         ckpt = pathlib.Path(entry["path"]).name
         print(
             f"{int(entry['idx']):>5} "
-            f"{float(entry.get('rating', entry.get('elo', 0.0))):>9.2f} "
+            f"{float(entry.get('rating', 0.0)):>9.2f} "
             f"{int(entry.get('games', 0)):>7d} "
             f"{float(entry.get('score_hint', 0.0)):>7.3f} "
             f"{str(entry.get('tag', '')):>10} "

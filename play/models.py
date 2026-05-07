@@ -36,7 +36,6 @@ from typing import Any, Optional
 
 RANDOM_ANCHOR_RATING: float = 1000.0
 HEURISTIC_ANCHOR_RATING: float = 2500.0
-HEURISTIC_OPUS_RATING: float = 2645.0
 
 
 def _runs_root(workspace_root: pathlib.Path) -> pathlib.Path:
@@ -45,8 +44,6 @@ def _runs_root(workspace_root: pathlib.Path) -> pathlib.Path:
 
 def _entry_rating(entry: dict, fallback: float) -> float:
     val = entry.get("rating")
-    if val is None:
-        val = entry.get("elo")
     if val is None:
         return fallback
     try:
@@ -144,7 +141,7 @@ def _builtins() -> list[dict[str, Any]]:
             "run": None,
             "tag": None,
             "ckpt": None,
-            "rating": HEURISTIC_OPUS_RATING,
+            "rating": HEURISTIC_ANCHOR_RATING,
             "games": 0,
             "hidden": None,
             "arch": None,

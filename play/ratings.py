@@ -11,7 +11,7 @@ import logging
 import pathlib
 from typing import Any
 
-from play import human_elo as HE
+from play import human_rating as HE
 from play import models as MD
 from play.store import JsonPlayStore
 
@@ -195,7 +195,7 @@ def human_leaderboard_rows(store: JsonPlayStore) -> list[dict[str, Any]]:
         wins = int(blob.get("wins", 0))
         if wins < HE.PLACEMENT_WINS_REQUIRED:
             continue
-        rating = float(blob.get("rating", blob.get("elo", HE.DEFAULT_INITIAL_RATING)))
+        rating = float(blob.get("rating", HE.DEFAULT_INITIAL_RATING))
         games = int(blob.get("games", 0))
         label = uname
         out.append(

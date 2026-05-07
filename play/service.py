@@ -10,7 +10,7 @@ import uuid
 from typing import Any, Protocol, Iterable
 
 from play import auth as AU
-from play import human_elo as HE
+from play import human_rating as HE
 from play import models as MD
 from replay import players as POL
 from play import ratings as RT
@@ -173,7 +173,8 @@ class PlayService:
             "steps": list(session.steps),
             "initial_state": session.initial_state,
             "aborted": session.aborted,
-            "elo_update": session.elo_update,
+            "rating_update": session.rating_update,
+            "elo_update": session.rating_update,  # backward compat
         }
 
     def _finalize_rating_if_needed(
@@ -181,7 +182,7 @@ class PlayService:
         session: GameSession,
         identity: AU.UserIdentity,
     ) -> None:
-        if session.aborted or not session.ended() or session.elo_update is not None:
+        if session.aborted or not session.ended() or session.rating_update is not None:
             return
         ranks = session.ranks()
         latest_models = self.list_models()
@@ -197,8 +198,6 @@ class PlayService:
                 rating = MD.RANDOM_ANCHOR_RATING
             elif m["kind"] == "heuristic":
                 rating = MD.HEURISTIC_ANCHOR_RATING
-            elif m["kind"] == "heuristic_opus":
-                rating = MD.HEURISTIC_OPUS_RATING
             opponents_payload.append(
                 {
                     "seat": seat,
@@ -221,66 +220,15 @@ class PlayService:
         # Also record pairwise results into the shared league so that bot
         # ratings (e.g. bedrock_claude_sonnet) reflect actual game outcomes
         # on the leaderboard instead of staying at the static default.
-        self._record_to_league(session, ranks, identity)
-        session.elo_update = {
-            "old_elo": update["old_rating"],
-            "new_elo": update["new_rating"],
+        # NOTE: This is now a no-op. LLM bot ratings should be tracked
+        # independently (like human ratings), not in the ML training league.
+        session.rating_update = {
             "old_rating": update["old_rating"],
             "new_rating": update["new_rating"],
             "delta": update["delta"],
             "games": update["games"],
             "per_opponent": update["per_opponent"],
         }
-
-    def _record_to_league(
-        self,
-        session: "GameSession",
-        ranks: list[int],
-        identity: AU.UserIdentity,
-    ) -> None:
-        """Record pairwise results into the shared league for bot rating.
-
-        Only records results for LLM bots (kind=llm_bedrock) since other bots
-        have fixed anchor ratings. Requires at least 3 games against the bot
-        before recording to avoid extreme MLE estimates.
-        """
-        from agent.train import league as LG
-
-        league_root = self.workspace_root / "agent" / "runs" / "league"
-        if not league_root.exists():
-            return
-        # Only record for LLM bots
-        llm_seats = [
-            seat for seat in range(session.num_players)
-            if seat != session.human_seat
-            and session.seat_models[seat].get("kind") == "llm_bedrock"
-        ]
-        if not llm_seats:
-            return
-        try:
-            league = LG.League(league_root)
-        except Exception:
-            return
-        human_entity = AU.human_entity_id(identity)
-        human_rank = ranks[session.human_seat]
-        for seat in llm_seats:
-            m = session.seat_models[seat]
-            bot_entity = MD.model_entity_id(m)
-            bot_rank = ranks[seat]
-            if human_rank < bot_rank:
-                league.record_result(human_entity, bot_entity, 1.0, 0.0, 0.0)
-            elif human_rank > bot_rank:
-                league.record_result(human_entity, bot_entity, 0.0, 1.0, 0.0)
-            else:
-                league.record_result(human_entity, bot_entity, 0.0, 0.0, 1.0)
-        # Add the human as an anchor using their current fitted rating so the
-        # bot's rating can be solved relative to the known rating scale.
-        hr = self.human_rating_store(identity)
-        snap = hr.snapshot()
-        human_rating = snap.get("rating")
-        if human_rating is not None:
-            league.manifest["anchors"][human_entity] = float(human_rating)
-        league.recompute_ratings()
 
     def _touch_session_save(
         self,
@@ -326,8 +274,8 @@ class PlayService:
         session.saved_num_sims = num_sims
         session.replay_persisted_steps(list(record.get("steps") or []))
         session.aborted = bool(record.get("aborted", False))
-        eu = record.get("elo_update")
-        session.elo_update = dict(eu) if isinstance(eu, dict) else eu
+        eu = record.get("rating_update") or record.get("elo_update")
+        session.rating_update = dict(eu) if isinstance(eu, dict) else eu
         return session
 
     def get_or_load_session(self, game_id: str, identity: AU.UserIdentity) -> GameSession:
@@ -496,9 +444,9 @@ class PlayService:
             # Determine game result for completed games
             result: str | None = None
             if st == "completed":
-                elo_update = row.get("elo_update")
-                if elo_update and "per_opponent" in elo_update:
-                    scores = [opp.get("score", 0.5) for opp in elo_update["per_opponent"]]
+                rating_update = row.get("rating_update") or row.get("elo_update")
+                if rating_update and "per_opponent" in rating_update:
+                    scores = [opp.get("score", 0.5) for opp in rating_update["per_opponent"]]
                     if all(s == 1.0 for s in scores):
                         result = "victory"
                     else:

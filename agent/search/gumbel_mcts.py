@@ -165,6 +165,29 @@ def _safe_root_actions(topk_idx: torch.Tensor, legal: torch.Tensor) -> torch.Ten
     return torch.where(topk_legal, topk_idx, any_legal.expand_as(topk_idx))
 
 
+def _root_value_index(
+    parent_cp: torch.Tensor,
+    child_cp: torch.Tensor,
+    num_players: int,
+) -> torch.Tensor:
+    """Determine the correct value-head index for the root player in each child state.
+
+    The value head outputs are rotated so seat 0 = the child's current player.
+    - If current_player advanced (normal end-of-turn), the root player is at
+      seat (num_players - 1) in the child's rotated view.
+    - If current_player did NOT advance (discard phase, noble-pick phase),
+      the root player is still seat 0 in the child's rotated view.
+
+    Returns a (N,) long tensor of column indices to gather from value output.
+    """
+    same_player = parent_cp == child_cp
+    return torch.where(
+        same_player,
+        torch.zeros_like(parent_cp, dtype=torch.long),
+        torch.full_like(parent_cp, num_players - 1, dtype=torch.long),
+    )
+
+
 def _evaluate_root_children_sequential(
     engine: BE.BatchedEngine,
     net: M.SplendorNet,
@@ -175,12 +198,15 @@ def _evaluate_root_children_sequential(
     B = engine.batch_size
     q_values = torch.full((B, A.NUM_ACTIONS), float("-inf"), device=engine.device)
     safe_topk = _safe_root_actions(topk_idx, legal)
+    parent_cp = engine.current_player.to(torch.long)
     for ki in range(safe_topk.shape[1]):
         clone = engine.clone()
         action_k = safe_topk[:, ki]
         clone.apply(action_k)
         v2 = net.value_inference(clone)
-        q_for_root = v2[:, engine.num_players - 1]
+        child_cp = clone.current_player.to(torch.long)
+        val_idx = _root_value_index(parent_cp, child_cp, engine.num_players)
+        q_for_root = v2.gather(1, val_idx.unsqueeze(-1)).squeeze(-1)
         q_values.scatter_(1, action_k.unsqueeze(-1), q_for_root.unsqueeze(-1))
     return q_values
 
@@ -198,8 +224,13 @@ def _evaluate_root_children_batched(
     if K == 0:
         return q_values
     safe_topk = _safe_root_actions(topk_idx, legal)
+    # Track parent's current_player before applying child actions.
+    parent_cp = engine.current_player.to(torch.long).repeat_interleave(K)  # (B*K,)
     child_engine = engine.repeat_interleave(K)
     child_engine.apply(safe_topk.reshape(-1))
-    child_values = net.value_inference(child_engine)[:, engine.num_players - 1].reshape(B, K)
+    child_cp = child_engine.current_player.to(torch.long)  # (B*K,)
+    val_idx = _root_value_index(parent_cp, child_cp, engine.num_players)  # (B*K,)
+    child_values_all = net.value_inference(child_engine)  # (B*K, MAX_PLAYERS)
+    child_values = child_values_all.gather(1, val_idx.unsqueeze(-1)).squeeze(-1).reshape(B, K)
     q_values.scatter_(1, safe_topk, child_values)
     return q_values

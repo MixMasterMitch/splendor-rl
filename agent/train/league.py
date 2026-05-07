@@ -123,10 +123,7 @@ class League:
         return float(
             entry.get(
                 "rating",
-                entry.get(
-                    "elo",
-                    self.manifest["anchors"].get("heuristic", R.HEURISTIC_ANCHOR_RATING),
-                ),
+                self.manifest["anchors"].get("heuristic", R.HEURISTIC_ANCHOR_RATING),
             )
         )
 
@@ -224,7 +221,6 @@ class League:
                 "idx": idx,
                 "tag": tag,
                 "path": self._to_relative_path(path),
-                "elo": float(self.manifest["anchors"]["heuristic"]),
                 "rating": float(self.manifest["anchors"]["heuristic"]),
                 "games": 0,
                 "hidden": int(net.hidden),
@@ -360,14 +356,17 @@ class League:
             losses = max(total_games - wins - ties, 0)
             self.record_result(entity, opponent, float(wins), float(losses), float(ties))
 
-    def recompute_ratings(self) -> dict[str, float]:
+    def recompute_ratings(self, extra_anchors: dict[str, float] | None = None) -> dict[str, float]:
         initial = {
             self._entry_entity_id(int(entry["idx"])): self._entry_rating(entry)
             for entry in self.manifest["entries"]
         }
+        anchors = dict(self.manifest["anchors"])
+        if extra_anchors:
+            anchors.update(extra_anchors)
         ratings = R.fit_anchored_ratings(
             self.manifest["results"],
-            anchors=self.manifest["anchors"],
+            anchors=anchors,
             initial=initial,
         )
         games_by_entity: dict[str, int] = {key: 0 for key in ratings}
@@ -379,18 +378,31 @@ class League:
             entity = self._entry_entity_id(int(entry["idx"]))
             if entity in ratings:
                 entry["rating"] = float(ratings[entity])
-                entry["elo"] = float(ratings[entity])
+                entry.pop("elo", None)
                 entry["games"] = int(games_by_entity.get(entity, 0))
+        # Persist fitted ratings for floating entities (non-anchor, non-checkpoint
+        # participants like heuristic_opus that appear in results).
+        entry_entities = {self._entry_entity_id(int(e["idx"])) for e in self.manifest["entries"]}
+        anchor_entities = set(self.manifest["anchors"])
+        floating: dict[str, dict] = {}
+        for entity, rating in ratings.items():
+            if entity not in entry_entities and entity not in anchor_entities:
+                floating[entity] = {
+                    "rating": float(rating),
+                    "games": int(games_by_entity.get(entity, 0)),
+                }
+        if floating:
+            self.manifest["floating_entities"] = floating
         self.manifest["rating_system"] = "anchored_bt"
         self._save_manifest()
         return ratings
 
-    def update_elo(self, idx: int, new_elo: float, games_played: int) -> None:
+    def update_rating(self, idx: int, new_rating: float, games_played: int) -> None:
         e = self.entry_by_idx(idx)
         if e is None:
             return
-        e["elo"] = new_elo
-        e["rating"] = new_elo
+        e["rating"] = new_rating
+        e.pop("elo", None)
         e["games"] = games_played
         self._save_manifest()
 

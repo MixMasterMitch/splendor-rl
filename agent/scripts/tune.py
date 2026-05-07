@@ -3,7 +3,7 @@
 Usage:
     python -m agent.scripts.tune --study-name my-sweep --n-trials 20 --iters-per-trial 10 --device cuda
 
-Each trial runs a short training burst, computes Elo via fit_anchored_ratings,
+Each trial runs a short training burst, computes a rating via fit_anchored_ratings,
 and reports it as the Optuna objective.  Supports fresh and warm-start phases
 with configurable wide/narrow search ranges.
 """
@@ -103,10 +103,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="Network architecture (default: flat).",
     )
     p.add_argument(
-        "--elo-games",
+        "--rating-games",
         type=int,
         default=512,
-        help="Games per opponent for Elo computation (default: 512). Higher = less noisy.",
+        help="Games per opponent for rating computation (default: 512). Higher = less noisy.",
     )
     p.add_argument(
         "--trial-prefix",
@@ -172,7 +172,7 @@ def define_search_space(trial: optuna.Trial, narrow: bool = False) -> dict:
     }
 
 
-def compute_elo_objective(
+def compute_rating_objective(
     net: "M.SplendorNet",
     num_players: int,
     num_games: int = 256,
@@ -181,10 +181,10 @@ def compute_elo_objective(
     best_checkpoint_path: Optional[str] = None,
     seed: int = 42,
 ) -> float:
-    """Run eval games and compute Elo via fit_anchored_ratings.
+    """Run eval games and compute rating via fit_anchored_ratings.
 
     Opponents: random, heuristic, heuristic_opus, and optionally best_checkpoint.
-    Returns the fitted Elo rating of the trial's agent.
+    Returns the fitted rating of the trial's agent.
     """
     from agent.eval import bots as B
     from agent.eval import heuristic_opus as HO
@@ -230,7 +230,7 @@ def compute_elo_objective(
         seed=seed,
     )
 
-    # --- Convert eval metrics to match results for Elo fitting -------------
+    # --- Convert eval metrics to match results for rating fitting -----------
     # evaluate() returns fractional winrate/ties per opponent.
     # Total games per opponent = num_players * max(1, num_games // num_players)
     per_seat = max(1, num_games // num_players)
@@ -254,7 +254,7 @@ def compute_elo_objective(
             ties=ties,
         )
 
-    # --- Fit Elo ratings ---------------------------------------------------
+    # --- Fit ratings ---------------------------------------------------------
     ratings = RK.fit_anchored_ratings(
         match_results,
         anchors={"random": 1000, "heuristic": 2500},
@@ -271,10 +271,10 @@ def trial_fn(
     minutes_per_trial: float,
     narrow: bool,
     best_checkpoint: Optional[str],
-    elo_games: int = 512,
+    rating_games: int = 512,
     trial_prefix: str = "tune_trial",
 ) -> float:
-    """Single Optuna trial: sample params, train, compute Elo."""
+    """Single Optuna trial: sample params, train, compute rating."""
     import logging
     import shutil
 
@@ -299,14 +299,9 @@ def trial_fn(
             # checkpointing so every iteration is pure train.
             merged["max_wall_minutes"] = minutes_per_trial
             merged["max_iters"] = 999_999
-            merged["eval_every"] = 999_999
             merged["checkpoint_every"] = 999_999
-            merged["league_ckpt_every"] = 999_999
             merged["league_selfplay_every"] = 0
-            merged["league_rating_games"] = 0
-            merged["league_rating_matches"] = 0
-            merged["rank_eval_games"] = 0
-            merged["async_eval"] = False
+            merged["eval_games"] = 0
         else:
             merged["max_iters"] = iters_per_trial
 
@@ -328,30 +323,30 @@ def trial_fn(
         # 7. Train.
         run_loop(run, cfg)
 
-        # 8. Load the final net weights and compute Elo objective.
+        # 8. Load the final net weights and compute rating objective.
         ckpt_path = run.ckpt_dir / "latest_resume.pt"
         net, _ = load_net_from_checkpoint(ckpt_path, map_location="cpu")
         net.eval()
 
-        elo = compute_elo_objective(
+        rating = compute_rating_objective(
             net,
             num_players=cfg.num_players,
-            num_games=elo_games,
+            num_games=rating_games,
             device="cpu",
             best_checkpoint_path=best_checkpoint,
         )
 
-        logger.info("Trial %d finished with Elo %.1f", trial.number, elo)
+        logger.info("Trial %d finished with rating %.1f", trial.number, rating)
         run.close()
 
-        # 10. Clean up trial directory to save disk space — the Elo is
+        # 10. Clean up trial directory to save disk space — the rating is
         # persisted in the Optuna database, so we don't need the artifacts.
         import shutil as _shutil
         if trial_dir.exists():
             _shutil.rmtree(trial_dir, ignore_errors=True)
 
-        # 9. Return the Elo rating as the objective value.
-        return elo
+        # 9. Return the rating as the objective value.
+        return rating
 
     except KeyboardInterrupt:
         raise  # Let Ctrl+C propagate
@@ -395,14 +390,14 @@ def main(argv: list[str] | None = None) -> int:
         minutes_per_trial=args.minutes_per_trial,
         narrow=args.narrow_ranges,
         best_checkpoint=args.best_checkpoint,
-        elo_games=args.elo_games,
+        rating_games=args.rating_games,
         trial_prefix=args.trial_prefix,
     )
 
     # 4. Run optimization.
     study.optimize(objective, n_trials=args.n_trials)
 
-    # 5. Print summary table of top-5 trials ranked by Elo (descending).
+    # 5. Print summary table of top-5 trials ranked by rating (descending).
     completed = [t for t in study.trials if t.value is not None]
     ranked = sorted(completed, key=lambda t: t.value, reverse=True)[:5]
 
@@ -411,12 +406,12 @@ def main(argv: list[str] | None = None) -> int:
         param_names = list(ranked[0].params.keys()) if ranked[0].params else []
 
         # Header
-        header = f"{'Trial':>6}  {'Elo':>10}"
+        header = f"{'Trial':>6}  {'Rating':>10}"
         for name in param_names:
             header += f"  {name:>22}"
         print()
         print("=" * len(header))
-        print("Top-5 Trials by Elo")
+        print("Top-5 Trials by Rating")
         print("=" * len(header))
         print(header)
         print("-" * len(header))

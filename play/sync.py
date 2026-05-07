@@ -14,7 +14,7 @@ import sys
 from typing import Any
 
 from play.dynamo_store import DynamoPlayStore
-from play.human_elo import (
+from play.human_rating import (
     HEURISTIC_ANCHOR_RATING,
     RANDOM_ANCHOR_RATING,
     fit_human_rating,
@@ -80,13 +80,13 @@ def _build_results_table(
         if status != "completed":
             continue
 
-        elo_update = game.get("elo_update")
-        if elo_update is None:
+        rating_update = game.get("rating_update") or game.get("elo_update")
+        if rating_update is None:
             continue
 
         human_seat = int(game.get("human_seat", 0))
         num_players = int(game.get("num_players", 2))
-        per_opponent = elo_update.get("per_opponent", [])
+        per_opponent = rating_update.get("per_opponent", [])
 
         num_opponents = len(per_opponent)
         weight = 1.0 / max(num_opponents, 1)
@@ -207,10 +207,10 @@ def sync_local_to_cloud(
         1
         for g in all_cloud_games
         if g.get("status") == "completed"
-        and g.get("elo_update")
+        and (g.get("rating_update") or g.get("elo_update"))
         and any(
             float(opp.get("score", 0)) == 1.0
-            for opp in (g.get("elo_update") or {}).get("per_opponent", [])
+            for opp in (g.get("rating_update") or g.get("elo_update") or {}).get("per_opponent", [])
         )
     )
 

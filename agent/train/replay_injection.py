@@ -84,9 +84,9 @@ def encode_replay_to_samples(
             if players:
                 scores = [p.get("points", 0) for p in players]
             else:
-                # Last resort: check elo_update for winner
-                elo_update = replay.get("elo_update", {})
-                per_opp = elo_update.get("per_opponent", [])
+                # Last resort: check rating_update for winner
+                rating_update = replay.get("rating_update") or replay.get("elo_update") or {}
+                per_opp = rating_update.get("per_opponent", [])
                 if per_opp:
                     human_seat = int(replay.get("human_seat", 0))
                     human_score = per_opp[0].get("score", 0)

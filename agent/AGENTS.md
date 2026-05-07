@@ -73,22 +73,22 @@ PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True python3 -m agent.scripts.train 
 python3 -m agent.scripts.tune \
     --study-name gpu-tune-cold --n-trials 40 \
     --minutes-per-trial 5 --device cuda \
-    --elo-games 512 --trial-prefix cold_trial
+    --rating-games 512 --trial-prefix cold_trial
 
 # Warm phase: narrow search from checkpoint
 python3 -m agent.scripts.tune \
     --study-name gpu-tune-warm --n-trials 25 \
     --minutes-per-trial 15 --device cuda \
     --narrow-ranges --init-from <checkpoint.pt> \
-    --elo-games 512 --trial-prefix warm_trial
+    --rating-games 512 --trial-prefix warm_trial
 ```
 
 ### Key Design Decisions
 
 - **Time-budget mode** (`--minutes-per-trial`): Each trial trains for a fixed wall-clock duration. This naturally rewards configs with better throughput.
 - **SQLite persistence**: Results stored in `agent/runs/optuna_<study>.db`. Studies can be resumed across restarts with `load_if_exists=True`.
-- **Trial cleanup**: Trial directories are deleted after Elo is computed to save disk space.
-- **Elo objective**: 512 games per opponent (random, heuristic, heuristic_opus, optionally best ML checkpoint). Anchors: random=1000, heuristic=2500.
+- **Trial cleanup**: Trial directories are deleted after rating is computed to save disk space.
+- **Rating objective**: 512 games per opponent (random, heuristic, heuristic_opus, optionally best ML checkpoint). Anchors: random=1000, heuristic=2500.
 
 ## Architecture Comparison
 

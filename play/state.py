@@ -27,7 +27,7 @@ class GameSession:
         device: str,
         steps: list[dict[str, Any]] | None = None,
         aborted: bool = False,
-        elo_update: dict[str, Any] | None = None,
+        rating_update: dict[str, Any] | None = None,
         initial_state_override: dict[str, Any] | None = None,
     ) -> None:
         if num_players not in (2, 3, 4):
@@ -54,7 +54,7 @@ class GameSession:
         )
         self.steps: list[dict[str, Any]] = [] if steps is None else list(steps)
         self.aborted = aborted
-        self.elo_update = elo_update
+        self.rating_update = rating_update
         self.ai_thinking_since: str | None = None
 
     def player_descriptors(self) -> list[dict[str, Any]]:
@@ -221,7 +221,8 @@ class GameSession:
             "winners": winners,
             "final_scores": final,
             "seed": self.seed,
-            "elo_update": self.elo_update,
+            "rating_update": self.rating_update,
+            "elo_update": self.rating_update,  # backward compat for old readers
             "aborted": self.aborted,
         }
         if status == "ai_thinking" and self.ai_thinking_since is not None:

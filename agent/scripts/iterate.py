@@ -71,19 +71,12 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--learner-batch", type=int, default=256)
     p.add_argument("--learner-steps-per-iter", type=int, default=192)
     p.add_argument("--entropy-bonus", type=float, default=0.0)
-    p.add_argument("--eval-every", type=int, default=2)
-    p.add_argument("--eval-games", type=int, default=128)
-    p.add_argument("--eval-sims", type=int, default=4)
+    p.add_argument("--eval-games", type=int, default=2048)
+    p.add_argument("--eval-sims", type=int, default=64)
     p.add_argument("--eval-max-turns", type=int, default=200)
-    p.add_argument("--rank-eval-games", type=int, default=512)
-    p.add_argument("--rank-eval-sims", type=int, default=16)
-    p.add_argument("--rank-eval-max-turns", type=int, default=200)
     p.add_argument("--league-selfplay-every", type=int, default=3)
     p.add_argument("--league-max-entries", type=int, default=24)
     p.add_argument("--league-keep-recent", type=int, default=8)
-    p.add_argument("--league-rating-games", type=int, default=64)
-    p.add_argument("--league-rating-sims", type=int, default=8)
-    p.add_argument("--league-rating-matches", type=int, default=4)
     p.add_argument("--rating-random-anchor", type=float, default=1000.0)
     p.add_argument("--rating-heuristic-anchor", type=float, default=2500.0)
     p.add_argument("--lr", type=float, default=3e-4)
@@ -133,13 +126,9 @@ def main(argv: list[str] | None = None) -> int:
             learner_batch=args.learner_batch,
             learner_steps_per_iter=args.learner_steps_per_iter,
             entropy_bonus=args.entropy_bonus,
-            eval_every=args.eval_every,
             eval_games=args.eval_games,
             eval_sims=args.eval_sims,
             eval_max_turns=args.eval_max_turns,
-            rank_eval_games=args.rank_eval_games,
-            rank_eval_sims=args.rank_eval_sims,
-            rank_eval_max_turns=args.rank_eval_max_turns,
             lr=lr,
             max_iters=args.burst_max_iters,
             max_wall_minutes=args.burst_max_wall_minutes,
@@ -147,9 +136,6 @@ def main(argv: list[str] | None = None) -> int:
             league_selfplay_every=args.league_selfplay_every,
             league_max_entries=args.league_max_entries,
             league_keep_recent=args.league_keep_recent,
-            league_rating_games=args.league_rating_games,
-            league_rating_sims=args.league_rating_sims,
-            league_rating_matches=args.league_rating_matches,
             rating_random_anchor=args.rating_random_anchor,
             rating_heuristic_anchor=args.rating_heuristic_anchor,
         )

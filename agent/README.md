@@ -117,7 +117,7 @@ PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True python3 -m agent.scripts.train 
 
 ```bash
 python3 -m agent.scripts.tune --study-name my-sweep --n-trials 30 \
-    --minutes-per-trial 5 --device cuda --elo-games 512
+    --minutes-per-trial 5 --device cuda --rating-games 512
 ```
 
 ### Flagging bad games for training

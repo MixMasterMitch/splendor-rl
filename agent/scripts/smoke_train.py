@@ -40,16 +40,13 @@ def main(argv: list[str] | None = None) -> int:
         replay_capacity=4000,
         learner_batch=128,
         learner_steps_per_iter=4,
-        eval_every=1,
-        eval_games=16,
-        eval_sims=2,
-        rank_eval_games=0,
         checkpoint_every=1,
-        league_rating_games=0,
-        league_rating_matches=0,
         max_iters=2,
         max_wall_minutes=5.0,
-        async_eval=False,
+        eval_games=16,
+        eval_sims=2,
+        eval_max_turns=100,
+        eval_league_opponents=0,
     )
     run_loop(run, cfg)
     run.event("smoke_done", {})

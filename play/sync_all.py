@@ -18,7 +18,7 @@ import sys
 from typing import Any
 
 from play.dynamo_store import DynamoPlayStore
-from play.human_elo import (
+from play.human_rating import (
     HEURISTIC_ANCHOR_RATING,
     RANDOM_ANCHOR_RATING,
     fit_human_rating,
@@ -41,7 +41,7 @@ def _build_history_from_games(completed_games: list[dict[str, Any]]) -> list[dic
     )
 
     for game in sorted_games:
-        eu = game.get("elo_update")
+        eu = game.get("rating_update") or game.get("elo_update")
         if not eu:
             continue
 
@@ -165,10 +165,10 @@ def sync_all(
         total_wins = sum(
             1
             for g in completed
-            if g.get("elo_update")
+            if g.get("rating_update") or g.get("elo_update")
             and any(
                 float(opp.get("score", 0)) == 1.0
-                for opp in (g.get("elo_update") or {}).get("per_opponent", [])
+                for opp in (g.get("rating_update") or g.get("elo_update") or {}).get("per_opponent", [])
             )
         )
 

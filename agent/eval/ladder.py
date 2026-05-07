@@ -9,7 +9,7 @@ Produces a dict of metrics suitable for logging to `metrics.jsonl`:
 - winrate_vs_random
 - winrate_vs_heuristic
 - avg_game_length
-- elo estimates (relative; absolute Elo initialized to 0 for first checkpoint).
+- rating estimates (anchored Bradley-Terry; random=1000, heuristic=2500).
 """
 
 from __future__ import annotations
@@ -120,8 +120,24 @@ def _play_match(
         device=engine.device,
     )
     prev_ended = torch.zeros(engine.batch_size, dtype=torch.bool, device=engine.device)
+    # Over-limit tracking: count how often the agent enters discard phase
+    agent_overlimit_count = 0
+    agent_main_actions_count = 0
     while turn < max_turns and (~engine.ended).any():
+        # Track pre-action state for over-limit detection
+        alive = ~engine.ended
+        cp = engine.current_player.to(torch.long)
+        is_agent_turn = alive & seat_is_agent[torch.arange(engine.batch_size, device=engine.device), cp]
+        phase_before = engine.phase.clone()
+        is_main_phase = (phase_before == 0) & is_agent_turn
+        agent_main_actions_count += int(is_main_phase.sum().item())
+
         _apply_mixed(engine, seat_is_agent, net, bot_choose, num_sims)
+
+        # Detect transitions into discard phase (phase 0 → phase 1) for agent seats
+        entered_discard = is_main_phase & (engine.phase == 1)
+        agent_overlimit_count += int(entered_discard.sum().item())
+
         cur_ended = engine.ended
         newly_ended = cur_ended & ~prev_ended
         if newly_ended.any():
@@ -166,6 +182,11 @@ def _play_match(
         "turns_sum": turns_sum,
         "finished_turns_sum": finished_turns_sum,
         "max_finished_step": max_finished_step,
+        "agent_overlimit_count": float(agent_overlimit_count),
+        "agent_main_actions": float(agent_main_actions_count),
+        "agent_overlimit_rate": (
+            float(agent_overlimit_count) / max(agent_main_actions_count, 1)
+        ),
     }
 
 
@@ -214,6 +235,8 @@ def evaluate(
         turns_sum = 0.0
         finished_turns_sum = 0.0
         max_finished_step = 0.0
+        overlimit_count = 0
+        main_actions_count = 0
 
         for seat_of_agent in range(num_players):
             eng = BE.BatchedEngine(
@@ -233,6 +256,8 @@ def evaluate(
             turns_sum += result["turns_sum"]
             finished_turns_sum += result["finished_turns_sum"]
             max_finished_step = max(max_finished_step, float(result["max_finished_step"]))
+            overlimit_count += int(result["agent_overlimit_count"])
+            main_actions_count += int(result["agent_main_actions"])
 
         total = num_players * per_seat
         results[f"winrate_vs_{name}"] = wins / max(total, 1)
@@ -244,6 +269,10 @@ def evaluate(
             finished_turns_sum / max(finished, 1) if finished > 0 else 0.0
         )
         results[f"max_finished_step_vs_{name}"] = max_finished_step
+        results[f"overlimit_rate_vs_{name}"] = (
+            overlimit_count / max(main_actions_count, 1)
+        )
+        results[f"overlimit_count_vs_{name}"] = float(overlimit_count)
         total_games += total
         total_finished += finished
 

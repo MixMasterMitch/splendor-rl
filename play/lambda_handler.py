@@ -354,7 +354,7 @@ def _ensure_checkpoint_local(model: dict[str, Any]) -> str | None:
 def _make_dynamo_human_rating_store(store):
     """Create a human_rating_store function that uses DynamoDB."""
     from play import auth as AU
-    from play import human_elo as HE
+    from play import human_rating as HE
 
     def human_rating_store(identity: AU.UserIdentity) -> HE.HumanRatingStore:
         """Create a HumanRatingStore backed by /tmp with DynamoDB sync."""
@@ -395,7 +395,7 @@ def _make_dynamo_human_rating_store(store):
 def _lambda_me(identity) -> dict[str, Any]:
     """Handle /me endpoint using DynamoDB directly."""
     from play import auth as AU
-    from play import human_elo as HE
+    from play import human_rating as HE
 
     store = _get_dynamo_store()
     svc = _get_service()

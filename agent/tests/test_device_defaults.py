@@ -44,13 +44,11 @@ class TestApplyDeviceDefaultsCUDA:
         assert result.learner_batch == 4096
         assert result.replay_capacity == 820_000
         assert result.learner_steps_per_iter == 64
-        assert result.async_eval is True
 
     def test_cuda_bare_device_string(self) -> None:
         cfg = LoopConfig()
         result = apply_device_defaults(cfg, "cuda")
         assert result.selfplay_games == 4096
-        assert result.async_eval is True
 
     def test_cuda1_device_string(self) -> None:
         cfg = LoopConfig()
@@ -73,7 +71,7 @@ class TestApplyDeviceDefaultsCUDA:
         cfg = LoopConfig()
         result = apply_device_defaults(cfg, "cuda:0")
         assert result.num_players == cfg.num_players
-        assert result.eval_every == cfg.eval_every
+        assert result.checkpoint_every == cfg.checkpoint_every
         assert result.lr == cfg.lr
         assert result.max_iters == cfg.max_iters
 
@@ -87,7 +85,6 @@ class TestCLIOverridesSurvive:
         assert result.selfplay_games == 2048
         # Other GPU defaults should still apply
         assert result.learner_batch == 4096
-        assert result.async_eval is True
 
     def test_custom_learner_batch_preserved(self) -> None:
         cfg = LoopConfig(learner_batch=8192)
@@ -99,19 +96,6 @@ class TestCLIOverridesSurvive:
         result = apply_device_defaults(cfg, "cuda:0")
         assert result.replay_capacity == 1_000_000
 
-    def test_custom_async_eval_false_preserved(self) -> None:
-        """If user explicitly sets async_eval=False (same as default), GPU default applies."""
-        # async_eval=False is the default, so GPU default (True) should apply.
-        cfg = LoopConfig(async_eval=False)
-        result = apply_device_defaults(cfg, "cuda:0")
-        assert result.async_eval is True
-
-    def test_custom_async_eval_true_preserved(self) -> None:
-        """If user explicitly sets async_eval=True (differs from default), it stays True."""
-        cfg = LoopConfig(async_eval=True)
-        result = apply_device_defaults(cfg, "cuda:0")
-        assert result.async_eval is True
-
     def test_all_fields_overridden(self) -> None:
         """When every GPU-default field is overridden, none should change."""
         cfg = LoopConfig(
@@ -120,7 +104,6 @@ class TestCLIOverridesSurvive:
             learner_batch=512,
             replay_capacity=100_000,
             learner_steps_per_iter=10,
-            async_eval=True,
         )
         result = apply_device_defaults(cfg, "cuda:0")
         assert result.selfplay_games == 1024
@@ -128,7 +111,6 @@ class TestCLIOverridesSurvive:
         assert result.learner_batch == 512
         assert result.replay_capacity == 100_000
         assert result.learner_steps_per_iter == 10
-        assert result.async_eval is True
 
     def test_custom_learner_steps_preserved(self) -> None:
         cfg = LoopConfig(learner_steps_per_iter=100)

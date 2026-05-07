@@ -1,4 +1,4 @@
-"""Tests for compute_elo_objective in agent/scripts/tune.py."""
+"""Tests for compute_rating_objective in agent/scripts/tune.py."""
 
 from __future__ import annotations
 
@@ -7,16 +7,16 @@ from unittest.mock import patch
 import torch
 
 from agent.net.model import SplendorNet
-from agent.scripts.tune import compute_elo_objective
+from agent.scripts.tune import compute_rating_objective
 
 
-def test_compute_elo_objective_returns_finite_float():
-    """Smoke test: compute_elo_objective returns a finite float Elo rating."""
+def test_compute_rating_objective_returns_finite_float():
+    """Smoke test: compute_rating_objective returns a finite float rating."""
     net = SplendorNet(hidden=32, arch="flat")
     net.eval()
 
     # Use very small num_games and num_sims for speed
-    elo = compute_elo_objective(
+    rating = compute_rating_objective(
         net,
         num_players=2,
         num_games=4,
@@ -24,12 +24,12 @@ def test_compute_elo_objective_returns_finite_float():
         device="cpu",
         seed=123,
     )
-    assert isinstance(elo, float)
-    assert not torch.tensor(elo).isnan().item()
-    assert not torch.tensor(elo).isinf().item()
+    assert isinstance(rating, float)
+    assert not torch.tensor(rating).isnan().item()
+    assert not torch.tensor(rating).isinf().item()
 
 
-def test_compute_elo_objective_uses_correct_anchors():
+def test_compute_rating_objective_uses_correct_anchors():
     """Verify that fit_anchored_ratings is called with the correct anchors."""
     net = SplendorNet(hidden=32, arch="flat")
     net.eval()
@@ -46,7 +46,7 @@ def test_compute_elo_objective_uses_correct_anchors():
         return original_fit(results, anchors=anchors, **kwargs)
 
     with patch("agent.train.ranking.fit_anchored_ratings", side_effect=spy_fit):
-        elo = compute_elo_objective(
+        rating = compute_rating_objective(
             net,
             num_players=2,
             num_games=4,
@@ -58,10 +58,10 @@ def test_compute_elo_objective_uses_correct_anchors():
     assert len(captured_calls) == 1
     call = captured_calls[0]
     assert call["anchors"] == {"random": 1000, "heuristic": 2500}
-    assert isinstance(elo, float)
+    assert isinstance(rating, float)
 
 
-def test_compute_elo_objective_includes_all_standard_opponents():
+def test_compute_rating_objective_includes_all_standard_opponents():
     """Verify match results include random, heuristic, and heuristic_opus."""
     net = SplendorNet(hidden=32, arch="flat")
     net.eval()
@@ -77,7 +77,7 @@ def test_compute_elo_objective_includes_all_standard_opponents():
         return original_fit(results, anchors=anchors, **kwargs)
 
     with patch("agent.train.ranking.fit_anchored_ratings", side_effect=spy_fit):
-        compute_elo_objective(
+        compute_rating_objective(
             net,
             num_players=2,
             num_games=4,
@@ -99,12 +99,12 @@ def test_compute_elo_objective_includes_all_standard_opponents():
     assert "heuristic_opus" in opponent_names
 
 
-def test_compute_elo_objective_rating_between_anchors_or_beyond():
-    """The Elo rating should be a reasonable number (not zero or NaN)."""
+def test_compute_rating_objective_rating_between_anchors_or_beyond():
+    """The rating should be a reasonable number (not zero or NaN)."""
     net = SplendorNet(hidden=32, arch="flat")
     net.eval()
 
-    elo = compute_elo_objective(
+    rating = compute_rating_objective(
         net,
         num_players=2,
         num_games=8,
@@ -112,8 +112,8 @@ def test_compute_elo_objective_rating_between_anchors_or_beyond():
         device="cpu",
         seed=99,
     )
-    # A random untrained net should get some Elo rating; it won't be exactly 0
+    # A random untrained net should get some rating; it won't be exactly 0
     # unless something went wrong with the fitting.
-    assert isinstance(elo, float)
+    assert isinstance(rating, float)
     # The rating should be in a reasonable range (not degenerate)
-    assert -5000 < elo < 10000
+    assert -5000 < rating < 10000

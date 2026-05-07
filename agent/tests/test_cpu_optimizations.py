@@ -227,6 +227,9 @@ def test_evaluate_reports_finished_step_metrics(monkeypatch) -> None:
             "turns_sum": 5.0,
             "finished_turns_sum": 2.0,
             "max_finished_step": 2.0,
+            "agent_overlimit_count": 2.0,
+            "agent_main_actions": 10.0,
+            "agent_overlimit_rate": 0.2,
         }
 
     monkeypatch.setattr(LAD, "_play_match", fake_play_match)

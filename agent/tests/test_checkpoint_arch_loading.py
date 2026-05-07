@@ -9,7 +9,7 @@ from agent.env import batched_engine as BE
 from agent.net import model as M
 from agent.train import checkpointing as CK
 from agent.train.health import decide_next_action
-from agent.train.loop import _is_new_best_eval, _latest_ckpt
+from agent.train.loop import _latest_ckpt
 from agent.train.league import League
 from agent.train import ranking as R
 from agent.train.replay_buffer import ReplayBuffer
@@ -123,112 +123,6 @@ def test_latest_resume_checkpoint_is_preferred_and_archive_is_lightweight(
     assert _latest_ckpt(tmp_path) == resume_path
 
 
-def test_is_new_best_eval_prefers_heuristic_score_then_tiebreakers() -> None:
-    history = [
-        {
-            "iter": 10,
-            "winrate_vs_random": 0.95,
-            "ties_vs_random": 0.0,
-            "winrate_vs_heuristic": 0.50,
-            "ties_vs_heuristic": 0.0,
-            "finished_vs_heuristic": 1.0,
-            "avg_turns_vs_heuristic": 150.0,
-        }
-    ]
-    assert _is_new_best_eval(
-        history,
-        {
-            "iter": 12,
-            "winrate_vs_random": 0.90,
-            "ties_vs_random": 0.0,
-            "winrate_vs_heuristic": 0.515625,
-            "ties_vs_heuristic": 0.0,
-            "finished_vs_heuristic": 1.0,
-            "avg_turns_vs_heuristic": 200.0,
-        },
-    )
-    assert _is_new_best_eval(
-        history,
-        {
-            "iter": 14,
-            "winrate_vs_random": 0.96,
-            "ties_vs_random": 0.0,
-            "winrate_vs_heuristic": 0.50,
-            "ties_vs_heuristic": 0.0,
-            "finished_vs_heuristic": 1.0,
-            "avg_turns_vs_heuristic": 140.0,
-        },
-    )
-    assert not _is_new_best_eval(
-        history,
-        {
-            "iter": 16,
-            "winrate_vs_random": 0.94,
-            "ties_vs_random": 0.0,
-            "winrate_vs_heuristic": 0.50,
-            "ties_vs_heuristic": 0.0,
-            "finished_vs_heuristic": 1.0,
-            "avg_turns_vs_heuristic": 160.0,
-        },
-    )
-
-
-def test_is_new_best_eval_prefers_finished_step_metrics_when_present() -> None:
-    history = [
-        {
-            "iter": 20,
-            "winrate_vs_random": 0.95,
-            "ties_vs_random": 0.0,
-            "winrate_vs_heuristic": 0.55,
-            "ties_vs_heuristic": 0.0,
-            "finished_vs_heuristic": 1.0,
-            "avg_finished_step_vs_heuristic": 118.0,
-            "max_finished_step_vs_heuristic": 150.0,
-        }
-    ]
-    assert _is_new_best_eval(
-        history,
-        {
-            "iter": 22,
-            "winrate_vs_random": 0.95,
-            "ties_vs_random": 0.0,
-            "winrate_vs_heuristic": 0.55,
-            "ties_vs_heuristic": 0.0,
-            "finished_vs_heuristic": 1.0,
-            "avg_finished_step_vs_heuristic": 117.0,
-            "max_finished_step_vs_heuristic": 149.0,
-        },
-    )
-
-
-def test_is_new_best_eval_prefers_rank_eval_metrics_when_present() -> None:
-    history = [
-        {
-            "iter": 30,
-            "winrate_vs_heuristic": 0.55,
-            "ties_vs_heuristic": 0.0,
-            "finished_vs_heuristic": 1.0,
-            "avg_finished_step_vs_heuristic": 120.0,
-            "rank_winrate_vs_heuristic": 0.50,
-            "rank_ties_vs_heuristic": 0.0,
-            "rank_finished_vs_heuristic": 1.0,
-            "rank_avg_finished_step_vs_heuristic": 115.0,
-        }
-    ]
-    assert _is_new_best_eval(
-        history,
-        {
-            "iter": 32,
-            "winrate_vs_heuristic": 0.54,
-            "ties_vs_heuristic": 0.0,
-            "finished_vs_heuristic": 1.0,
-            "avg_finished_step_vs_heuristic": 130.0,
-            "rank_winrate_vs_heuristic": 0.56,
-            "rank_ties_vs_heuristic": 0.0,
-            "rank_finished_vs_heuristic": 1.0,
-            "rank_avg_finished_step_vs_heuristic": 114.0,
-        },
-    )
 
 
 def test_decide_next_action_reduces_lr_for_strong_flat_window() -> None:
@@ -345,7 +239,7 @@ def test_league_migrates_legacy_entries_into_results(tmp_path: pathlib.Path) -> 
       "idx": 0,
       "tag": "i5",
       "path": "%s",
-      "elo": 0.0,
+      "rating": 0.0,
       "games": 0,
       "hidden": 192,
       "arch": "attn",

@@ -48,7 +48,7 @@ def test_validate_rejects_net_in_three_player_game(svc_workspace: PlayService) -
 
 
 def test_fit_human_rating_respects_entity_id() -> None:
-    from play import human_elo as HE
+    from play import human_rating as HE
 
     anchors = {"opp": 2000.0}
     rows = [{"a": "human:alice", "b": "opp", "wins_a": 10.0, "wins_b": 0.0, "ties": 0.0}]

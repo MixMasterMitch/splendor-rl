@@ -1,4 +1,4 @@
-"""Persistent human rating using the batch-fit Bradley-Terry/Elo system.
+"""Persistent human rating using the batch-fit Bradley-Terry system.
 
 Mirrors the league rating system in
 agent/train/ranking. We maintain an
@@ -13,7 +13,7 @@ from the full table by maximum likelihood, anchored to fixed ratings:
 Because every refit uses the full result history, the rating is independent
 of the order games were played in. There is no per-game k-factor update.
 
-Storage (JSON) at play/human_elo.json:
+Storage (JSON) at play/human_rating.json:
 
     {
         "rating_system": "anchored_bt",
@@ -45,7 +45,7 @@ from typing import Any, Iterable
 
 RANDOM_ANCHOR_RATING: float = 1000.0
 HEURISTIC_ANCHOR_RATING: float = 2500.0
-ELO_SCALE: float = 400.0
+RATING_SCALE: float = 400.0
 HUMAN_ENTITY: str = "human"
 DEFAULT_INITIAL_RATING: float = 1500.0
 
@@ -65,8 +65,8 @@ PLACEMENT_WINS_REQUIRED: int = 5
 
 
 def _expected_score(r_a: float, r_b: float) -> float:
-    """Probability that A beats B under Elo with scale 400."""
-    return 1.0 / (1.0 + math.pow(10.0, (r_b - r_a) / ELO_SCALE))
+    """Probability that A beats B under Bradley-Terry with scale 400."""
+    return 1.0 / (1.0 + math.pow(10.0, (r_b - r_a) / RATING_SCALE))
 
 
 def _canonical(a: str, b: str, wins_a: float, wins_b: float, ties: float):
@@ -257,7 +257,7 @@ class HumanRatingStore:
             self._save_locked()
 
     def _migrate_legacy_in_place(self) -> None:
-        """Older files used per-game online Elo updates (`elo`, `history`).
+        """Older files used per-game online rating updates (`elo`, `history`).
 
         We keep the existing history but reset to a clean rating because the
         results table is unrecoverable. New games will start filling in the
@@ -410,4 +410,4 @@ class HumanRatingStore:
             }
 
 
-HumanEloStore = HumanRatingStore
+

@@ -4,1417 +4,2782 @@
       "idx": 1801,
       "tag": "i3010",
       "path": "ckpt_01801_i3010.pt",
-      "elo": 3053.1270588583916,
-      "rating": 3053.1270588583916,
-      "games": 1216,
+      "rating": 2494.245035742885,
+      "games": 398,
       "hidden": 192,
-      "arch": "attn",
-      "rank_winrate_vs_random": 0.994140625,
-      "rank_ties_vs_random": 0.0,
-      "rank_finished_vs_random": 1.0,
-      "rank_avg_turns_vs_random": 87.5625,
-      "rank_winrate_vs_heuristic": 0.96875,
-      "rank_ties_vs_heuristic": 0.0,
-      "rank_finished_vs_heuristic": 1.0,
-      "rank_avg_turns_vs_heuristic": 63.63671875,
-      "rank_avg_finished_step_vs_heuristic": 63.63671875,
-      "rank_max_finished_step_vs_heuristic": 126.0,
-      "rank_winrate_vs_heuristic_opus": 0.81640625,
-      "rank_ties_vs_heuristic_opus": 0.0,
-      "rank_finished_vs_heuristic_opus": 0.990234375,
-      "rank_avg_turns_vs_heuristic_opus": 68.1171875,
-      "score_hint": 0.96875
+      "arch": "attn"
     },
     {
       "idx": 1803,
       "tag": "i3020",
       "path": "ckpt_01803_i3020.pt",
-      "elo": 3050.0142094512,
-      "rating": 3050.0142094512,
-      "games": 1216,
+      "rating": 2515.4269266953843,
+      "games": 276,
       "hidden": 192,
-      "arch": "attn",
-      "rank_winrate_vs_random": 0.998046875,
-      "rank_ties_vs_random": 0.0,
-      "rank_finished_vs_random": 0.998046875,
-      "rank_avg_turns_vs_random": 86.92578125,
-      "rank_winrate_vs_heuristic": 0.9765625,
-      "rank_ties_vs_heuristic": 0.00390625,
-      "rank_finished_vs_heuristic": 0.998046875,
-      "rank_avg_turns_vs_heuristic": 63.96484375,
-      "rank_avg_finished_step_vs_heuristic": 63.6986301369863,
-      "rank_max_finished_step_vs_heuristic": 121.0,
-      "rank_winrate_vs_heuristic_opus": 0.84375,
-      "rank_ties_vs_heuristic_opus": 0.001953125,
-      "rank_finished_vs_heuristic_opus": 0.994140625,
-      "rank_avg_turns_vs_heuristic_opus": 66.8203125,
-      "score_hint": 0.978515625
+      "arch": "attn"
     },
     {
       "idx": 1804,
       "tag": "i3025",
       "path": "ckpt_01804_i3025.pt",
-      "elo": 3045.882677417771,
-      "rating": 3045.882677417771,
-      "games": 1216,
+      "rating": 2481.0386199817144,
+      "games": 272,
       "hidden": 192,
-      "arch": "attn",
-      "rank_winrate_vs_random": 0.9921875,
-      "rank_ties_vs_random": 0.0,
-      "rank_finished_vs_random": 1.0,
-      "rank_avg_turns_vs_random": 86.1953125,
-      "rank_winrate_vs_heuristic": 0.955078125,
-      "rank_ties_vs_heuristic": 0.0,
-      "rank_finished_vs_heuristic": 0.998046875,
-      "rank_avg_turns_vs_heuristic": 64.181640625,
-      "rank_avg_finished_step_vs_heuristic": 63.91585127201566,
-      "rank_max_finished_step_vs_heuristic": 133.0,
-      "rank_winrate_vs_heuristic_opus": 0.798828125,
-      "rank_ties_vs_heuristic_opus": 0.0078125,
-      "rank_finished_vs_heuristic_opus": 1.0,
-      "rank_avg_turns_vs_heuristic_opus": 65.5390625,
-      "score_hint": 0.955078125
+      "arch": "attn"
     },
     {
       "idx": 1805,
       "tag": "i3030",
       "path": "ckpt_01805_i3030.pt",
-      "elo": 3048.650498196977,
-      "rating": 3048.650498196977,
-      "games": 1344,
+      "rating": 2502.199072230328,
+      "games": 307,
       "hidden": 192,
-      "arch": "attn",
-      "rank_winrate_vs_random": 0.990234375,
-      "rank_ties_vs_random": 0.0,
-      "rank_finished_vs_random": 1.0,
-      "rank_avg_turns_vs_random": 87.390625,
-      "rank_winrate_vs_heuristic": 0.966796875,
-      "rank_ties_vs_heuristic": 0.0,
-      "rank_finished_vs_heuristic": 1.0,
-      "rank_avg_turns_vs_heuristic": 63.970703125,
-      "rank_avg_finished_step_vs_heuristic": 63.970703125,
-      "rank_max_finished_step_vs_heuristic": 138.0,
-      "rank_winrate_vs_heuristic_opus": 0.783203125,
-      "rank_ties_vs_heuristic_opus": 0.0,
-      "rank_finished_vs_heuristic_opus": 0.9921875,
-      "rank_avg_turns_vs_heuristic_opus": 67.041015625,
-      "score_hint": 0.966796875
+      "arch": "attn"
     },
     {
       "idx": 1842,
       "tag": "i3215",
       "path": "ckpt_01842_i3215.pt",
-      "elo": 3052.666252026268,
-      "rating": 3052.666252026268,
-      "games": 1088,
+      "rating": 2525.01257938786,
+      "games": 306,
       "hidden": 192,
-      "arch": "attn",
-      "rank_winrate_vs_random": 0.998046875,
-      "rank_ties_vs_random": 0.0,
-      "rank_finished_vs_random": 1.0,
-      "rank_avg_turns_vs_random": 86.591796875,
-      "rank_winrate_vs_heuristic": 0.962890625,
-      "rank_ties_vs_heuristic": 0.001953125,
-      "rank_finished_vs_heuristic": 0.998046875,
-      "rank_avg_turns_vs_heuristic": 64.20703125,
-      "rank_avg_finished_step_vs_heuristic": 63.9412915851272,
-      "rank_max_finished_step_vs_heuristic": 142.0,
-      "rank_winrate_vs_heuristic_opus": 0.826171875,
-      "rank_ties_vs_heuristic_opus": 0.0,
-      "rank_finished_vs_heuristic_opus": 0.998046875,
-      "rank_avg_turns_vs_heuristic_opus": 66.037109375,
-      "score_hint": 0.9638671875
+      "arch": "attn"
     },
     {
       "idx": 1869,
       "tag": "i3350",
       "path": "ckpt_01869_i3350.pt",
-      "elo": 3051.7319498343454,
-      "rating": 3051.7319498343454,
-      "games": 1152,
+      "rating": 2485.451869126254,
+      "games": 284,
       "hidden": 192,
-      "arch": "attn",
-      "rank_winrate_vs_random": 0.990234375,
-      "rank_ties_vs_random": 0.0,
-      "rank_finished_vs_random": 0.99609375,
-      "rank_avg_turns_vs_random": 86.955078125,
-      "rank_winrate_vs_heuristic": 0.982421875,
-      "rank_ties_vs_heuristic": 0.0,
-      "rank_finished_vs_heuristic": 1.0,
-      "rank_avg_turns_vs_heuristic": 64.46484375,
-      "rank_avg_finished_step_vs_heuristic": 64.46484375,
-      "rank_max_finished_step_vs_heuristic": 109.0,
-      "rank_winrate_vs_heuristic_opus": 0.841796875,
-      "rank_ties_vs_heuristic_opus": 0.00390625,
-      "rank_finished_vs_heuristic_opus": 0.994140625,
-      "rank_avg_turns_vs_heuristic_opus": 68.203125,
-      "score_hint": 0.982421875
+      "arch": "attn"
     },
     {
       "idx": 1876,
       "tag": "i3385",
       "path": "ckpt_01876_i3385.pt",
-      "elo": 3053.3816426080166,
-      "rating": 3053.3816426080166,
-      "games": 1280,
+      "rating": 2535.2124407873366,
+      "games": 336,
       "hidden": 192,
-      "arch": "attn",
-      "rank_winrate_vs_random": 0.998046875,
-      "rank_ties_vs_random": 0.0,
-      "rank_finished_vs_random": 0.998046875,
-      "rank_avg_turns_vs_random": 86.048828125,
-      "rank_winrate_vs_heuristic": 0.9609375,
-      "rank_ties_vs_heuristic": 0.0,
-      "rank_finished_vs_heuristic": 1.0,
-      "rank_avg_turns_vs_heuristic": 63.72265625,
-      "rank_avg_finished_step_vs_heuristic": 63.72265625,
-      "rank_max_finished_step_vs_heuristic": 142.0,
-      "rank_winrate_vs_heuristic_opus": 0.837890625,
-      "rank_ties_vs_heuristic_opus": 0.001953125,
-      "rank_finished_vs_heuristic_opus": 0.998046875,
-      "rank_avg_turns_vs_heuristic_opus": 66.9765625,
-      "score_hint": 0.9609375
+      "arch": "attn"
     },
     {
       "idx": 1877,
       "tag": "i3390",
       "path": "ckpt_01877_i3390.pt",
-      "elo": 3063.917735361516,
-      "rating": 3063.917735361516,
-      "games": 1280,
+      "rating": 2505.4922082327616,
+      "games": 314,
       "hidden": 192,
-      "arch": "attn",
-      "rank_winrate_vs_random": 0.998046875,
-      "rank_ties_vs_random": 0.0,
-      "rank_finished_vs_random": 1.0,
-      "rank_avg_turns_vs_random": 87.5,
-      "rank_winrate_vs_heuristic": 0.97265625,
-      "rank_ties_vs_heuristic": 0.00390625,
-      "rank_finished_vs_heuristic": 1.0,
-      "rank_avg_turns_vs_heuristic": 64.166015625,
-      "rank_avg_finished_step_vs_heuristic": 64.166015625,
-      "rank_max_finished_step_vs_heuristic": 136.0,
-      "rank_winrate_vs_heuristic_opus": 0.826171875,
-      "rank_ties_vs_heuristic_opus": 0.0,
-      "rank_finished_vs_heuristic_opus": 0.998046875,
-      "rank_avg_turns_vs_heuristic_opus": 67.58984375,
-      "score_hint": 0.974609375
+      "arch": "attn"
     },
     {
       "idx": 1894,
       "tag": "i3475",
       "path": "ckpt_01894_i3475.pt",
-      "elo": 3061.853513311462,
-      "rating": 3061.853513311462,
-      "games": 1408,
+      "rating": 2504.8865252924884,
+      "games": 290,
       "hidden": 192,
-      "arch": "attn",
-      "rank_winrate_vs_random": 0.99609375,
-      "rank_ties_vs_random": 0.0,
-      "rank_finished_vs_random": 1.0,
-      "rank_avg_turns_vs_random": 86.62890625,
-      "rank_winrate_vs_heuristic": 0.94921875,
-      "rank_ties_vs_heuristic": 0.0,
-      "rank_finished_vs_heuristic": 1.0,
-      "rank_avg_turns_vs_heuristic": 63.6640625,
-      "rank_avg_finished_step_vs_heuristic": 63.6640625,
-      "rank_max_finished_step_vs_heuristic": 124.0,
-      "rank_winrate_vs_heuristic_opus": 0.8203125,
-      "rank_ties_vs_heuristic_opus": 0.001953125,
-      "rank_finished_vs_heuristic_opus": 0.99609375,
-      "rank_avg_turns_vs_heuristic_opus": 66.546875,
-      "score_hint": 0.94921875
+      "arch": "attn"
     },
     {
       "idx": 1895,
       "tag": "i3480",
       "path": "ckpt_01895_i3480.pt",
-      "elo": 3053.556168638651,
-      "rating": 3053.556168638651,
-      "games": 1152,
+      "rating": 2576.0258202721393,
+      "games": 325,
       "hidden": 192,
-      "arch": "attn",
-      "rank_winrate_vs_random": 0.994140625,
-      "rank_ties_vs_random": 0.0,
-      "rank_finished_vs_random": 1.0,
-      "rank_avg_turns_vs_random": 86.666015625,
-      "rank_winrate_vs_heuristic": 0.96875,
-      "rank_ties_vs_heuristic": 0.0,
-      "rank_finished_vs_heuristic": 1.0,
-      "rank_avg_turns_vs_heuristic": 64.11328125,
-      "rank_avg_finished_step_vs_heuristic": 64.11328125,
-      "rank_max_finished_step_vs_heuristic": 126.0,
-      "rank_winrate_vs_heuristic_opus": 0.80859375,
-      "rank_ties_vs_heuristic_opus": 0.001953125,
-      "rank_finished_vs_heuristic_opus": 0.998046875,
-      "rank_avg_turns_vs_heuristic_opus": 65.7265625,
-      "score_hint": 0.96875
+      "arch": "attn"
     },
     {
       "idx": 1912,
       "tag": "i3565",
       "path": "ckpt_01912_i3565.pt",
-      "elo": 3053.878265762201,
-      "rating": 3053.878265762201,
-      "games": 1216,
+      "rating": 2513.3759222909202,
+      "games": 299,
       "hidden": 192,
-      "arch": "attn",
-      "rank_winrate_vs_random": 0.99609375,
-      "rank_ties_vs_random": 0.0,
-      "rank_finished_vs_random": 1.0,
-      "rank_avg_turns_vs_random": 87.361328125,
-      "rank_winrate_vs_heuristic": 0.958984375,
-      "rank_ties_vs_heuristic": 0.001953125,
-      "rank_finished_vs_heuristic": 1.0,
-      "rank_avg_turns_vs_heuristic": 64.1328125,
-      "rank_avg_finished_step_vs_heuristic": 64.1328125,
-      "rank_max_finished_step_vs_heuristic": 147.0,
-      "rank_winrate_vs_heuristic_opus": 0.814453125,
-      "rank_ties_vs_heuristic_opus": 0.0,
-      "rank_finished_vs_heuristic_opus": 0.994140625,
-      "rank_avg_turns_vs_heuristic_opus": 67.525390625,
-      "score_hint": 0.9599609375
-    },
-    {
-      "idx": 1913,
-      "tag": "i3570",
-      "path": "ckpt_01913_i3570.pt",
-      "elo": 3065.3849723657554,
-      "rating": 3065.3849723657554,
-      "games": 1280,
-      "hidden": 192,
-      "arch": "attn",
-      "rank_winrate_vs_random": 0.998046875,
-      "rank_ties_vs_random": 0.0,
-      "rank_finished_vs_random": 1.0,
-      "rank_avg_turns_vs_random": 87.42578125,
-      "rank_winrate_vs_heuristic": 0.974609375,
-      "rank_ties_vs_heuristic": 0.001953125,
-      "rank_finished_vs_heuristic": 1.0,
-      "rank_avg_turns_vs_heuristic": 63.65625,
-      "rank_avg_finished_step_vs_heuristic": 63.65625,
-      "rank_max_finished_step_vs_heuristic": 147.0,
-      "rank_winrate_vs_heuristic_opus": 0.861328125,
-      "rank_ties_vs_heuristic_opus": 0.00390625,
-      "rank_finished_vs_heuristic_opus": 0.998046875,
-      "rank_avg_turns_vs_heuristic_opus": 65.806640625,
-      "score_hint": 0.9755859375
+      "arch": "attn"
     },
     {
       "idx": 1922,
       "tag": "i3615",
       "path": "ckpt_01922_i3615.pt",
-      "elo": 3077.012302514915,
-      "rating": 3077.012302514915,
-      "games": 1664,
+      "rating": 2492.982309539567,
+      "games": 366,
       "hidden": 192,
-      "arch": "attn",
-      "rank_winrate_vs_random": 0.99609375,
-      "rank_ties_vs_random": 0.0,
-      "rank_finished_vs_random": 0.998046875,
-      "rank_avg_turns_vs_random": 87.65625,
-      "rank_winrate_vs_heuristic": 0.962890625,
-      "rank_ties_vs_heuristic": 0.00390625,
-      "rank_finished_vs_heuristic": 1.0,
-      "rank_avg_turns_vs_heuristic": 64.0546875,
-      "rank_avg_finished_step_vs_heuristic": 64.0546875,
-      "rank_max_finished_step_vs_heuristic": 138.0,
-      "rank_winrate_vs_heuristic_opus": 0.86328125,
-      "rank_ties_vs_heuristic_opus": 0.001953125,
-      "rank_finished_vs_heuristic_opus": 0.99609375,
-      "rank_avg_turns_vs_heuristic_opus": 65.685546875,
-      "score_hint": 0.96484375
+      "arch": "attn"
     },
     {
       "idx": 1923,
       "tag": "i3620",
       "path": "ckpt_01923_i3620.pt",
-      "elo": 3063.04097256446,
-      "rating": 3063.04097256446,
-      "games": 1280,
+      "rating": 2483.298542795146,
+      "games": 272,
       "hidden": 192,
-      "arch": "attn",
-      "rank_winrate_vs_random": 0.998046875,
-      "rank_ties_vs_random": 0.0,
-      "rank_finished_vs_random": 1.0,
-      "rank_avg_turns_vs_random": 87.11328125,
-      "rank_winrate_vs_heuristic": 0.962890625,
-      "rank_ties_vs_heuristic": 0.001953125,
-      "rank_finished_vs_heuristic": 1.0,
-      "rank_avg_turns_vs_heuristic": 64.697265625,
-      "rank_avg_finished_step_vs_heuristic": 64.697265625,
-      "rank_max_finished_step_vs_heuristic": 138.0,
-      "rank_winrate_vs_heuristic_opus": 0.8515625,
-      "rank_ties_vs_heuristic_opus": 0.001953125,
-      "rank_finished_vs_heuristic_opus": 0.994140625,
-      "rank_avg_turns_vs_heuristic_opus": 66.6796875,
-      "score_hint": 0.9638671875
+      "arch": "attn"
     },
     {
       "idx": 1924,
       "tag": "i3625",
       "path": "ckpt_01924_i3625.pt",
-      "elo": 3066.608014112558,
-      "rating": 3066.608014112558,
-      "games": 1664,
+      "rating": 2480.728817030892,
+      "games": 301,
       "hidden": 192,
-      "arch": "attn",
-      "rank_winrate_vs_random": 0.99609375,
-      "rank_ties_vs_random": 0.0,
-      "rank_finished_vs_random": 1.0,
-      "rank_avg_turns_vs_random": 87.43359375,
-      "rank_winrate_vs_heuristic": 0.96875,
-      "rank_ties_vs_heuristic": 0.0,
-      "rank_finished_vs_heuristic": 0.998046875,
-      "rank_avg_turns_vs_heuristic": 64.083984375,
-      "rank_avg_finished_step_vs_heuristic": 63.81800391389432,
-      "rank_max_finished_step_vs_heuristic": 106.0,
-      "rank_winrate_vs_heuristic_opus": 0.828125,
-      "rank_ties_vs_heuristic_opus": 0.0,
-      "rank_finished_vs_heuristic_opus": 0.998046875,
-      "rank_avg_turns_vs_heuristic_opus": 66.91796875,
-      "score_hint": 0.96875
+      "arch": "attn"
     },
     {
       "idx": 1926,
       "tag": "i3635",
       "path": "ckpt_01926_i3635.pt",
-      "elo": 3082.398235745303,
-      "rating": 3082.398235745303,
-      "games": 1152,
+      "rating": 2526.3695825569257,
+      "games": 284,
       "hidden": 192,
-      "arch": "attn",
-      "rank_winrate_vs_random": 0.99609375,
-      "rank_ties_vs_random": 0.0,
-      "rank_finished_vs_random": 1.0,
-      "rank_avg_turns_vs_random": 85.92578125,
-      "rank_winrate_vs_heuristic": 0.978515625,
-      "rank_ties_vs_heuristic": 0.00390625,
-      "rank_finished_vs_heuristic": 1.0,
-      "rank_avg_turns_vs_heuristic": 64.818359375,
-      "rank_avg_finished_step_vs_heuristic": 64.818359375,
-      "rank_max_finished_step_vs_heuristic": 123.0,
-      "rank_winrate_vs_heuristic_opus": 0.833984375,
-      "rank_ties_vs_heuristic_opus": 0.005859375,
-      "rank_finished_vs_heuristic_opus": 0.9921875,
-      "rank_avg_turns_vs_heuristic_opus": 66.3984375,
-      "score_hint": 0.98046875
-    },
-    {
-      "idx": 2492,
-      "tag": "i2810",
-      "path": "ckpt_02492_i2810.pt",
-      "elo": 2957.0352462213705,
-      "rating": 2957.0352462213705,
-      "games": 1280,
-      "hidden": 192,
-      "arch": "attn",
-      "rank_winrate_vs_random": 0.990234375,
-      "rank_ties_vs_random": 0.001953125,
-      "rank_finished_vs_random": 1.0,
-      "rank_avg_turns_vs_random": 85.150390625,
-      "rank_winrate_vs_heuristic": 0.921875,
-      "rank_ties_vs_heuristic": 0.0,
-      "rank_finished_vs_heuristic": 1.0,
-      "rank_avg_turns_vs_heuristic": 65.970703125,
-      "rank_avg_finished_step_vs_heuristic": 65.970703125,
-      "rank_max_finished_step_vs_heuristic": 124.0,
-      "rank_winrate_vs_heuristic_opus": 0.826171875,
-      "rank_ties_vs_heuristic_opus": 0.001953125,
-      "rank_finished_vs_heuristic_opus": 0.998046875,
-      "rank_avg_turns_vs_heuristic_opus": 69.51171875,
-      "score_hint": 0.921875
-    },
-    {
-      "idx": 2493,
-      "tag": "i2815",
-      "path": "ckpt_02493_i2815.pt",
-      "elo": 2964.8414949860876,
-      "rating": 2964.8414949860876,
-      "games": 1344,
-      "hidden": 192,
-      "arch": "attn",
-      "rank_winrate_vs_random": 0.994140625,
-      "rank_ties_vs_random": 0.0,
-      "rank_finished_vs_random": 1.0,
-      "rank_avg_turns_vs_random": 84.974609375,
-      "rank_winrate_vs_heuristic": 0.939453125,
-      "rank_ties_vs_heuristic": 0.0,
-      "rank_finished_vs_heuristic": 1.0,
-      "rank_avg_turns_vs_heuristic": 65.4453125,
-      "rank_avg_finished_step_vs_heuristic": 65.4453125,
-      "rank_max_finished_step_vs_heuristic": 140.0,
-      "rank_winrate_vs_heuristic_opus": 0.82421875,
-      "rank_ties_vs_heuristic_opus": 0.005859375,
-      "rank_finished_vs_heuristic_opus": 0.994140625,
-      "rank_avg_turns_vs_heuristic_opus": 70.13671875,
-      "score_hint": 0.939453125
+      "arch": "attn"
     },
     {
       "idx": 2494,
       "tag": "i2820",
       "path": "ckpt_02494_i2820.pt",
-      "elo": 2978.553857876375,
-      "rating": 2978.553857876375,
-      "games": 1408,
+      "rating": 2615.1045399881314,
+      "games": 344,
       "hidden": 192,
-      "arch": "attn",
-      "rank_winrate_vs_random": 0.994140625,
-      "rank_ties_vs_random": 0.0,
-      "rank_finished_vs_random": 1.0,
-      "rank_avg_turns_vs_random": 83.865234375,
-      "rank_winrate_vs_heuristic": 0.943359375,
-      "rank_ties_vs_heuristic": 0.001953125,
-      "rank_finished_vs_heuristic": 0.998046875,
-      "rank_avg_turns_vs_heuristic": 65.5078125,
-      "rank_avg_finished_step_vs_heuristic": 65.24461839530332,
-      "rank_max_finished_step_vs_heuristic": 131.0,
-      "rank_winrate_vs_heuristic_opus": 0.8046875,
-      "rank_ties_vs_heuristic_opus": 0.00390625,
-      "rank_finished_vs_heuristic_opus": 0.998046875,
-      "rank_avg_turns_vs_heuristic_opus": 68.416015625,
-      "score_hint": 0.9443359375
+      "arch": "attn"
     },
     {
       "idx": 2495,
       "tag": "i2825",
       "path": "ckpt_02495_i2825.pt",
-      "elo": 2975.384314130141,
-      "rating": 2975.384314130141,
-      "games": 1408,
+      "rating": 2585.1924457650844,
+      "games": 353,
       "hidden": 192,
-      "arch": "attn",
-      "rank_winrate_vs_random": 0.990234375,
-      "rank_ties_vs_random": 0.0,
-      "rank_finished_vs_random": 0.99609375,
-      "rank_avg_turns_vs_random": 85.2265625,
-      "rank_winrate_vs_heuristic": 0.94140625,
-      "rank_ties_vs_heuristic": 0.0,
-      "rank_finished_vs_heuristic": 0.998046875,
-      "rank_avg_turns_vs_heuristic": 65.884765625,
-      "rank_avg_finished_step_vs_heuristic": 65.62230919765166,
-      "rank_max_finished_step_vs_heuristic": 112.0,
-      "rank_winrate_vs_heuristic_opus": 0.78125,
-      "rank_ties_vs_heuristic_opus": 0.001953125,
-      "rank_finished_vs_heuristic_opus": 0.994140625,
-      "rank_avg_turns_vs_heuristic_opus": 69.73046875,
-      "score_hint": 0.94140625
+      "arch": "attn"
     },
     {
       "idx": 2496,
       "tag": "i2830",
       "path": "ckpt_02496_i2830.pt",
-      "elo": 2952.7459752204204,
-      "rating": 2952.7459752204204,
-      "games": 1408,
+      "rating": 2625.356479352908,
+      "games": 526,
       "hidden": 192,
-      "arch": "attn",
-      "rank_winrate_vs_random": 0.98828125,
-      "rank_ties_vs_random": 0.0,
-      "rank_finished_vs_random": 1.0,
-      "rank_avg_turns_vs_random": 86.123046875,
-      "rank_winrate_vs_heuristic": 0.9375,
-      "rank_ties_vs_heuristic": 0.00390625,
-      "rank_finished_vs_heuristic": 0.998046875,
-      "rank_avg_turns_vs_heuristic": 66.20703125,
-      "rank_avg_finished_step_vs_heuristic": 65.94520547945206,
-      "rank_max_finished_step_vs_heuristic": 131.0,
-      "rank_winrate_vs_heuristic_opus": 0.828125,
-      "rank_ties_vs_heuristic_opus": 0.0,
-      "rank_finished_vs_heuristic_opus": 0.998046875,
-      "rank_avg_turns_vs_heuristic_opus": 68.490234375,
-      "score_hint": 0.939453125
+      "arch": "attn"
     },
     {
       "idx": 2497,
       "tag": "i2835",
       "path": "ckpt_02497_i2835.pt",
-      "elo": 2967.5944957555944,
-      "rating": 2967.5944957555944,
-      "games": 1344,
+      "rating": 2609.863963291013,
+      "games": 411,
       "hidden": 192,
-      "arch": "attn",
-      "rank_winrate_vs_random": 1.0,
-      "rank_ties_vs_random": 0.0,
-      "rank_finished_vs_random": 1.0,
-      "rank_avg_turns_vs_random": 84.9296875,
-      "rank_winrate_vs_heuristic": 0.947265625,
-      "rank_ties_vs_heuristic": 0.005859375,
-      "rank_finished_vs_heuristic": 1.0,
-      "rank_avg_turns_vs_heuristic": 65.2890625,
-      "rank_avg_finished_step_vs_heuristic": 65.2890625,
-      "rank_max_finished_step_vs_heuristic": 125.0,
-      "rank_winrate_vs_heuristic_opus": 0.802734375,
-      "rank_ties_vs_heuristic_opus": 0.0,
-      "rank_finished_vs_heuristic_opus": 1.0,
-      "rank_avg_turns_vs_heuristic_opus": 67.72265625,
-      "score_hint": 0.9501953125
+      "arch": "attn"
     },
     {
       "idx": 2498,
       "tag": "i2840",
       "path": "ckpt_02498_i2840.pt",
-      "elo": 2989.460335821646,
-      "rating": 2989.460335821646,
-      "games": 1290,
+      "rating": 2620.8407343623326,
+      "games": 417,
       "hidden": 192,
-      "arch": "attn",
-      "rank_winrate_vs_random": 0.994140625,
-      "rank_ties_vs_random": 0.0,
-      "rank_finished_vs_random": 0.998046875,
-      "rank_avg_turns_vs_random": 84.326171875,
-      "rank_winrate_vs_heuristic": 0.94921875,
-      "rank_ties_vs_heuristic": 0.001953125,
-      "rank_finished_vs_heuristic": 1.0,
-      "rank_avg_turns_vs_heuristic": 65.533203125,
-      "rank_avg_finished_step_vs_heuristic": 65.533203125,
-      "rank_max_finished_step_vs_heuristic": 120.0,
-      "rank_winrate_vs_heuristic_opus": 0.77734375,
-      "rank_ties_vs_heuristic_opus": 0.001953125,
-      "rank_finished_vs_heuristic_opus": 0.998046875,
-      "rank_avg_turns_vs_heuristic_opus": 68.30859375,
-      "score_hint": 0.9501953125
+      "arch": "attn"
     },
     {
       "idx": 2499,
       "tag": "i2845",
       "path": "ckpt_02499_i2845.pt",
-      "elo": 2500.0,
-      "rating": 2500.0,
-      "games": 0,
+      "rating": 2636.081201327856,
+      "games": 419,
       "hidden": 192,
-      "arch": "attn",
-      "rank_winrate_vs_random": 0.98828125,
-      "rank_ties_vs_random": 0.0,
-      "rank_finished_vs_random": 0.998046875,
-      "rank_avg_turns_vs_random": 85.431640625,
-      "rank_winrate_vs_heuristic": 0.939453125,
-      "rank_ties_vs_heuristic": 0.0,
-      "rank_finished_vs_heuristic": 1.0,
-      "rank_avg_turns_vs_heuristic": 65.24609375,
-      "rank_avg_finished_step_vs_heuristic": 65.24609375,
-      "rank_max_finished_step_vs_heuristic": 133.0,
-      "rank_winrate_vs_heuristic_opus": 0.779296875,
-      "rank_ties_vs_heuristic_opus": 0.0078125,
-      "rank_finished_vs_heuristic_opus": 0.998046875,
-      "rank_avg_turns_vs_heuristic_opus": 68.58203125,
-      "score_hint": 0.939453125
+      "arch": "attn"
+    },
+    {
+      "idx": 2500,
+      "tag": "i2850",
+      "path": "ckpt_02500_i2850.pt",
+      "rating": 2620.5536201980435,
+      "games": 482,
+      "hidden": 192,
+      "arch": "attn"
+    },
+    {
+      "idx": 2501,
+      "tag": "i2875",
+      "path": "ckpt_02501_i2875.pt",
+      "rating": 2690.2993851865776,
+      "games": 446,
+      "hidden": 192,
+      "arch": "attn"
+    },
+    {
+      "idx": 2502,
+      "tag": "i2900",
+      "path": "ckpt_02502_i2900.pt",
+      "rating": 2635.381331357717,
+      "games": 396,
+      "hidden": 192,
+      "arch": "attn"
     }
   ],
   "results": [
     {
       "a": "ckpt:1801",
-      "b": "random",
-      "wins_a": 509.0,
-      "wins_b": 3.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1801",
-      "b": "heuristic",
-      "wins_a": 496.0,
-      "wins_b": 16.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1803",
-      "b": "random",
-      "wins_a": 511.0,
-      "wins_b": 1.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1803",
-      "b": "heuristic",
-      "wins_a": 500.0,
+      "b": "ckpt:2495",
+      "wins_a": 4.0,
       "wins_b": 10.0,
-      "ties": 2.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1801",
-      "b": "ckpt:1803",
-      "wins_a": 33.0,
-      "wins_b": 31.0,
       "ties": 0.0,
-      "games": 64.0
+      "games": 14.0
     },
     {
-      "a": "ckpt:1804",
+      "a": "ckpt:2498",
       "b": "random",
-      "wins_a": 508.0,
-      "wins_b": 4.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1804",
-      "b": "heuristic",
-      "wins_a": 489.0,
-      "wins_b": 23.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1803",
-      "b": "ckpt:1804",
-      "wins_a": 27.0,
-      "wins_b": 36.0,
-      "ties": 1.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1801",
-      "b": "ckpt:1804",
-      "wins_a": 33.0,
-      "wins_b": 31.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1805",
-      "b": "random",
-      "wins_a": 507.0,
-      "wins_b": 5.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1805",
-      "b": "heuristic",
-      "wins_a": 495.0,
-      "wins_b": 17.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1804",
-      "b": "ckpt:1805",
-      "wins_a": 33.0,
-      "wins_b": 31.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1803",
-      "b": "ckpt:1805",
-      "wins_a": 29.0,
-      "wins_b": 35.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1801",
-      "b": "ckpt:1805",
-      "wins_a": 30.0,
-      "wins_b": 34.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1842",
-      "b": "random",
-      "wins_a": 511.0,
-      "wins_b": 1.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1842",
-      "b": "heuristic",
-      "wins_a": 493.0,
-      "wins_b": 18.0,
-      "ties": 1.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1869",
-      "b": "random",
-      "wins_a": 507.0,
-      "wins_b": 5.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1869",
-      "b": "heuristic",
-      "wins_a": 503.0,
-      "wins_b": 9.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1876",
-      "b": "random",
-      "wins_a": 511.0,
-      "wins_b": 1.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1876",
-      "b": "heuristic",
-      "wins_a": 492.0,
-      "wins_b": 20.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1869",
-      "b": "ckpt:1876",
-      "wins_a": 28.0,
-      "wins_b": 36.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1805",
-      "b": "ckpt:1876",
-      "wins_a": 32.0,
-      "wins_b": 30.0,
-      "ties": 2.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1877",
-      "b": "random",
-      "wins_a": 511.0,
-      "wins_b": 1.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1877",
-      "b": "heuristic",
-      "wins_a": 498.0,
-      "wins_b": 12.0,
-      "ties": 2.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1876",
-      "b": "ckpt:1877",
-      "wins_a": 34.0,
-      "wins_b": 29.0,
-      "ties": 1.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1805",
-      "b": "ckpt:1877",
-      "wins_a": 26.0,
-      "wins_b": 38.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1894",
-      "b": "random",
-      "wins_a": 510.0,
-      "wins_b": 2.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1894",
-      "b": "heuristic",
-      "wins_a": 486.0,
-      "wins_b": 26.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1876",
-      "b": "ckpt:1894",
-      "wins_a": 26.0,
-      "wins_b": 38.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1895",
-      "b": "random",
-      "wins_a": 509.0,
-      "wins_b": 3.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1895",
-      "b": "heuristic",
-      "wins_a": 496.0,
-      "wins_b": 16.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1894",
-      "b": "ckpt:1895",
-      "wins_a": 35.0,
-      "wins_b": 29.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1842",
-      "b": "ckpt:1895",
-      "wins_a": 31.0,
-      "wins_b": 33.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1912",
-      "b": "random",
-      "wins_a": 510.0,
-      "wins_b": 2.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1912",
-      "b": "heuristic",
-      "wins_a": 491.0,
-      "wins_b": 20.0,
-      "ties": 1.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1877",
-      "b": "ckpt:1912",
-      "wins_a": 30.0,
-      "wins_b": 33.0,
-      "ties": 1.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1894",
-      "b": "ckpt:1912",
-      "wins_a": 33.0,
-      "wins_b": 31.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1913",
-      "b": "random",
-      "wins_a": 511.0,
-      "wins_b": 1.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1913",
-      "b": "heuristic",
-      "wins_a": 499.0,
-      "wins_b": 12.0,
-      "ties": 1.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1912",
-      "b": "ckpt:1913",
-      "wins_a": 31.0,
-      "wins_b": 33.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1894",
-      "b": "ckpt:1913",
-      "wins_a": 37.0,
-      "wins_b": 27.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1922",
-      "b": "random",
-      "wins_a": 510.0,
-      "wins_b": 2.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1922",
-      "b": "heuristic",
-      "wins_a": 493.0,
-      "wins_b": 17.0,
-      "ties": 2.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1913",
-      "b": "ckpt:1922",
-      "wins_a": 32.0,
-      "wins_b": 32.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1869",
-      "b": "ckpt:1922",
-      "wins_a": 27.0,
-      "wins_b": 37.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1923",
-      "b": "random",
-      "wins_a": 511.0,
-      "wins_b": 1.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1923",
-      "b": "heuristic",
-      "wins_a": 493.0,
-      "wins_b": 18.0,
-      "ties": 1.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1922",
-      "b": "ckpt:1923",
-      "wins_a": 35.0,
-      "wins_b": 28.0,
-      "ties": 1.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1894",
-      "b": "ckpt:1923",
-      "wins_a": 35.0,
-      "wins_b": 29.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1913",
-      "b": "ckpt:1923",
-      "wins_a": 31.0,
-      "wins_b": 33.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1924",
-      "b": "random",
-      "wins_a": 510.0,
-      "wins_b": 2.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1924",
-      "b": "heuristic",
-      "wins_a": 496.0,
-      "wins_b": 16.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1923",
-      "b": "ckpt:1924",
-      "wins_a": 36.0,
-      "wins_b": 28.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1922",
-      "b": "ckpt:1924",
-      "wins_a": 30.0,
-      "wins_b": 34.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1894",
-      "b": "ckpt:1924",
-      "wins_a": 23.0,
-      "wins_b": 39.0,
-      "ties": 2.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1926",
-      "b": "random",
-      "wins_a": 510.0,
-      "wins_b": 2.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1926",
-      "b": "heuristic",
-      "wins_a": 501.0,
-      "wins_b": 9.0,
-      "ties": 2.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1924",
-      "b": "ckpt:1926",
-      "wins_a": 33.0,
-      "wins_b": 31.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:2492",
-      "b": "random",
-      "wins_a": 507.0,
-      "wins_b": 4.0,
-      "ties": 1.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:2492",
-      "b": "heuristic",
-      "wins_a": 472.0,
-      "wins_b": 40.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:1924",
-      "b": "ckpt:2492",
-      "wins_a": 41.0,
-      "wins_b": 22.0,
-      "ties": 1.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1922",
-      "b": "ckpt:2492",
-      "wins_a": 38.0,
-      "wins_b": 26.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:2493",
-      "b": "random",
-      "wins_a": 509.0,
-      "wins_b": 3.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:2493",
-      "b": "heuristic",
-      "wins_a": 481.0,
-      "wins_b": 31.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:2492",
-      "b": "ckpt:2493",
-      "wins_a": 31.0,
-      "wins_b": 32.0,
-      "ties": 1.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1924",
-      "b": "ckpt:2493",
-      "wins_a": 41.0,
-      "wins_b": 23.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1877",
-      "b": "ckpt:2493",
-      "wins_a": 37.0,
-      "wins_b": 27.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:2494",
-      "b": "random",
-      "wins_a": 509.0,
-      "wins_b": 3.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:2494",
-      "b": "heuristic",
-      "wins_a": 483.0,
-      "wins_b": 28.0,
-      "ties": 1.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:2493",
-      "b": "ckpt:2494",
-      "wins_a": 26.0,
-      "wins_b": 38.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:2492",
-      "b": "ckpt:2494",
-      "wins_a": 35.0,
-      "wins_b": 29.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1924",
-      "b": "ckpt:2494",
-      "wins_a": 39.0,
-      "wins_b": 23.0,
-      "ties": 2.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1922",
-      "b": "ckpt:2494",
-      "wins_a": 42.0,
-      "wins_b": 21.0,
-      "ties": 1.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:2495",
-      "b": "random",
-      "wins_a": 507.0,
-      "wins_b": 5.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:2495",
-      "b": "heuristic",
-      "wins_a": 482.0,
-      "wins_b": 30.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:2494",
-      "b": "ckpt:2495",
-      "wins_a": 31.0,
-      "wins_b": 32.0,
-      "ties": 1.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:2493",
-      "b": "ckpt:2495",
-      "wins_a": 33.0,
-      "wins_b": 31.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1924",
-      "b": "ckpt:2495",
-      "wins_a": 33.0,
-      "wins_b": 30.0,
-      "ties": 1.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1922",
-      "b": "ckpt:2495",
-      "wins_a": 44.0,
-      "wins_b": 20.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:2496",
-      "b": "random",
-      "wins_a": 506.0,
-      "wins_b": 6.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:2496",
-      "b": "heuristic",
-      "wins_a": 480.0,
-      "wins_b": 30.0,
-      "ties": 2.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:2495",
-      "b": "ckpt:2496",
-      "wins_a": 35.0,
-      "wins_b": 29.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:2494",
-      "b": "ckpt:2496",
-      "wins_a": 38.0,
-      "wins_b": 26.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1922",
-      "b": "ckpt:2496",
-      "wins_a": 41.0,
-      "wins_b": 23.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1924",
-      "b": "ckpt:2496",
-      "wins_a": 40.0,
-      "wins_b": 23.0,
-      "ties": 1.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:2497",
-      "b": "random",
-      "wins_a": 512.0,
+      "wins_a": 21.0,
       "wins_b": 0.0,
       "ties": 0.0,
-      "games": 512.0
+      "games": 21.0
     },
     {
-      "a": "ckpt:2497",
-      "b": "heuristic",
-      "wins_a": 485.0,
-      "wins_b": 24.0,
-      "ties": 3.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:2496",
-      "b": "ckpt:2497",
-      "wins_a": 31.0,
-      "wins_b": 33.0,
+      "a": "ckpt:1842",
+      "b": "ckpt:1869",
+      "wins_a": 7.0,
+      "wins_b": 6.0,
       "ties": 0.0,
-      "games": 64.0
+      "games": 13.0
     },
     {
-      "a": "ckpt:2495",
-      "b": "ckpt:2497",
-      "wins_a": 33.0,
-      "wins_b": 31.0,
+      "a": "ckpt:1803",
+      "b": "ckpt:1842",
+      "wins_a": 5.0,
+      "wins_b": 6.0,
       "ties": 0.0,
-      "games": 64.0
+      "games": 11.0
     },
     {
-      "a": "ckpt:1922",
-      "b": "ckpt:2497",
-      "wins_a": 45.0,
-      "wins_b": 19.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:1924",
-      "b": "ckpt:2497",
-      "wins_a": 40.0,
-      "wins_b": 24.0,
-      "ties": 0.0,
-      "games": 64.0
-    },
-    {
-      "a": "ckpt:2498",
-      "b": "random",
-      "wins_a": 509.0,
-      "wins_b": 3.0,
-      "ties": 0.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:2498",
-      "b": "heuristic",
-      "wins_a": 486.0,
-      "wins_b": 25.0,
-      "ties": 1.0,
-      "games": 512.0
-    },
-    {
-      "a": "ckpt:2497",
+      "a": "ckpt:1801",
       "b": "ckpt:2498",
-      "wins_a": 26.0,
-      "wins_b": 38.0,
+      "wins_a": 7.0,
+      "wins_b": 13.0,
       "ties": 0.0,
-      "games": 64.0
+      "games": 20.0
     },
     {
       "a": "ckpt:2496",
       "b": "ckpt:2498",
-      "wins_a": 31.0,
-      "wins_b": 33.0,
+      "wins_a": 9.0,
+      "wins_b": 11.0,
       "ties": 0.0,
-      "games": 64.0
+      "games": 20.0
     },
     {
-      "a": "ckpt:1922",
-      "b": "ckpt:2498",
-      "wins_a": 40.0,
-      "wins_b": 24.0,
+      "a": "ckpt:1912",
+      "b": "ckpt:1926",
+      "wins_a": 6.0,
+      "wins_b": 7.0,
       "ties": 0.0,
-      "games": 64.0
+      "games": 13.0
     },
     {
-      "a": "ckpt:1926",
-      "b": "ckpt:2498",
-      "wins_a": 37.0,
-      "wins_b": 26.0,
-      "ties": 1.0,
-      "games": 64.0
-    },
-    {
-      "a": "bedrock_claude_sonnet",
+      "a": "heuristic",
       "b": "random",
+      "wins_a": 12.166666666666668,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 12.166666666666668
+    },
+    {
+      "a": "ckpt:1842",
+      "b": "ckpt:1923",
       "wins_a": 2.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 8.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "random",
+      "wins_a": 14.0,
       "wins_b": 1.0,
       "ties": 0.0,
-      "games": 3.0
+      "games": 15.0
     },
     {
-      "a": "bedrock_claude_sonnet",
-      "b": "ckpt:2498",
-      "wins_a": 6.0,
-      "wins_b": 4.0,
+      "a": "ckpt:1805",
+      "b": "ckpt:1924",
+      "wins_a": 9.0,
+      "wins_b": 1.0,
       "ties": 0.0,
       "games": 10.0
     },
     {
-      "a": "bedrock_claude_sonnet",
+      "a": "ckpt:2495",
+      "b": "ckpt:2497",
+      "wins_a": 15.0,
+      "wins_b": 8.0,
+      "ties": 0.0,
+      "games": 23.0
+    },
+    {
+      "a": "ckpt:1924",
+      "b": "ckpt:2497",
+      "wins_a": 7.0,
+      "wins_b": 8.0,
+      "ties": 0.0,
+      "games": 15.0
+    },
+    {
+      "a": "ckpt:1842",
+      "b": "ckpt:1912",
+      "wins_a": 8.0,
+      "wins_b": 5.0,
+      "ties": 0.0,
+      "games": 13.0
+    },
+    {
+      "a": "ckpt:1869",
+      "b": "ckpt:2500",
+      "wins_a": 4.0,
+      "wins_b": 15.0,
+      "ties": 0.0,
+      "games": 19.0
+    },
+    {
+      "a": "ckpt:2499",
+      "b": "random",
+      "wins_a": 16.0,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 16.0
+    },
+    {
+      "a": "ckpt:1804",
+      "b": "ckpt:2500",
+      "wins_a": 7.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 14.0
+    },
+    {
+      "a": "ckpt:1912",
+      "b": "ckpt:2497",
+      "wins_a": 7.0,
+      "wins_b": 8.0,
+      "ties": 0.0,
+      "games": 15.0
+    },
+    {
+      "a": "ckpt:1869",
+      "b": "ckpt:1877",
+      "wins_a": 5.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 11.0
+    },
+    {
+      "a": "ckpt:1803",
+      "b": "ckpt:1805",
+      "wins_a": 7.0,
+      "wins_b": 4.0,
+      "ties": 0.0,
+      "games": 11.0
+    },
+    {
+      "a": "ckpt:1877",
+      "b": "ckpt:2499",
+      "wins_a": 6.0,
+      "wins_b": 15.0,
+      "ties": 0.0,
+      "games": 21.0
+    },
+    {
+      "a": "ckpt:1801",
+      "b": "ckpt:1895",
+      "wins_a": 7.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 14.0
+    },
+    {
+      "a": "ckpt:1894",
+      "b": "ckpt:2494",
+      "wins_a": 3.0,
+      "wins_b": 9.0,
+      "ties": 0.0,
+      "games": 12.0
+    },
+    {
+      "a": "ckpt:2498",
       "b": "heuristic",
+      "wins_a": 8.0,
+      "wins_b": 5.0,
+      "ties": 0.0,
+      "games": 13.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2501",
+      "wins_a": 2.0,
+      "wins_b": 16.0,
+      "ties": 0.0,
+      "games": 18.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2495",
+      "wins_a": 6.0,
+      "wins_b": 8.0,
+      "ties": 0.0,
+      "games": 14.0
+    },
+    {
+      "a": "ckpt:1894",
+      "b": "ckpt:1926",
+      "wins_a": 6.0,
+      "wins_b": 5.0,
+      "ties": 0.0,
+      "games": 11.0
+    },
+    {
+      "a": "ckpt:1805",
+      "b": "ckpt:2497",
+      "wins_a": 3.0,
+      "wins_b": 15.0,
+      "ties": 0.0,
+      "games": 18.0
+    },
+    {
+      "a": "ckpt:1842",
+      "b": "ckpt:2496",
+      "wins_a": 5.0,
+      "wins_b": 9.0,
+      "ties": 0.0,
+      "games": 14.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2499",
+      "wins_a": 5.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 12.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "ckpt:2501",
+      "wins_a": 9.0,
+      "wins_b": 14.0,
+      "ties": 0.0,
+      "games": 23.0
+    },
+    {
+      "a": "ckpt:1804",
+      "b": "ckpt:1894",
+      "wins_a": 3.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 9.0
+    },
+    {
+      "a": "ckpt:1805",
+      "b": "ckpt:1894",
       "wins_a": 4.0,
       "wins_b": 7.0,
       "ties": 0.0,
       "games": 11.0
     },
     {
-      "a": "bedrock_claude_sonnet",
-      "b": "heuristic_opus",
-      "wins_a": 0.0,
+      "a": "ckpt:1869",
+      "b": "ckpt:2496",
+      "wins_a": 4.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 10.0
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "ckpt:2497",
+      "wins_a": 11.0,
+      "wins_b": 5.0,
+      "ties": 0.0,
+      "games": 16.0
+    },
+    {
+      "a": "ckpt:1804",
+      "b": "ckpt:1924",
+      "wins_a": 5.0,
+      "wins_b": 5.0,
+      "ties": 0.0,
+      "games": 10.0
+    },
+    {
+      "a": "ckpt:1842",
+      "b": "ckpt:2498",
+      "wins_a": 5.0,
+      "wins_b": 10.0,
+      "ties": 0.0,
+      "games": 15.0
+    },
+    {
+      "a": "ckpt:1869",
+      "b": "ckpt:1895",
+      "wins_a": 3.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 9.0
+    },
+    {
+      "a": "ckpt:1842",
+      "b": "ckpt:1924",
+      "wins_a": 6.0,
+      "wins_b": 2.0,
+      "ties": 0.0,
+      "games": 8.0
+    },
+    {
+      "a": "ckpt:1877",
+      "b": "ckpt:2496",
+      "wins_a": 6.0,
+      "wins_b": 15.0,
+      "ties": 0.0,
+      "games": 21.0
+    },
+    {
+      "a": "ckpt:2499",
+      "b": "ckpt:2501",
+      "wins_a": 11.0,
+      "wins_b": 14.0,
+      "ties": 0.0,
+      "games": 25.0
+    },
+    {
+      "a": "ckpt:2499",
+      "b": "heuristic",
+      "wins_a": 16.0,
+      "wins_b": 5.0,
+      "ties": 0.0,
+      "games": 21.0
+    },
+    {
+      "a": "ckpt:1842",
+      "b": "ckpt:2501",
+      "wins_a": 6.0,
+      "wins_b": 14.0,
+      "ties": 0.0,
+      "games": 20.0
+    },
+    {
+      "a": "ckpt:2500",
+      "b": "heuristic",
+      "wins_a": 16.166666666666668,
+      "wins_b": 8.0,
+      "ties": 0.0,
+      "games": 24.166666666666668
+    },
+    {
+      "a": "ckpt:1877",
+      "b": "ckpt:1895",
+      "wins_a": 6.0,
+      "wins_b": 9.0,
+      "ties": 0.0,
+      "games": 15.0
+    },
+    {
+      "a": "ckpt:1805",
+      "b": "ckpt:1926",
+      "wins_a": 12.0,
+      "wins_b": 4.0,
+      "ties": 0.0,
+      "games": 16.0
+    },
+    {
+      "a": "ckpt:1877",
+      "b": "ckpt:2497",
+      "wins_a": 9.0,
+      "wins_b": 16.0,
+      "ties": 0.0,
+      "games": 25.0
+    },
+    {
+      "a": "ckpt:1805",
+      "b": "ckpt:2495",
+      "wins_a": 8.0,
+      "wins_b": 5.0,
+      "ties": 0.0,
+      "games": 13.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:1922",
+      "wins_a": 9.0,
+      "wins_b": 4.0,
+      "ties": 0.0,
+      "games": 13.0
+    },
+    {
+      "a": "ckpt:1803",
+      "b": "ckpt:1869",
+      "wins_a": 9.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 15.0
+    },
+    {
+      "a": "ckpt:1924",
+      "b": "ckpt:2498",
+      "wins_a": 2.0,
+      "wins_b": 10.0,
+      "ties": 0.0,
+      "games": 12.0
+    },
+    {
+      "a": "ckpt:1869",
+      "b": "ckpt:1924",
+      "wins_a": 6.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 12.0
+    },
+    {
+      "a": "ckpt:1926",
+      "b": "ckpt:2498",
+      "wins_a": 6.0,
+      "wins_b": 8.0,
+      "ties": 0.0,
+      "games": 14.0
+    },
+    {
+      "a": "ckpt:1894",
+      "b": "ckpt:1895",
+      "wins_a": 7.0,
+      "wins_b": 5.0,
+      "ties": 0.0,
+      "games": 12.0
+    },
+    {
+      "a": "ckpt:1922",
+      "b": "ckpt:1923",
+      "wins_a": 7.0,
+      "wins_b": 1.0,
+      "ties": 0.0,
+      "games": 8.0
+    },
+    {
+      "a": "ckpt:1801",
+      "b": "heuristic",
+      "wins_a": 9.0,
+      "wins_b": 8.833333333333332,
+      "ties": 0.0,
+      "games": 17.833333333333332
+    },
+    {
+      "a": "ckpt:1803",
+      "b": "ckpt:2495",
+      "wins_a": 3.0,
+      "wins_b": 13.0,
+      "ties": 0.0,
+      "games": 16.0
+    },
+    {
+      "a": "ckpt:1912",
+      "b": "ckpt:2496",
+      "wins_a": 4.0,
+      "wins_b": 12.0,
+      "ties": 0.0,
+      "games": 16.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2494",
+      "wins_a": 6.0,
+      "wins_b": 11.0,
+      "ties": 0.0,
+      "games": 17.0
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "random",
+      "wins_a": 16.833333333333332,
+      "wins_b": 1.0,
+      "ties": 0.0,
+      "games": 17.833333333333332
+    },
+    {
+      "a": "ckpt:1924",
+      "b": "ckpt:2496",
+      "wins_a": 7.0,
+      "wins_b": 12.0,
+      "ties": 0.0,
+      "games": 19.0
+    },
+    {
+      "a": "ckpt:1869",
+      "b": "ckpt:2499",
+      "wins_a": 7.0,
+      "wins_b": 12.0,
+      "ties": 0.0,
+      "games": 19.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "ckpt:2499",
+      "wins_a": 9.0,
+      "wins_b": 11.0,
+      "ties": 0.0,
+      "games": 20.0
+    },
+    {
+      "a": "ckpt:1801",
+      "b": "ckpt:1877",
+      "wins_a": 6.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 13.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:1912",
+      "wins_a": 8.0,
       "wins_b": 3.0,
       "ties": 0.0,
+      "games": 11.0
+    },
+    {
+      "a": "ckpt:1869",
+      "b": "ckpt:2498",
+      "wins_a": 3.0,
+      "wins_b": 13.0,
+      "ties": 0.0,
+      "games": 16.0
+    },
+    {
+      "a": "ckpt:1923",
+      "b": "ckpt:2499",
+      "wins_a": 5.0,
+      "wins_b": 11.0,
+      "ties": 0.0,
+      "games": 16.0
+    },
+    {
+      "a": "ckpt:1804",
+      "b": "ckpt:1923",
+      "wins_a": 4.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 10.0
+    },
+    {
+      "a": "ckpt:1923",
+      "b": "ckpt:2495",
+      "wins_a": 5.0,
+      "wins_b": 11.0,
+      "ties": 0.0,
+      "games": 16.0
+    },
+    {
+      "a": "ckpt:1805",
+      "b": "ckpt:2494",
+      "wins_a": 6.0,
+      "wins_b": 9.0,
+      "ties": 0.0,
+      "games": 15.0
+    },
+    {
+      "a": "ckpt:1803",
+      "b": "ckpt:1894",
+      "wins_a": 8.0,
+      "wins_b": 10.0,
+      "ties": 0.0,
+      "games": 18.0
+    },
+    {
+      "a": "ckpt:1804",
+      "b": "ckpt:2499",
+      "wins_a": 5.0,
+      "wins_b": 10.0,
+      "ties": 0.0,
+      "games": 15.0
+    },
+    {
+      "a": "ckpt:1924",
+      "b": "ckpt:2499",
+      "wins_a": 6.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 12.0
+    },
+    {
+      "a": "ckpt:1923",
+      "b": "random",
+      "wins_a": 9.0,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 9.0
+    },
+    {
+      "a": "ckpt:1877",
+      "b": "ckpt:2494",
+      "wins_a": 5.0,
+      "wins_b": 12.0,
+      "ties": 0.0,
+      "games": 17.0
+    },
+    {
+      "a": "ckpt:1922",
+      "b": "random",
+      "wins_a": 15.5,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 15.5
+    },
+    {
+      "a": "ckpt:1801",
+      "b": "ckpt:1894",
+      "wins_a": 3.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 9.0
+    },
+    {
+      "a": "ckpt:2500",
+      "b": "ckpt:2501",
+      "wins_a": 7.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 14.0
+    },
+    {
+      "a": "ckpt:1842",
+      "b": "ckpt:1876",
+      "wins_a": 9.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 15.0
+    },
+    {
+      "a": "ckpt:1842",
+      "b": "heuristic",
+      "wins_a": 8.0,
+      "wins_b": 9.0,
+      "ties": 0.0,
+      "games": 17.0
+    },
+    {
+      "a": "ckpt:1922",
+      "b": "ckpt:2501",
+      "wins_a": 1.0,
+      "wins_b": 13.0,
+      "ties": 0.0,
+      "games": 14.0
+    },
+    {
+      "a": "ckpt:1803",
+      "b": "ckpt:2496",
+      "wins_a": 8.0,
+      "wins_b": 10.0,
+      "ties": 0.0,
+      "games": 18.0
+    },
+    {
+      "a": "ckpt:1922",
+      "b": "ckpt:1924",
+      "wins_a": 7.0,
+      "wins_b": 11.0,
+      "ties": 0.0,
+      "games": 18.0
+    },
+    {
+      "a": "ckpt:1804",
+      "b": "ckpt:1869",
+      "wins_a": 1.0,
+      "wins_b": 2.0,
+      "ties": 0.0,
       "games": 3.0
+    },
+    {
+      "a": "ckpt:1923",
+      "b": "ckpt:2494",
+      "wins_a": 5.0,
+      "wins_b": 4.0,
+      "ties": 0.0,
+      "games": 9.0
+    },
+    {
+      "a": "ckpt:1805",
+      "b": "ckpt:1912",
+      "wins_a": 1.0,
+      "wins_b": 9.0,
+      "ties": 0.0,
+      "games": 10.0
+    },
+    {
+      "a": "ckpt:2497",
+      "b": "ckpt:2498",
+      "wins_a": 11.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 17.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:1895",
+      "wins_a": 6.0,
+      "wins_b": 11.0,
+      "ties": 0.0,
+      "games": 17.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "ckpt:2496",
+      "wins_a": 7.0,
+      "wins_b": 11.0,
+      "ties": 0.0,
+      "games": 18.0
+    },
+    {
+      "a": "ckpt:1801",
+      "b": "ckpt:1842",
+      "wins_a": 4.0,
+      "wins_b": 9.0,
+      "ties": 0.0,
+      "games": 13.0
+    },
+    {
+      "a": "ckpt:1877",
+      "b": "random",
+      "wins_a": 9.0,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 9.0
+    },
+    {
+      "a": "ckpt:1924",
+      "b": "ckpt:1926",
+      "wins_a": 4.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 10.0
+    },
+    {
+      "a": "ckpt:1842",
+      "b": "ckpt:1926",
+      "wins_a": 6.0,
+      "wins_b": 9.0,
+      "ties": 0.0,
+      "games": 15.0
+    },
+    {
+      "a": "ckpt:1842",
+      "b": "random",
+      "wins_a": 7.0,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 7.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "heuristic",
+      "wins_a": 10.0,
+      "wins_b": 4.0,
+      "ties": 0.0,
+      "games": 14.0
+    },
+    {
+      "a": "ckpt:1877",
+      "b": "heuristic",
+      "wins_a": 6.0,
+      "wins_b": 9.0,
+      "ties": 0.0,
+      "games": 15.0
+    },
+    {
+      "a": "ckpt:1922",
+      "b": "ckpt:2496",
+      "wins_a": 4.833333333333333,
+      "wins_b": 14.333333333333332,
+      "ties": 0.0,
+      "games": 19.166666666666664
+    },
+    {
+      "a": "ckpt:1803",
+      "b": "ckpt:2498",
+      "wins_a": 6.0,
+      "wins_b": 8.0,
+      "ties": 0.0,
+      "games": 14.0
+    },
+    {
+      "a": "ckpt:1922",
+      "b": "ckpt:1926",
+      "wins_a": 3.0,
+      "wins_b": 3.0,
+      "ties": 0.0,
+      "games": 6.0
+    },
+    {
+      "a": "ckpt:1842",
+      "b": "ckpt:2500",
+      "wins_a": 4.0,
+      "wins_b": 9.0,
+      "ties": 0.0,
+      "games": 13.0
+    },
+    {
+      "a": "ckpt:1922",
+      "b": "ckpt:2500",
+      "wins_a": 1.6666666666666665,
+      "wins_b": 15.833333333333334,
+      "ties": 0.0,
+      "games": 17.5
+    },
+    {
+      "a": "ckpt:1801",
+      "b": "ckpt:2496",
+      "wins_a": 4.5,
+      "wins_b": 18.0,
+      "ties": 0.0,
+      "games": 22.5
+    },
+    {
+      "a": "ckpt:1894",
+      "b": "ckpt:1912",
+      "wins_a": 5.0,
+      "wins_b": 8.0,
+      "ties": 0.0,
+      "games": 13.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "heuristic",
+      "wins_a": 9.0,
+      "wins_b": 3.0,
+      "ties": 0.0,
+      "games": 12.0
+    },
+    {
+      "a": "ckpt:1877",
+      "b": "ckpt:2498",
+      "wins_a": 6.0,
+      "wins_b": 9.0,
+      "ties": 0.0,
+      "games": 15.0
+    },
+    {
+      "a": "ckpt:1801",
+      "b": "ckpt:2500",
+      "wins_a": 3.5,
+      "wins_b": 14.5,
+      "ties": 0.0,
+      "games": 18.0
+    },
+    {
+      "a": "ckpt:1805",
+      "b": "ckpt:1842",
+      "wins_a": 3.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 10.0
+    },
+    {
+      "a": "ckpt:1804",
+      "b": "ckpt:1912",
+      "wins_a": 5.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 11.0
+    },
+    {
+      "a": "ckpt:1801",
+      "b": "ckpt:1924",
+      "wins_a": 10.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 16.0
+    },
+    {
+      "a": "ckpt:1924",
+      "b": "ckpt:2501",
+      "wins_a": 8.0,
+      "wins_b": 16.0,
+      "ties": 0.0,
+      "games": 24.0
+    },
+    {
+      "a": "ckpt:1842",
+      "b": "ckpt:2499",
+      "wins_a": 7.0,
+      "wins_b": 13.0,
+      "ties": 0.0,
+      "games": 20.0
+    },
+    {
+      "a": "ckpt:1805",
+      "b": "ckpt:1922",
+      "wins_a": 7.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 14.0
+    },
+    {
+      "a": "ckpt:1804",
+      "b": "ckpt:1895",
+      "wins_a": 6.0,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 6.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "random",
+      "wins_a": 7.0,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 7.0
+    },
+    {
+      "a": "ckpt:1924",
+      "b": "ckpt:2500",
+      "wins_a": 4.0,
+      "wins_b": 8.0,
+      "ties": 0.0,
+      "games": 12.0
+    },
+    {
+      "a": "ckpt:1803",
+      "b": "ckpt:1922",
+      "wins_a": 5.0,
+      "wins_b": 4.0,
+      "ties": 0.0,
+      "games": 9.0
+    },
+    {
+      "a": "ckpt:1805",
+      "b": "ckpt:1876",
+      "wins_a": 7.0,
+      "wins_b": 3.0,
+      "ties": 0.0,
+      "games": 10.0
+    },
+    {
+      "a": "ckpt:1805",
+      "b": "heuristic",
+      "wins_a": 9.0,
+      "wins_b": 10.0,
+      "ties": 0.0,
+      "games": 19.0
+    },
+    {
+      "a": "ckpt:1924",
+      "b": "heuristic",
+      "wins_a": 7.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 14.0
+    },
+    {
+      "a": "ckpt:1926",
+      "b": "heuristic",
+      "wins_a": 7.0,
+      "wins_b": 2.0,
+      "ties": 0.0,
+      "games": 9.0
+    },
+    {
+      "a": "ckpt:1923",
+      "b": "heuristic",
+      "wins_a": 6.0,
+      "wins_b": 4.0,
+      "ties": 0.0,
+      "games": 10.0
+    },
+    {
+      "a": "ckpt:1842",
+      "b": "ckpt:1895",
+      "wins_a": 6.0,
+      "wins_b": 5.0,
+      "ties": 0.0,
+      "games": 11.0
+    },
+    {
+      "a": "ckpt:1801",
+      "b": "ckpt:1926",
+      "wins_a": 8.0,
+      "wins_b": 8.0,
+      "ties": 0.0,
+      "games": 16.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "heuristic",
+      "wins_a": 14.0,
+      "wins_b": 3.0,
+      "ties": 0.0,
+      "games": 17.0
+    },
+    {
+      "a": "ckpt:1923",
+      "b": "ckpt:1926",
+      "wins_a": 0.0,
+      "wins_b": 5.0,
+      "ties": 0.0,
+      "games": 5.0
+    },
+    {
+      "a": "ckpt:1805",
+      "b": "ckpt:2496",
+      "wins_a": 6.0,
+      "wins_b": 11.0,
+      "ties": 0.0,
+      "games": 17.0
+    },
+    {
+      "a": "ckpt:1803",
+      "b": "ckpt:1895",
+      "wins_a": 5.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 12.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2496",
+      "wins_a": 6.0,
+      "wins_b": 12.0,
+      "ties": 0.0,
+      "games": 18.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2495",
+      "wins_a": 8.0,
+      "wins_b": 3.0,
+      "ties": 0.0,
+      "games": 11.0
+    },
+    {
+      "a": "ckpt:1926",
+      "b": "ckpt:2494",
+      "wins_a": 5.0,
+      "wins_b": 8.0,
+      "ties": 0.0,
+      "games": 13.0
+    },
+    {
+      "a": "ckpt:1803",
+      "b": "ckpt:1923",
+      "wins_a": 3.0,
+      "wins_b": 1.0,
+      "ties": 0.0,
+      "games": 4.0
+    },
+    {
+      "a": "ckpt:1842",
+      "b": "ckpt:1894",
+      "wins_a": 7.0,
+      "wins_b": 5.0,
+      "ties": 0.0,
+      "games": 12.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:1894",
+      "wins_a": 9.0,
+      "wins_b": 3.0,
+      "ties": 0.0,
+      "games": 12.0
+    },
+    {
+      "a": "ckpt:1804",
+      "b": "ckpt:1876",
+      "wins_a": 4.0,
+      "wins_b": 10.0,
+      "ties": 0.0,
+      "games": 14.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2497",
+      "wins_a": 9.0,
+      "wins_b": 8.0,
+      "ties": 0.0,
+      "games": 17.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2494",
+      "wins_a": 4.0,
+      "wins_b": 9.0,
+      "ties": 0.0,
+      "games": 13.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "ckpt:2500",
+      "wins_a": 6.0,
+      "wins_b": 9.0,
+      "ties": 0.0,
+      "games": 15.0
+    },
+    {
+      "a": "ckpt:2501",
+      "b": "random",
+      "wins_a": 18.0,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 18.0
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "ckpt:2501",
+      "wins_a": 13.0,
+      "wins_b": 14.0,
+      "ties": 0.0,
+      "games": 27.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:1924",
+      "wins_a": 8.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 14.0
+    },
+    {
+      "a": "ckpt:1801",
+      "b": "ckpt:1869",
+      "wins_a": 9.0,
+      "wins_b": 5.0,
+      "ties": 0.0,
+      "games": 14.0
+    },
+    {
+      "a": "ckpt:1803",
+      "b": "ckpt:1876",
+      "wins_a": 6.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 13.0
+    },
+    {
+      "a": "ckpt:1869",
+      "b": "ckpt:2495",
+      "wins_a": 6.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 13.0
+    },
+    {
+      "a": "ckpt:1869",
+      "b": "ckpt:1923",
+      "wins_a": 3.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 9.0
+    },
+    {
+      "a": "ckpt:1922",
+      "b": "heuristic",
+      "wins_a": 4.666666666666667,
+      "wins_b": 8.0,
+      "ties": 0.0,
+      "games": 12.666666666666666
+    },
+    {
+      "a": "ckpt:1869",
+      "b": "heuristic",
+      "wins_a": 6.0,
+      "wins_b": 10.0,
+      "ties": 0.0,
+      "games": 16.0
+    },
+    {
+      "a": "ckpt:1869",
+      "b": "ckpt:2501",
+      "wins_a": 4.0,
+      "wins_b": 14.0,
+      "ties": 0.0,
+      "games": 18.0
+    },
+    {
+      "a": "ckpt:1804",
+      "b": "ckpt:2498",
+      "wins_a": 6.0,
+      "wins_b": 13.0,
+      "ties": 0.0,
+      "games": 19.0
+    },
+    {
+      "a": "ckpt:1912",
+      "b": "ckpt:1924",
+      "wins_a": 8.0,
+      "wins_b": 5.0,
+      "ties": 0.0,
+      "games": 13.0
+    },
+    {
+      "a": "ckpt:1924",
+      "b": "random",
+      "wins_a": 4.0,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 4.0
+    },
+    {
+      "a": "ckpt:1803",
+      "b": "ckpt:2497",
+      "wins_a": 4.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 11.0
+    },
+    {
+      "a": "ckpt:2501",
+      "b": "heuristic",
+      "wins_a": 12.0,
+      "wins_b": 4.0,
+      "ties": 0.0,
+      "games": 16.0
+    },
+    {
+      "a": "ckpt:1894",
+      "b": "ckpt:1924",
+      "wins_a": 6.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 12.0
+    },
+    {
+      "a": "ckpt:1803",
+      "b": "heuristic",
+      "wins_a": 8.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 14.0
+    },
+    {
+      "a": "ckpt:1912",
+      "b": "heuristic",
+      "wins_a": 4.0,
+      "wins_b": 5.0,
+      "ties": 0.0,
+      "games": 9.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2500",
+      "wins_a": 9.0,
+      "wins_b": 11.0,
+      "ties": 0.0,
+      "games": 20.0
+    },
+    {
+      "a": "ckpt:1894",
+      "b": "ckpt:2500",
+      "wins_a": 4.0,
+      "wins_b": 11.0,
+      "ties": 0.0,
+      "games": 15.0
+    },
+    {
+      "a": "ckpt:1894",
+      "b": "heuristic",
+      "wins_a": 6.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 13.0
+    },
+    {
+      "a": "ckpt:1912",
+      "b": "ckpt:2498",
+      "wins_a": 6.0,
+      "wins_b": 11.0,
+      "ties": 0.0,
+      "games": 17.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2498",
+      "wins_a": 7.0,
+      "wins_b": 14.0,
+      "ties": 0.0,
+      "games": 21.0
+    },
+    {
+      "a": "ckpt:1803",
+      "b": "ckpt:1804",
+      "wins_a": 5.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 11.0
+    },
+    {
+      "a": "ckpt:1804",
+      "b": "ckpt:1842",
+      "wins_a": 2.0,
+      "wins_b": 2.0,
+      "ties": 0.0,
+      "games": 4.0
+    },
+    {
+      "a": "ckpt:1877",
+      "b": "ckpt:1912",
+      "wins_a": 8.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 14.0
+    },
+    {
+      "a": "ckpt:1912",
+      "b": "ckpt:2500",
+      "wins_a": 4.0,
+      "wins_b": 15.0,
+      "ties": 0.0,
+      "games": 19.0
+    },
+    {
+      "a": "ckpt:2498",
+      "b": "ckpt:2500",
+      "wins_a": 7.0,
+      "wins_b": 10.0,
+      "ties": 0.0,
+      "games": 17.0
+    },
+    {
+      "a": "ckpt:1804",
+      "b": "ckpt:2497",
+      "wins_a": 5.0,
+      "wins_b": 9.0,
+      "ties": 0.0,
+      "games": 14.0
+    },
+    {
+      "a": "ckpt:2497",
+      "b": "ckpt:2500",
+      "wins_a": 9.0,
+      "wins_b": 12.0,
+      "ties": 0.0,
+      "games": 21.0
+    },
+    {
+      "a": "ckpt:1894",
+      "b": "ckpt:2501",
+      "wins_a": 5.0,
+      "wins_b": 10.0,
+      "ties": 0.0,
+      "games": 15.0
+    },
+    {
+      "a": "ckpt:1805",
+      "b": "ckpt:1877",
+      "wins_a": 4.0,
+      "wins_b": 11.0,
+      "ties": 0.0,
+      "games": 15.0
+    },
+    {
+      "a": "ckpt:1894",
+      "b": "ckpt:2495",
+      "wins_a": 4.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 11.0
+    },
+    {
+      "a": "ckpt:1923",
+      "b": "ckpt:2496",
+      "wins_a": 5.0,
+      "wins_b": 12.0,
+      "ties": 0.0,
+      "games": 17.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2496",
+      "wins_a": 13.0,
+      "wins_b": 17.0,
+      "ties": 0.0,
+      "games": 30.0
+    },
+    {
+      "a": "ckpt:1877",
+      "b": "ckpt:1924",
+      "wins_a": 3.0,
+      "wins_b": 5.0,
+      "ties": 0.0,
+      "games": 8.0
+    },
+    {
+      "a": "ckpt:1801",
+      "b": "random",
+      "wins_a": 8.833333333333334,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 8.833333333333334
+    },
+    {
+      "a": "ckpt:1804",
+      "b": "ckpt:1926",
+      "wins_a": 4.0,
+      "wins_b": 5.0,
+      "ties": 0.0,
+      "games": 9.0
+    },
+    {
+      "a": "ckpt:1869",
+      "b": "ckpt:1926",
+      "wins_a": 7.0,
+      "wins_b": 4.0,
+      "ties": 0.0,
+      "games": 11.0
+    },
+    {
+      "a": "ckpt:1801",
+      "b": "ckpt:2494",
+      "wins_a": 5.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 12.0
+    },
+    {
+      "a": "ckpt:1894",
+      "b": "ckpt:2498",
+      "wins_a": 6.0,
+      "wins_b": 14.0,
+      "ties": 0.0,
+      "games": 20.0
+    },
+    {
+      "a": "ckpt:1877",
+      "b": "ckpt:2500",
+      "wins_a": 4.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 11.0
+    },
+    {
+      "a": "ckpt:1801",
+      "b": "ckpt:1923",
+      "wins_a": 4.0,
+      "wins_b": 4.0,
+      "ties": 0.0,
+      "games": 8.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:1926",
+      "wins_a": 5.0,
+      "wins_b": 4.0,
+      "ties": 0.0,
+      "games": 9.0
+    },
+    {
+      "a": "ckpt:1805",
+      "b": "ckpt:1895",
+      "wins_a": 6.0,
+      "wins_b": 10.0,
+      "ties": 0.0,
+      "games": 16.0
+    },
+    {
+      "a": "ckpt:1869",
+      "b": "ckpt:2497",
+      "wins_a": 4.0,
+      "wins_b": 9.0,
+      "ties": 0.0,
+      "games": 13.0
+    },
+    {
+      "a": "ckpt:2497",
+      "b": "heuristic",
+      "wins_a": 8.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 14.0
+    },
+    {
+      "a": "ckpt:1912",
+      "b": "random",
+      "wins_a": 15.0,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 15.0
+    },
+    {
+      "a": "ckpt:1912",
+      "b": "ckpt:1923",
+      "wins_a": 9.0,
+      "wins_b": 3.0,
+      "ties": 0.0,
+      "games": 12.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2496",
+      "wins_a": 10.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 17.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2498",
+      "wins_a": 11.0,
+      "wins_b": 10.0,
+      "ties": 0.0,
+      "games": 21.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:1923",
+      "wins_a": 3.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 10.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2498",
+      "wins_a": 6.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 13.0
+    },
+    {
+      "a": "ckpt:1804",
+      "b": "ckpt:2494",
+      "wins_a": 4.0,
+      "wins_b": 11.0,
+      "ties": 0.0,
+      "games": 15.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "random",
+      "wins_a": 10.0,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 10.0
+    },
+    {
+      "a": "ckpt:1926",
+      "b": "ckpt:2500",
+      "wins_a": 10.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 17.0
+    },
+    {
+      "a": "ckpt:1877",
+      "b": "ckpt:2495",
+      "wins_a": 8.0,
+      "wins_b": 4.0,
+      "ties": 0.0,
+      "games": 12.0
+    },
+    {
+      "a": "ckpt:1923",
+      "b": "ckpt:2500",
+      "wins_a": 8.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 14.0
+    },
+    {
+      "a": "ckpt:1803",
+      "b": "ckpt:2500",
+      "wins_a": 6.0,
+      "wins_b": 8.0,
+      "ties": 0.0,
+      "games": 14.0
+    },
+    {
+      "a": "ckpt:1922",
+      "b": "ckpt:2499",
+      "wins_a": 8.0,
+      "wins_b": 13.0,
+      "ties": 0.0,
+      "games": 21.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2499",
+      "wins_a": 8.0,
+      "wins_b": 17.0,
+      "ties": 0.0,
+      "games": 25.0
+    },
+    {
+      "a": "ckpt:2497",
+      "b": "random",
+      "wins_a": 18.0,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 18.0
+    },
+    {
+      "a": "ckpt:1923",
+      "b": "ckpt:2497",
+      "wins_a": 3.0,
+      "wins_b": 15.0,
+      "ties": 0.0,
+      "games": 18.0
+    },
+    {
+      "a": "ckpt:1801",
+      "b": "ckpt:1803",
+      "wins_a": 5.0,
+      "wins_b": 3.0,
+      "ties": 0.0,
+      "games": 8.0
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "ckpt:2500",
+      "wins_a": 16.0,
+      "wins_b": 13.833333333333332,
+      "ties": 0.0,
+      "games": 29.833333333333332
+    },
+    {
+      "a": "ckpt:1923",
+      "b": "ckpt:1924",
+      "wins_a": 8.0,
+      "wins_b": 8.0,
+      "ties": 0.0,
+      "games": 16.0
+    },
+    {
+      "a": "ckpt:1924",
+      "b": "ckpt:2494",
+      "wins_a": 3.0,
+      "wins_b": 10.0,
+      "ties": 0.0,
+      "games": 13.0
+    },
+    {
+      "a": "ckpt:2498",
+      "b": "ckpt:2501",
+      "wins_a": 13.0,
+      "wins_b": 23.0,
+      "ties": 0.0,
+      "games": 36.0
+    },
+    {
+      "a": "ckpt:1923",
+      "b": "ckpt:2501",
+      "wins_a": 6.0,
+      "wins_b": 11.0,
+      "ties": 0.0,
+      "games": 17.0
+    },
+    {
+      "a": "ckpt:1912",
+      "b": "ckpt:2501",
+      "wins_a": 4.0,
+      "wins_b": 9.0,
+      "ties": 0.0,
+      "games": 13.0
+    },
+    {
+      "a": "ckpt:1922",
+      "b": "ckpt:2498",
+      "wins_a": 6.0,
+      "wins_b": 9.0,
+      "ties": 0.0,
+      "games": 15.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2497",
+      "wins_a": 8.0,
+      "wins_b": 16.0,
+      "ties": 0.0,
+      "games": 24.0
+    },
+    {
+      "a": "ckpt:1842",
+      "b": "ckpt:2497",
+      "wins_a": 4.0,
+      "wins_b": 13.0,
+      "ties": 0.0,
+      "games": 17.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2497",
+      "wins_a": 13.0,
+      "wins_b": 11.0,
+      "ties": 0.0,
+      "games": 24.0
+    },
+    {
+      "a": "ckpt:1805",
+      "b": "ckpt:2501",
+      "wins_a": 5.0,
+      "wins_b": 9.0,
+      "ties": 0.0,
+      "games": 14.0
+    },
+    {
+      "a": "ckpt:1912",
+      "b": "ckpt:2499",
+      "wins_a": 5.0,
+      "wins_b": 10.0,
+      "ties": 0.0,
+      "games": 15.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2499",
+      "wins_a": 7.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 14.0
+    },
+    {
+      "a": "ckpt:1926",
+      "b": "ckpt:2499",
+      "wins_a": 2.0,
+      "wins_b": 13.0,
+      "ties": 0.0,
+      "games": 15.0
+    },
+    {
+      "a": "ckpt:2497",
+      "b": "ckpt:2499",
+      "wins_a": 9.0,
+      "wins_b": 13.0,
+      "ties": 0.0,
+      "games": 22.0
+    },
+    {
+      "a": "ckpt:1894",
+      "b": "ckpt:1922",
+      "wins_a": 4.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 11.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2501",
+      "wins_a": 7.0,
+      "wins_b": 13.0,
+      "ties": 0.0,
+      "games": 20.0
+    },
+    {
+      "a": "ckpt:1869",
+      "b": "ckpt:2494",
+      "wins_a": 4.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 10.0
+    },
+    {
+      "a": "ckpt:1869",
+      "b": "ckpt:1922",
+      "wins_a": 2.0,
+      "wins_b": 2.0,
+      "ties": 0.0,
+      "games": 4.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:1912",
+      "wins_a": 6.0,
+      "wins_b": 4.0,
+      "ties": 0.0,
+      "games": 10.0
+    },
+    {
+      "a": "ckpt:1804",
+      "b": "ckpt:2501",
+      "wins_a": 4.0,
+      "wins_b": 15.0,
+      "ties": 0.0,
+      "games": 19.0
+    },
+    {
+      "a": "ckpt:1803",
+      "b": "ckpt:2494",
+      "wins_a": 3.0,
+      "wins_b": 9.0,
+      "ties": 0.0,
+      "games": 12.0
+    },
+    {
+      "a": "ckpt:1926",
+      "b": "ckpt:2496",
+      "wins_a": 4.0,
+      "wins_b": 10.0,
+      "ties": 0.0,
+      "games": 14.0
+    },
+    {
+      "a": "ckpt:1912",
+      "b": "ckpt:2495",
+      "wins_a": 5.0,
+      "wins_b": 9.0,
+      "ties": 0.0,
+      "games": 14.0
+    },
+    {
+      "a": "ckpt:1804",
+      "b": "heuristic",
+      "wins_a": 10.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 17.0
+    },
+    {
+      "a": "ckpt:1869",
+      "b": "ckpt:1912",
+      "wins_a": 5.0,
+      "wins_b": 4.0,
+      "ties": 0.0,
+      "games": 9.0
+    },
+    {
+      "a": "ckpt:1842",
+      "b": "ckpt:2495",
+      "wins_a": 6.0,
+      "wins_b": 11.0,
+      "ties": 0.0,
+      "games": 17.0
+    },
+    {
+      "a": "ckpt:1842",
+      "b": "ckpt:2494",
+      "wins_a": 5.0,
+      "wins_b": 8.0,
+      "ties": 0.0,
+      "games": 13.0
+    },
+    {
+      "a": "ckpt:1922",
+      "b": "ckpt:2494",
+      "wins_a": 4.0,
+      "wins_b": 9.0,
+      "ties": 0.0,
+      "games": 13.0
+    },
+    {
+      "a": "ckpt:1801",
+      "b": "ckpt:2497",
+      "wins_a": 3.0,
+      "wins_b": 14.0,
+      "ties": 0.0,
+      "games": 17.0
+    },
+    {
+      "a": "ckpt:2497",
+      "b": "ckpt:2501",
+      "wins_a": 5.0,
+      "wins_b": 10.0,
+      "ties": 0.0,
+      "games": 15.0
+    },
+    {
+      "a": "ckpt:1801",
+      "b": "ckpt:1876",
+      "wins_a": 9.0,
+      "wins_b": 9.0,
+      "ties": 0.0,
+      "games": 18.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:1926",
+      "wins_a": 7.0,
+      "wins_b": 5.0,
+      "ties": 0.0,
+      "games": 12.0
+    },
+    {
+      "a": "ckpt:1926",
+      "b": "ckpt:2501",
+      "wins_a": 3.0,
+      "wins_b": 19.0,
+      "ties": 0.0,
+      "games": 22.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2500",
+      "wins_a": 8.0,
+      "wins_b": 4.0,
+      "ties": 0.0,
+      "games": 12.0
+    },
+    {
+      "a": "ckpt:1894",
+      "b": "ckpt:2496",
+      "wins_a": 7.0,
+      "wins_b": 10.0,
+      "ties": 0.0,
+      "games": 17.0
+    },
+    {
+      "a": "ckpt:1877",
+      "b": "ckpt:2501",
+      "wins_a": 2.0,
+      "wins_b": 14.0,
+      "ties": 0.0,
+      "games": 16.0
+    },
+    {
+      "a": "ckpt:1801",
+      "b": "ckpt:1922",
+      "wins_a": 5.666666666666667,
+      "wins_b": 8.666666666666666,
+      "ties": 0.0,
+      "games": 14.333333333333332
+    },
+    {
+      "a": "ckpt:1912",
+      "b": "ckpt:1922",
+      "wins_a": 5.0,
+      "wins_b": 5.0,
+      "ties": 0.0,
+      "games": 10.0
+    },
+    {
+      "a": "ckpt:2499",
+      "b": "ckpt:2500",
+      "wins_a": 8.0,
+      "wins_b": 9.0,
+      "ties": 0.0,
+      "games": 17.0
+    },
+    {
+      "a": "ckpt:1842",
+      "b": "ckpt:1877",
+      "wins_a": 6.0,
+      "wins_b": 4.0,
+      "ties": 0.0,
+      "games": 10.0
+    },
+    {
+      "a": "ckpt:1877",
+      "b": "ckpt:1922",
+      "wins_a": 6.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 12.0
+    },
+    {
+      "a": "ckpt:1804",
+      "b": "ckpt:1922",
+      "wins_a": 3.0,
+      "wins_b": 8.0,
+      "ties": 0.0,
+      "games": 11.0
+    },
+    {
+      "a": "ckpt:1805",
+      "b": "ckpt:2500",
+      "wins_a": 5.0,
+      "wins_b": 8.0,
+      "ties": 0.0,
+      "games": 13.0
+    },
+    {
+      "a": "ckpt:1805",
+      "b": "ckpt:2498",
+      "wins_a": 3.0,
+      "wins_b": 9.0,
+      "ties": 0.0,
+      "games": 12.0
+    },
+    {
+      "a": "ckpt:1922",
+      "b": "ckpt:2495",
+      "wins_a": 7.0,
+      "wins_b": 11.0,
+      "ties": 0.0,
+      "games": 18.0
+    },
+    {
+      "a": "ckpt:1877",
+      "b": "ckpt:1894",
+      "wins_a": 4.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 10.0
+    },
+    {
+      "a": "ckpt:1869",
+      "b": "ckpt:1876",
+      "wins_a": 7.0,
+      "wins_b": 4.0,
+      "ties": 0.0,
+      "games": 11.0
+    },
+    {
+      "a": "ckpt:1805",
+      "b": "ckpt:1869",
+      "wins_a": 7.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 14.0
+    },
+    {
+      "a": "ckpt:2498",
+      "b": "ckpt:2499",
+      "wins_a": 8.0,
+      "wins_b": 11.0,
+      "ties": 0.0,
+      "games": 19.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2501",
+      "wins_a": 5.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 11.0
+    },
+    {
+      "a": "ckpt:1801",
+      "b": "ckpt:2501",
+      "wins_a": 3.0,
+      "wins_b": 15.0,
+      "ties": 0.0,
+      "games": 18.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "heuristic",
+      "wins_a": 3.0,
+      "wins_b": 8.0,
+      "ties": 0.0,
+      "games": 11.0
+    },
+    {
+      "a": "ckpt:1803",
+      "b": "ckpt:2499",
+      "wins_a": 3.0,
+      "wins_b": 9.0,
+      "ties": 0.0,
+      "games": 12.0
+    },
+    {
+      "a": "ckpt:1804",
+      "b": "ckpt:1877",
+      "wins_a": 4.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 11.0
+    },
+    {
+      "a": "ckpt:1803",
+      "b": "ckpt:1926",
+      "wins_a": 4.0,
+      "wins_b": 8.0,
+      "ties": 0.0,
+      "games": 12.0
+    },
+    {
+      "a": "ckpt:1912",
+      "b": "ckpt:2494",
+      "wins_a": 5.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 11.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:1923",
+      "wins_a": 1.0,
+      "wins_b": 4.0,
+      "ties": 0.0,
+      "games": 5.0
+    },
+    {
+      "a": "ckpt:1804",
+      "b": "ckpt:2496",
+      "wins_a": 4.0,
+      "wins_b": 13.0,
+      "ties": 0.0,
+      "games": 17.0
+    },
+    {
+      "a": "ckpt:1804",
+      "b": "random",
+      "wins_a": 8.0,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 8.0
+    },
+    {
+      "a": "ckpt:1924",
+      "b": "ckpt:2495",
+      "wins_a": 2.0,
+      "wins_b": 9.0,
+      "ties": 0.0,
+      "games": 11.0
+    },
+    {
+      "a": "ckpt:1803",
+      "b": "ckpt:2501",
+      "wins_a": 5.0,
+      "wins_b": 8.0,
+      "ties": 0.0,
+      "games": 13.0
+    },
+    {
+      "a": "ckpt:1926",
+      "b": "ckpt:2495",
+      "wins_a": 10.0,
+      "wins_b": 5.0,
+      "ties": 0.0,
+      "games": 15.0
+    },
+    {
+      "a": "ckpt:1805",
+      "b": "ckpt:2499",
+      "wins_a": 4.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 11.0
+    },
+    {
+      "a": "ckpt:1803",
+      "b": "ckpt:1924",
+      "wins_a": 6.0,
+      "wins_b": 5.0,
+      "ties": 0.0,
+      "games": 11.0
+    },
+    {
+      "a": "ckpt:1922",
+      "b": "ckpt:2497",
+      "wins_a": 2.0,
+      "wins_b": 10.0,
+      "ties": 0.0,
+      "games": 12.0
+    },
+    {
+      "a": "ckpt:1842",
+      "b": "ckpt:1922",
+      "wins_a": 4.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 10.0
+    },
+    {
+      "a": "ckpt:1923",
+      "b": "ckpt:2498",
+      "wins_a": 1.0,
+      "wins_b": 17.0,
+      "ties": 0.0,
+      "games": 18.0
+    },
+    {
+      "a": "ckpt:1877",
+      "b": "ckpt:1923",
+      "wins_a": 8.0,
+      "wins_b": 4.0,
+      "ties": 0.0,
+      "games": 12.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:1924",
+      "wins_a": 5.0,
+      "wins_b": 2.0,
+      "ties": 0.0,
+      "games": 7.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2500",
+      "wins_a": 9.0,
+      "wins_b": 8.0,
+      "ties": 0.0,
+      "games": 17.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "ckpt:2498",
+      "wins_a": 5.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 12.0
+    },
+    {
+      "a": "ckpt:2500",
+      "b": "random",
+      "wins_a": 13.666666666666666,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 13.666666666666666
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "ckpt:2499",
+      "wins_a": 12.0,
+      "wins_b": 14.0,
+      "ties": 0.0,
+      "games": 26.0
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "heuristic",
+      "wins_a": 7.833333333333333,
+      "wins_b": 8.333333333333332,
+      "ties": 0.0,
+      "games": 16.166666666666664
+    },
+    {
+      "a": "ckpt:1804",
+      "b": "ckpt:1805",
+      "wins_a": 4.0,
+      "wins_b": 3.0,
+      "ties": 0.0,
+      "games": 7.0
+    },
+    {
+      "a": "ckpt:1894",
+      "b": "ckpt:1923",
+      "wins_a": 5.0,
+      "wins_b": 5.0,
+      "ties": 0.0,
+      "games": 10.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2495",
+      "wins_a": 9.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 15.0
+    },
+    {
+      "a": "ckpt:1805",
+      "b": "random",
+      "wins_a": 5.0,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 5.0
+    },
+    {
+      "a": "ckpt:1803",
+      "b": "ckpt:1877",
+      "wins_a": 5.0,
+      "wins_b": 2.0,
+      "ties": 0.0,
+      "games": 7.0
+    },
+    {
+      "a": "ckpt:1801",
+      "b": "ckpt:1805",
+      "wins_a": 8.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 15.0
+    },
+    {
+      "a": "ckpt:1869",
+      "b": "ckpt:1894",
+      "wins_a": 4.0,
+      "wins_b": 4.0,
+      "ties": 0.0,
+      "games": 8.0
+    },
+    {
+      "a": "ckpt:1926",
+      "b": "random",
+      "wins_a": 6.0,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 6.0
+    },
+    {
+      "a": "ckpt:1877",
+      "b": "ckpt:1926",
+      "wins_a": 2.0,
+      "wins_b": 2.0,
+      "ties": 0.0,
+      "games": 4.0
+    },
+    {
+      "a": "ckpt:1801",
+      "b": "ckpt:1804",
+      "wins_a": 5.0,
+      "wins_b": 4.0,
+      "ties": 0.0,
+      "games": 9.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "random",
+      "wins_a": 9.0,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 9.0
+    },
+    {
+      "a": "ckpt:1869",
+      "b": "random",
+      "wins_a": 7.0,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 7.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:1922",
+      "wins_a": 10.0,
+      "wins_b": 1.0,
+      "ties": 0.0,
+      "games": 11.0
+    },
+    {
+      "a": "ckpt:1801",
+      "b": "ckpt:2499",
+      "wins_a": 9.0,
+      "wins_b": 8.0,
+      "ties": 0.0,
+      "games": 17.0
+    },
+    {
+      "a": "ckpt:1803",
+      "b": "random",
+      "wins_a": 4.0,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 4.0
+    },
+    {
+      "a": "ckpt:1803",
+      "b": "ckpt:1912",
+      "wins_a": 4.0,
+      "wins_b": 2.0,
+      "ties": 0.0,
+      "games": 6.0
+    },
+    {
+      "a": "ckpt:1805",
+      "b": "ckpt:1923",
+      "wins_a": 7.0,
+      "wins_b": 4.0,
+      "ties": 0.0,
+      "games": 11.0
+    },
+    {
+      "a": "ckpt:1894",
+      "b": "ckpt:2497",
+      "wins_a": 5.0,
+      "wins_b": 10.0,
+      "ties": 0.0,
+      "games": 15.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:1877",
+      "wins_a": 7.0,
+      "wins_b": 3.0,
+      "ties": 0.0,
+      "games": 10.0
+    },
+    {
+      "a": "ckpt:1894",
+      "b": "random",
+      "wins_a": 6.0,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 6.0
+    },
+    {
+      "a": "ckpt:1804",
+      "b": "ckpt:2495",
+      "wins_a": 2.0,
+      "wins_b": 7.0,
+      "ties": 0.0,
+      "games": 9.0
+    },
+    {
+      "a": "ckpt:1801",
+      "b": "ckpt:1912",
+      "wins_a": 4.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 10.0
+    },
+    {
+      "a": "ckpt:1894",
+      "b": "ckpt:2499",
+      "wins_a": 2.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 8.0
+    },
+    {
+      "a": "ckpt:1926",
+      "b": "ckpt:2497",
+      "wins_a": 4.0,
+      "wins_b": 6.0,
+      "ties": 0.0,
+      "games": 10.0
+    },
+    {
+      "a": "ckpt:2500",
+      "b": "ckpt:2502",
+      "wins_a": 33.16666666666665,
+      "wins_b": 34.33333333333332,
+      "ties": 0.0,
+      "games": 67.49999999999997
+    },
+    {
+      "a": "ckpt:2502",
+      "b": "random",
+      "wins_a": 60.66666666666677,
+      "wins_b": 0.5,
+      "ties": 0.0,
+      "games": 61.16666666666677
+    },
+    {
+      "a": "ckpt:1922",
+      "b": "ckpt:2502",
+      "wins_a": 20.666666666666657,
+      "wins_b": 29.16666666666662,
+      "ties": 0.0,
+      "games": 49.83333333333328
+    },
+    {
+      "a": "ckpt:2502",
+      "b": "heuristic_opus",
+      "wins_a": 37.00000000000001,
+      "wins_b": 19.166666666666668,
+      "ties": 0.0,
+      "games": 56.16666666666667
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "ckpt:2502",
+      "wins_a": 25.499999999999968,
+      "wins_b": 29.666666666666636,
+      "ties": 0.0,
+      "games": 55.1666666666666
+    },
+    {
+      "a": "ckpt:1801",
+      "b": "ckpt:2502",
+      "wins_a": 17.83333333333333,
+      "wins_b": 34.166666666666636,
+      "ties": 0.0,
+      "games": 51.999999999999964
+    },
+    {
+      "a": "ckpt:2502",
+      "b": "heuristic",
+      "wins_a": 42.00000000000005,
+      "wins_b": 13.166666666666675,
+      "ties": 0.0,
+      "games": 55.16666666666673
+    },
+    {
+      "a": "heuristic",
+      "b": "heuristic_opus",
+      "wins_a": 2.8333333333333335,
+      "wins_b": 3.666666666666667,
+      "ties": 0.0,
+      "games": 6.5
+    },
+    {
+      "a": "heuristic_opus",
+      "b": "random",
+      "wins_a": 4.5,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 4.5
+    },
+    {
+      "a": "heuristic_opus",
+      "b": "heuristic_opus",
+      "wins_a": 3.166666666666667,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 3.166666666666667
+    },
+    {
+      "a": "heuristic",
+      "b": "heuristic",
+      "wins_a": 1.6666666666666665,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 1.6666666666666665
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "heuristic_opus",
+      "wins_a": 1.6666666666666665,
+      "wins_b": 3.833333333333334,
+      "ties": 0.0,
+      "games": 5.5
+    },
+    {
+      "a": "ckpt:1801",
+      "b": "heuristic_opus",
+      "wins_a": 1.6666666666666665,
+      "wins_b": 2.8333333333333335,
+      "ties": 0.0,
+      "games": 4.5
+    },
+    {
+      "a": "ckpt:2500",
+      "b": "ckpt:2500",
+      "wins_a": 4.000000000000001,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 4.000000000000001
+    },
+    {
+      "a": "ckpt:2500",
+      "b": "heuristic_opus",
+      "wins_a": 3.833333333333334,
+      "wins_b": 4.833333333333333,
+      "ties": 0.0,
+      "games": 8.666666666666668
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "ckpt:2496",
+      "wins_a": 3.833333333333334,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 3.833333333333334
+    },
+    {
+      "a": "random",
+      "b": "random",
+      "wins_a": 0.5,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 0.5
+    },
+    {
+      "a": "ckpt:1922",
+      "b": "heuristic_opus",
+      "wins_a": 1.3333333333333333,
+      "wins_b": 3.0,
+      "ties": 0.0,
+      "games": 4.333333333333333
+    },
+    {
+      "a": "ckpt:1922",
+      "b": "ckpt:1922",
+      "wins_a": 0.6666666666666666,
+      "wins_b": 0.0,
+      "ties": 0.0,
+      "games": 0.6666666666666666
     }
   ],
   "anchors": {
     "random": 1000.0,
-    "heuristic": 2500.0,
-    "human:UncleMitz": 2992.9844381461353
+    "heuristic": 2500.0
   },
-  "rating_system": "anchored_bt"
+  "rating_system": "anchored_bt",
+  "floating_entities": {
+    "heuristic_opus": {
+      "rating": 2563.1207739415536,
+      "games": 95
+    }
+  }
 }
