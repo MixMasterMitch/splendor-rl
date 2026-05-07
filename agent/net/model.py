@@ -91,6 +91,10 @@ class SplendorNet(nn.Module):
         """Wrap forward with torch.compile after the module is on its target device."""
         if self._compiled:
             return
+        # Enable the inductor FX graph cache so subsequent runs with the same
+        # model shape skip recompilation.
+        import os
+        os.environ.setdefault("TORCHINDUCTOR_FX_GRAPH_CACHE", "1")
         compiled = torch.compile(
             self._forward_impl,
             mode=self._compile_mode,

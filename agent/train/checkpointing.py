@@ -140,6 +140,9 @@ def save_checkpoint(
         "torch_rng": torch.random.get_rng_state(),
         "py_rng": pickle.dumps(random.getstate()),
     }
+    # Save CUDA RNG state for reproducibility when training on GPU.
+    if next(net.parameters()).device.type == "cuda":
+        payload["cuda_rng"] = torch.cuda.get_rng_state()
     if buffer is not None:
         payload["buffer"] = buffer.state_dict()
     torch.save(payload, path)
@@ -159,7 +162,21 @@ def load_checkpoint(
     if buffer is not None and "buffer" in payload:
         buffer.load_state_dict(payload["buffer"])
     if "torch_rng" in payload:
-        torch.random.set_rng_state(payload["torch_rng"])
+        # torch.random.set_rng_state requires a CPU ByteTensor regardless of
+        # map_location, so move it back to CPU if it was mapped to another device.
+        rng_state = payload["torch_rng"]
+        if isinstance(rng_state, torch.Tensor) and rng_state.device.type != "cpu":
+            rng_state = rng_state.cpu()
+        torch.random.set_rng_state(rng_state)
     if "py_rng" in payload:
         random.setstate(pickle.loads(payload["py_rng"]))
+    # Restore CUDA RNG state when resuming on a CUDA device.
+    if "cuda_rng" in payload:
+        target = torch.device(map_location) if isinstance(map_location, str) else map_location
+        if target.type == "cuda" and torch.cuda.is_available():
+            cuda_rng = payload["cuda_rng"]
+            # torch.cuda.set_rng_state expects a CPU ByteTensor.
+            if isinstance(cuda_rng, torch.Tensor) and cuda_rng.device.type != "cpu":
+                cuda_rng = cuda_rng.cpu()
+            torch.cuda.set_rng_state(cuda_rng)
     return payload

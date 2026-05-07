@@ -6,28 +6,32 @@ interface CardTileProps {
   hidden?: boolean;        // true = face-down reserve (show contents dimmed to observer)
   small?: boolean;
   highlight?: boolean;
+  affordable?: boolean;    // true = card can be bought by the human (subtle emphasis)
+  onClick?: () => void;    // clickable card (buy or reserve)
+  displayCosts?: number[]; // optional override for displayed costs (length 5)
 }
 
-export function CardTile({ card, hidden = false, small = false, highlight = false }: CardTileProps) {
+export function CardTile({ card, hidden = false, small = false, highlight = false, affordable = false, onClick, displayCosts }: CardTileProps) {
   const w = small ? 52 : 72;
   const h = small ? 70 : 96;
 
   if (!card) {
     if (hidden) {
       // Face-down placeholder: no card details visible, just a card-back tile
-      // with the eye-slash overlay so the human can see *that* an opponent
-      // has reserved a card without knowing which.
       return (
         <div
+          onClick={onClick}
           style={{
             width: w,
             height: h,
             borderRadius: 6,
-            border: "2px solid rgba(255,255,255,0.1)",
+            border: `2px solid ${highlight ? "#e8c848" : "rgba(255,255,255,0.1)"}`,
             background:
               "repeating-linear-gradient(45deg,#0f1f3a,#0f1f3a 4px,#16213e 4px,#16213e 8px)",
             flexShrink: 0,
             position: "relative",
+            cursor: onClick ? "pointer" : undefined,
+            boxShadow: highlight ? "0 0 8px #e8c848" : undefined,
           }}
           title="Hidden reserved card"
         >
@@ -64,13 +68,16 @@ export function CardTile({ card, hidden = false, small = false, highlight = fals
     }
     return (
       <div
+        onClick={onClick}
         style={{
           width: w,
           height: h,
           borderRadius: 6,
-          border: "1px dashed #2a4a7f",
+          border: `1px dashed ${highlight ? "#e8c848" : "#2a4a7f"}`,
           background: "transparent",
           flexShrink: 0,
+          cursor: onClick ? "pointer" : undefined,
+          boxShadow: highlight ? "0 0 8px #e8c848" : undefined,
         }}
       />
     );
@@ -78,25 +85,28 @@ export function CardTile({ card, hidden = false, small = false, highlight = fals
 
   const bonusColor = GEM_COLORS[card.bonus] ?? "#888";
   const bonusFg = GEM_TEXT_COLORS[card.bonus] ?? "#fff";
-  const nonZeroCosts = card.cost
+  const costsToShow = displayCosts ?? card.cost;
+  const nonZeroCosts = costsToShow
     .map((c, i) => ({ count: c, color: i }))
     .filter((x) => x.count > 0);
 
   return (
     <div
+      onClick={onClick}
       style={{
         width: w,
         height: h,
         borderRadius: 6,
-        border: `2px solid ${highlight ? "#e8c848" : "rgba(255,255,255,0.1)"}`,
+        border: `2px solid ${highlight ? "#e8c848" : affordable ? "#4caf50" : "rgba(255,255,255,0.1)"}`,
         background: "#16213e",
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",
         flexShrink: 0,
         position: "relative",
-        boxShadow: highlight ? "0 0 8px #e8c848" : undefined,
+        boxShadow: highlight ? "0 0 8px #e8c848" : affordable ? "0 0 6px rgba(76,175,80,0.4)" : undefined,
         opacity: hidden ? 0.75 : 1,
+        cursor: onClick ? "pointer" : undefined,
       }}
     >
       {/* Single header: fixed height, gem icon left, PV right */}
@@ -175,7 +185,7 @@ export function CardTile({ card, hidden = false, small = false, highlight = fals
         <div
           style={{
             position: "absolute",
-            top: small ? 18 : 22,  // start just below the header
+            top: small ? 18 : 22,
             left: 0,
             right: 0,
             bottom: 0,
@@ -194,16 +204,13 @@ export function CardTile({ card, hidden = false, small = false, highlight = fals
             xmlns="http://www.w3.org/2000/svg"
             style={{ opacity: 0.28 }}
           >
-            {/* Eye outline */}
             <path
               d="M1 12C1 12 5 5 12 5C19 5 23 12 23 12C23 12 19 19 12 19C5 19 1 12 1 12Z"
               stroke="#a8c8ff"
               strokeWidth="1.8"
               fill="none"
             />
-            {/* Pupil */}
             <circle cx="12" cy="12" r="3" stroke="#a8c8ff" strokeWidth="1.6" fill="none" />
-            {/* Slash */}
             <line x1="3" y1="3" x2="21" y2="21" stroke="#a8c8ff" strokeWidth="1.8" strokeLinecap="round" />
           </svg>
         </div>

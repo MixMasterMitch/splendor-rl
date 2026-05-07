@@ -30,16 +30,17 @@ export function PlaySetup({
     return [...models].sort((a, b) => {
       if (a.kind !== b.kind) {
         const order: Record<string, number> = {
-          net: 0,
-          heuristic_opus: 1,
-          heuristic: 2,
-          random: 3,
+          llm_bedrock: 0,
+          net: 1,
+          heuristic_opus: 2,
+          heuristic: 3,
+          random: 4,
           human: 9,
         };
         return (order[a.kind] ?? 9) - (order[b.kind] ?? 9);
       }
-      const aR = a.rating ?? a.elo ?? 0;
-      const bR = b.rating ?? b.elo ?? 0;
+      const aR = a.rating ?? 0;
+      const bR = b.rating ?? 0;
       return bR - aR;
     });
   }, [models]);
@@ -48,6 +49,7 @@ export function PlaySetup({
     return sortedModels.filter((m) => {
       if (m.kind === "human") return false;
       if (numPlayers > 2 && m.kind === "net") return false;
+      if (numPlayers > 2 && m.kind === "llm_bedrock") return false;
       return true;
     });
   }, [sortedModels, numPlayers]);
@@ -137,6 +139,16 @@ export function PlaySetup({
         <div style={{ color: "#ef5350" }}>Models error: {modelsError}</div>
       )}
 
+      {loadingModels && (
+        <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#7a94b8", fontSize: 13 }}>
+          <svg width={16} height={16} viewBox="0 0 20 20" fill="none" style={{ animation: "rock 1.2s ease-in-out infinite" }}>
+            <polygon points="10,1 11.8,7.5 18,6.5 13.2,11 16,17.5 10,14 4,17.5 6.8,11 2,6.5 8.2,7.5" fill="#e8c848" stroke="#c9ae3d" strokeWidth="0.5" />
+          </svg>
+          Loading models...
+          <style>{`@keyframes rock { 0%, 100% { transform: rotate(-45deg); } 50% { transform: rotate(45deg); } }`}</style>
+        </div>
+      )}
+
       <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
         <span style={{ fontSize: 12, color: "#7a94b8" }}>Number of players</span>
         <select
@@ -159,14 +171,14 @@ export function PlaySetup({
       )}
 
       <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-        <span style={{ fontSize: 12, color: "#7a94b8" }}>Your seat</span>
+        <span style={{ fontSize: 12, color: "#7a94b8" }}>Your seat (seat 1 goes first)</span>
         <select
           value={humanSeat}
           onChange={(e) => setHumanSeat(Number(e.target.value))}
         >
           {Array.from({ length: numPlayers }, (_, i) => (
             <option key={i} value={i}>
-              Seat {i}
+              Seat {i + 1}
             </option>
           ))}
         </select>
@@ -186,7 +198,7 @@ export function PlaySetup({
                 fontSize: 13,
               }}
             >
-              <span style={{ minWidth: 60 }}>Seat {s}</span>
+              <span style={{ minWidth: 60 }}>Seat {s + 1}</span>
               <select
                 value={seatModels[s] ?? ""}
                 onChange={(e) =>
@@ -197,7 +209,7 @@ export function PlaySetup({
               >
                 {pickableModels.map((m) => (
                   <option key={m.id} value={m.id}>
-                    {m.label}
+                    {m.label} ({m.rating.toFixed(0)})
                   </option>
                 ))}
               </select>

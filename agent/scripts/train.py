@@ -22,9 +22,15 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--num-players", type=int, default=2, choices=[2, 3, 4])
     p.add_argument(
         "--device",
-        choices=["cpu"],
+        choices=["cpu", "cuda", "auto"],
         default="cpu",
-        help="Execution device (CPU-only; default: cpu).",
+        help="Training device: cpu, cuda, or auto (prefers GPU if available; default: cpu).",
+    )
+    p.add_argument(
+        "--use-amp",
+        action="store_true",
+        default=False,
+        help="Enable mixed-precision (AMP) on CUDA. Ignored on CPU.",
     )
     p.add_argument(
         "--no-compile-net",
@@ -39,6 +45,21 @@ def build_parser() -> argparse.ArgumentParser:
         help="Enable torch.compile on the net forward (experimental on this machine)",
     )
     p.set_defaults(compile_net=False)
+    async_eval_group = p.add_mutually_exclusive_group()
+    async_eval_group.add_argument(
+        "--async-eval",
+        dest="async_eval",
+        action="store_true",
+        default=None,
+        help="Enable async CPU eval subprocess (default: auto based on device).",
+    )
+    async_eval_group.add_argument(
+        "--no-async-eval",
+        dest="async_eval",
+        action="store_false",
+        default=None,
+        help="Disable async CPU eval subprocess.",
+    )
     p.add_argument("--hidden", type=int, default=192)
     p.add_argument(
         "--arch",
@@ -65,7 +86,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--entropy-bonus",
         type=float,
-        default=0.0,
+        default=0.015,
         help="Small policy-entropy bonus added during learning to slow premature collapse.",
     )
     p.add_argument("--eval-every", type=int, default=2)
@@ -117,13 +138,13 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--dirichlet-alpha",
         type=float,
-        default=0.3,
+        default=0.15,
         help="Root Dirichlet exploration noise alpha (0 disables)",
     )
     p.add_argument(
         "--dirichlet-mix",
         type=float,
-        default=0.25,
+        default=0.40,
         help="Fraction of prior replaced by Dirichlet noise at the root",
     )
     p.add_argument(
@@ -137,6 +158,13 @@ def build_parser() -> argparse.ArgumentParser:
         type=float,
         default=10.0,
         help="MCTS root Q-value coefficient in improved policy target",
+    )
+    p.add_argument(
+        "--mixed-players",
+        type=int,
+        nargs="*",
+        default=None,
+        help="Rotate selfplay through these player counts (e.g. --mixed-players 2 3 4). Overrides --num-players for selfplay.",
     )
     p.add_argument(
         "--league-selfplay-every",
@@ -182,7 +210,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     run = Run(args.run_id)
-    cfg = LoopConfig(
+    loop_kwargs: dict = dict(
         num_players=args.num_players,
         device=args.device,
         compile_net=args.compile_net,
@@ -220,7 +248,13 @@ def main(argv: list[str] | None = None) -> int:
         time_discount=args.time_discount,
         q_scale=args.q_scale,
         init_from=args.init_from,
+        use_amp=args.use_amp,
     )
+    if args.async_eval is not None:
+        loop_kwargs["async_eval"] = args.async_eval
+    if args.mixed_players:
+        loop_kwargs["mixed_players"] = args.mixed_players
+    cfg = LoopConfig(**loop_kwargs)
     try:
         result = run_loop(run, cfg)
     except Exception as exc:

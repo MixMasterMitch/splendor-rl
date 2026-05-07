@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Gold circle (joker token) -->
+  <circle cx="32" cy="32" r="30" fill="#FFD700" stroke="#B8860B" stroke-width="2.5"/>
+  <!-- Inner ring -->
+  <circle cx="32" cy="32" r="24" fill="none" stroke="#DAA520" stroke-width="1.5"/>
+  <!-- 5-pointed star in center -->
+  <polygon
+    points="32,12 36.9,24.5 50.2,24.5 39.6,32.5 43.5,45 32,38 20.5,45 24.4,32.5 13.8,24.5 27.1,24.5"
+    fill="#B8860B"
+    stroke="#8B6914"
+    stroke-width="0.5"
+  />
+</svg>

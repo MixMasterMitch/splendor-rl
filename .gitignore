@@ -3,6 +3,7 @@
 
 # Editor
 .vscode/
+.kiro/
 
 # Python
 __pycache__/
@@ -10,19 +11,29 @@ __pycache__/
 *.pyo
 .venv/
 *.egg-info/
+.pytest_cache/
 
 # Node
 node_modules/
 
-# ---------- Training runs ----------
-# Archive checkpoints (keep only league/ checkpoints + latest_resume.pt)
-agent/runs/*/checkpoints/iter_*.pt
+# Build artifacts
+cdk.out/
+infra/layer/python/
+replay_webapp/dist/
 
-# Ephemeral run artifacts
-agent/runs/*/commands/
-agent/runs/*/heartbeat.json
-agent/runs/*/replay/
-agent/runs/*/samples/
+# ---------- Training runs ----------
+# Ignore everything in agent/runs except the league checkpoints
+agent/runs/*
+!agent/runs/league/
+
+# Flagged replays (pulled from DynamoDB at runtime)
+agent/training_replays/
+
+# Recorded game replays (generated)
+replay/games/
+
+# Optuna / ephemeral databases
+*.db
 *.log
 
 # Validation experiments (one-off, not needed for continued training)

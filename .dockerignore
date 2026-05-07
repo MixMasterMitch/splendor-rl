@@ -1,0 +1,12 @@
+agent/runs
+replay_webapp/node_modules
+.venv
+.git
+.kiro
+.pytest_cache
+cdk.out
+*.egg-info
+infra/layer
+__pycache__
+*.pyc
+play/play_data

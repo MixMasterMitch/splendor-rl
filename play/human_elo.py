@@ -29,7 +29,8 @@ Storage (JSON) at play/human_elo.json:
     }
 
 Multi-player games: we decompose into pairwise human-vs-opponent records
-based on final ranking (1 = win, 0.5 = tie, 0 = loss).
+based on final ranking (1 = win, 0 = loss). Ties are not possible because
+Splendor uses a fewer-cards tiebreaker when points are equal.
 """
 
 from __future__ import annotations
@@ -56,7 +57,11 @@ DEFAULT_INITIAL_RATING: float = 1500.0
 # 6 ghost games, a single real win against heuristic (2500) settles the
 # rating around the mid-1700s instead of running off to +infinity.
 PRIOR_MEAN_RATING: float = 1500.0
-PRIOR_GHOST_GAMES: float = 6.0
+PRIOR_GHOST_GAMES: float = 0.0
+
+# Minimum number of wins required before the human is "placed" and their
+# rating is shown on the leaderboard.
+PLACEMENT_WINS_REQUIRED: int = 5
 
 
 def _expected_score(r_a: float, r_b: float) -> float:
@@ -213,6 +218,23 @@ class HumanRatingStore:
         self._data.setdefault("history", [])
         self._data.setdefault("rating", self._initial_rating)
         self._data.setdefault("games", 0)
+        # Always recompute wins from history to stay consistent with the
+        # current definition (1st-place finishes only).
+        self._data["wins"] = self._count_wins_from_history()
+
+    def _count_wins_from_history(self) -> int:
+        """Count total game wins (1st place finishes) from history.
+
+        Always recomputed on load to stay consistent with the current
+        definition regardless of what was previously persisted.
+        """
+        total = 0
+        for entry in self._data.get("history", []):
+            if entry.get("legacy"):
+                continue
+            if int(entry.get("human_rank", -1)) == 0:
+                total += 1
+        return total
 
     def _fresh_data(self) -> dict[str, Any]:
         return {
@@ -225,6 +247,7 @@ class HumanRatingStore:
             "history": [],
             "rating": self._initial_rating,
             "games": 0,
+            "wins": 0,
         }
 
     def _migrate_profile_keys_from_legacy_file(self) -> None:
@@ -271,11 +294,15 @@ class HumanRatingStore:
 
     def snapshot(self) -> dict[str, Any]:
         with self._lock:
+            wins = int(self._data.get("wins", 0))
+            placed = wins >= PLACEMENT_WINS_REQUIRED
+            rating = float(self._data["rating"])
             out: dict[str, Any] = {
                 "rating_system": str(self._data.get("rating_system", "anchored_bt")),
-                "rating": float(self._data["rating"]),
-                "elo": float(self._data["rating"]),
+                "rating": rating if placed else None,
                 "games": int(self._data["games"]),
+                "wins": wins,
+                "placed": placed,
                 "anchors": dict(self._data["anchors"]),
                 "history": list(self._data["history"]),
                 "results": list(self._data["results"]),
@@ -304,6 +331,12 @@ class HumanRatingStore:
         """
         with self._lock:
             old_rating = float(self._data["rating"])
+            num_opponents = len(opponents)
+            # Normalize pairwise results by number of opponents so that a
+            # single 4-player game contributes the same total weight as a
+            # single 2-player game (each pairwise result is scaled by
+            # 1/num_opponents).
+            weight = 1.0 / max(num_opponents, 1)
             per_opp: list[dict[str, Any]] = []
             for opp in opponents:
                 opp_seat = int(opp["seat"])
@@ -313,20 +346,17 @@ class HumanRatingStore:
                 opp_rank = ranks[opp_seat]
                 if human_rank < opp_rank:
                     score = 1.0
-                    wins_h, ties, wins_o = 1.0, 0.0, 0.0
-                elif human_rank > opp_rank:
-                    score = 0.0
-                    wins_h, ties, wins_o = 0.0, 0.0, 1.0
+                    wins_h, wins_o = weight, 0.0
                 else:
-                    score = 0.5
-                    wins_h, ties, wins_o = 0.0, 1.0, 0.0
+                    score = 0.0
+                    wins_h, wins_o = 0.0, weight
                 _add_match(
                     self._data["results"],
                     self._human_entity,
                     entity_id,
                     wins_h,
                     wins_o,
-                    ties,
+                    0.0,
                 )
                 per_opp.append(
                     {
@@ -347,6 +377,12 @@ class HumanRatingStore:
             )
             self._data["rating"] = new_rating
             self._data["games"] = int(self._data["games"]) + 1
+
+            # Count wins for placement threshold.
+            # A win = human finished 1st (rank 0, beat all opponents).
+            # A tie does NOT count toward the 5-win placement threshold.
+            if human_rank == 0:
+                self._data["wins"] = int(self._data.get("wins", 0)) + 1
 
             entry = {
                 "timestamp": datetime.datetime.now().isoformat(timespec="seconds"),

@@ -7,18 +7,31 @@ after any code change.
 
 from __future__ import annotations
 
+import argparse
 import sys
 
 from agent.obs.run import Run
 from agent.train.loop import LoopConfig, run_loop
 
 
+def build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(description="Quick smoke training run")
+    p.add_argument(
+        "--device",
+        choices=["cpu", "cuda", "auto"],
+        default="cpu",
+        help="Training device: cpu, cuda, or auto (prefers GPU if available; default: cpu).",
+    )
+    return p
+
+
 def main(argv: list[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
     run = Run("smoke")
     # Smoke leaves compile_net off to keep cold-start fast.
     cfg = LoopConfig(
         num_players=2,
-        device="cpu",
+        device=args.device,
         compile_net=False,
         hidden=64,
         arch="flat",
@@ -36,6 +49,7 @@ def main(argv: list[str] | None = None) -> int:
         league_rating_matches=0,
         max_iters=2,
         max_wall_minutes=5.0,
+        async_eval=False,
     )
     run_loop(run, cfg)
     run.event("smoke_done", {})

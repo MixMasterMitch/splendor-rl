@@ -169,7 +169,7 @@ function actionLabel(
       const card = cardId != null ? cards[cardId] : null;
       return (
         <span style={{ fontSize: 12 }}>
-          {TIER_LABELS[d.tier!]} slot {d.slot!}
+          {TIER_LABELS[d.tier!]} slot {d.slot! + 1}
           {card ? ` (${card.points}pt, +`: ""}
           {card ? <ColorPip color={card.bonus} size={10} /> : null}
           {card ? ")" : ""}
@@ -181,11 +181,11 @@ function actionLabel(
     case "buy_grid": {
       const cardId = grid[d.tier!]?.[d.slot!];
       const card = cardId != null ? cards[cardId] : null;
-      if (!card) return <span>{TIER_LABELS[d.tier!]} slot {d.slot!}</span>;
+      if (!card) return <span>{TIER_LABELS[d.tier!]} slot {d.slot! + 1}</span>;
       return (
         <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12 }}>
           <span style={{ minWidth: 38 }}>
-            {TIER_LABELS[d.tier!]}.{d.slot}
+            {TIER_LABELS[d.tier!]}.{d.slot! + 1}
           </span>
           <span style={{ display: "inline-flex", alignItems: "center", gap: 2 }}>
             <ColorPip color={card.bonus} size={12} />
@@ -199,10 +199,10 @@ function actionLabel(
     case "buy_reserved": {
       const cardId = reserved[d.rslot!];
       const card = cardId != null ? cards[cardId] : null;
-      if (!card) return <span>reserved {d.rslot}</span>;
+      if (!card) return <span>reserved {d.rslot! + 1}</span>;
       return (
         <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12 }}>
-          <span style={{ minWidth: 60 }}>reserved {d.rslot}</span>
+          <span style={{ minWidth: 60 }}>reserved {d.rslot! + 1}</span>
           <ColorPip color={card.bonus} size={12} />
           <span style={{ color: "#e8c848" }}>{card.points}pt</span>
           <span style={{ color: "#7a94b8" }}>pay:</span>
@@ -225,7 +225,7 @@ function actionLabel(
     case "pick_noble": {
       const nid = noblesOnBoard[d.slot!];
       const n = nid != null ? nobles[nid] : null;
-      return <span style={{ fontSize: 12 }}>{n?.name ?? `noble ${d.slot}`}</span>;
+      return <span style={{ fontSize: 12 }}>{n?.name ?? `noble ${d.slot! + 1}`}</span>;
     }
     default:
       return <span>action {d.action}</span>;

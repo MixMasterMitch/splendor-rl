@@ -7,6 +7,7 @@ export type BotKind =
   | "heuristic"
   | "heuristic_opus"
   | "net"
+  | "llm_bedrock"
   | "human";
 
 export interface ModelInfo {
@@ -17,7 +18,6 @@ export interface ModelInfo {
   tag: string | null;
   ckpt: string | null;
   rating: number;
-  elo: number;
   games: number;
   hidden?: number | null;
   arch?: string | null;
@@ -51,9 +51,10 @@ export interface HumanRatingHistoryEntry {
 export interface UserMe {
   username: string;
   rating_system?: string;
-  rating: number;
-  elo: number;
+  rating: number | null;
   games: number;
+  wins: number;
+  placed: boolean;
   anchors?: Record<string, number>;
   history?: HumanRatingHistoryEntry[];
   results?: Record<string, unknown>[];
@@ -65,6 +66,7 @@ export interface GameListItem {
   human_seat: number;
   seed: number;
   status: string;
+  result?: string | null;
   step_count: number;
   updated_at?: string;
 }
@@ -74,7 +76,6 @@ export interface LeaderboardCombinedEntry {
   entity_id?: string;
   label: string;
   rating: number;
-  elo: number;
   games: number;
   username?: string;
   model_id?: string;
@@ -82,9 +83,7 @@ export interface LeaderboardCombinedEntry {
 }
 
 export interface LeaderboardResponse {
-  agents: LeaderboardCombinedEntry[];
-  humans: LeaderboardCombinedEntry[];
-  combined: LeaderboardCombinedEntry[];
+  entities: LeaderboardCombinedEntry[];
 }
 
 /** @deprecated use UserMe instead */
@@ -96,7 +95,6 @@ export interface PlaySeatInfo {
   label: string;
   model_id: string | null;
   rating: number | null;
-  elo: number | null;
 }
 
 export interface PlayStep {
@@ -149,6 +147,7 @@ export interface PlayView {
   seed: number;
   elo_update: EloUpdateResult | null;
   aborted: boolean;
+  ai_thinking_since?: string | null;
 }
 
 export interface NewGameRequest {

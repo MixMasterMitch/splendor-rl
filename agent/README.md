@@ -88,8 +88,20 @@ pytest
 
 ## Recommended training settings
 
-CPU-only. `torch.compile` remains available as an experiment but the default
-path leaves it off.
+### GPU (RTX 3080 Ti, attn/192)
+
+```bash
+PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True python3 -m agent.scripts.train \
+    --run-id my_run --device cuda --arch attn \
+    --selfplay-games 1024 --selfplay-sims 32 \
+    --learner-batch 4096 --learner-steps-per-iter 64 \
+    --replay-capacity 820000 --lr 3e-5 \
+    --entropy-bonus 0.015 --dirichlet-alpha 0.15 \
+    --dirichlet-mix 0.40 --q-scale 22.0 --time-discount 0.995 \
+    --max-iters 2000 --max-wall-minutes 720
+```
+
+### CPU (flat/192, for quick experiments)
 
 ```
 --device cpu
@@ -101,6 +113,22 @@ path leaves it off.
 --max-iters 40 --max-wall-minutes 120
 ```
 
+### Hyperparameter tuning
+
+```bash
+python3 -m agent.scripts.tune --study-name my-sweep --n-trials 30 \
+    --minutes-per-trial 5 --device cuda --elo-games 512
+```
+
+### Flagging bad games for training
+
+```bash
+python3 -m agent.scripts.flag_game --game-id <id_from_dynamodb>
+```
+
+See `AGENTS.md` for detailed operational knowledge including tuning results,
+architecture comparison data, and known issues.
+
 ## Dependencies
 
-Core: `torch`, `numpy`, `pytest`, `pyyaml`, `tqdm`
+Core: `torch`, `numpy`, `pytest`, `pyyaml`, `tqdm`, `optuna`

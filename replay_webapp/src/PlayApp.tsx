@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PlaySetup } from "./components/PlaySetup";
 import { PlayGame } from "./components/PlayGame";
+import { LoadingSpinner } from "./components/LoadingSpinner";
 import type {
   GameListItem,
   LeaderboardResponse,
@@ -29,12 +30,16 @@ function gamesTableOrder(list: GameListItem[]): GameListItem[] {
   return [...inflight.sort(byUpdated), ...past.sort(byUpdated)];
 }
 
-function formatGameStatus(status: string): string {
-  if (status === "human_turn") return "Your turn";
-  if (status === "ai_thinking") return "AI thinking";
-  if (status === "completed") return "Completed";
-  if (status === "aborted") return "Aborted";
-  return status;
+function formatGameStatus(g: GameListItem): string {
+  if (g.status === "human_turn") return "In Progress";
+  if (g.status === "ai_thinking") return "In Progress";
+  if (g.status === "completed") {
+    if (g.result === "victory") return "Victory";
+    if (g.result === "loss") return "Loss";
+    return "Completed";
+  }
+  if (g.status === "aborted") return "Aborted";
+  return g.status;
 }
 
 function readActiveGameId(): string | null {
@@ -119,7 +124,7 @@ async function postJsonAuth<T>(url: string, username: string, body: unknown): Pr
   return JSON.parse(txt) as T;
 }
 
-type Panel = "lobby" | "leaderboard";
+type Panel = "lobby" | "leaderboard" | "game";
 
 function UsernameGate({ onChosen }: { onChosen: (u: string) => void }) {
   const [draft, setDraft] = useState("");
@@ -205,7 +210,16 @@ function UsernameGate({ onChosen }: { onChosen: (u: string) => void }) {
 }
 
 function PlayAppLoggedIn({ username }: { username: string }) {
-  const [panel, setPanel] = useState<Panel>("lobby");
+  // Hash-based routing: #lobby, #leaderboard, #game/<id>
+  function parseHash(): { panel: Panel; gameId: string | null } {
+    const h = window.location.hash.replace(/^#/, "");
+    if (h === "leaderboard") return { panel: "leaderboard", gameId: null };
+    if (h.startsWith("game/")) return { panel: "game", gameId: h.slice(5) };
+    return { panel: "lobby", gameId: null };
+  }
+
+  const [panel, setPanel] = useState<Panel>(() => parseHash().panel);
+  const [, setHashGameId] = useState<string | null>(() => parseHash().gameId);
   const [models, setModels] = useState<ModelInfo[]>([]);
   const [loadingModels, setLoadingModels] = useState(true);
   const [modelsError, setModelsError] = useState<string | null>(null);
@@ -217,6 +231,7 @@ function PlayAppLoggedIn({ username }: { username: string }) {
   const [gamesError, setGamesError] = useState<string | null>(null);
 
   const [leaderboard, setLeaderboard] = useState<LeaderboardResponse | null>(null);
+  const [leaderboardLoading, setLeaderboardLoading] = useState(true);
 
   const [view, setView] = useState<PlayView | null>(null);
   const [showSetup, setShowSetup] = useState(false);
@@ -226,6 +241,45 @@ function PlayAppLoggedIn({ username }: { username: string }) {
   const [actionError, setActionError] = useState<string | null>(null);
 
   const resumeDoneForUser = useRef<string | null>(null);
+
+  // Navigate: update panel + hash together.
+  const navigate = useCallback((p: Panel, gameId?: string | null) => {
+    setPanel(p);
+    if (p === "game" && gameId) {
+      setHashGameId(gameId);
+      window.history.pushState(null, "", `#game/${gameId}`);
+    } else if (p === "leaderboard") {
+      setHashGameId(null);
+      window.history.pushState(null, "", "#leaderboard");
+    } else {
+      setHashGameId(null);
+      window.history.pushState(null, "", "#lobby");
+    }
+  }, []);
+
+  // Listen for browser back/forward.
+  useEffect(() => {
+    const onPop = () => {
+      const { panel: p, gameId } = parseHash();
+      setPanel(p);
+      setHashGameId(gameId);
+      if (p === "game" && gameId) {
+        // Load the game if we don't already have it.
+        if (!view || view.game_id !== gameId) {
+          void getJsonAuth<PlayView>(`${PLAY_API}/games/${gameId}`, username)
+            .then((v) => setView(v))
+            .catch(() => {
+              setView(null);
+              setPanel("lobby");
+            });
+        }
+      } else {
+        setView(null);
+      }
+    };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, [username, view]);
 
   const refreshMe = useCallback(async () => {
     try {
@@ -252,30 +306,38 @@ function PlayAppLoggedIn({ username }: { username: string }) {
   }, [username]);
 
   const refreshLeaderboard = useCallback(async () => {
+    setLeaderboardLoading(true);
     try {
       const lb = await getJsonAuth<LeaderboardResponse>(`${PLAY_API}/leaderboard`, username);
       setLeaderboard(lb);
     } catch {
       setLeaderboard(null);
+    } finally {
+      setLeaderboardLoading(false);
     }
   }, [username]);
 
   const updateView = useCallback(
     (next: PlayView | null) => {
       setView(next);
-      if (next && next.status !== "ended") {
-        writeActiveGameId(next.game_id);
+      if (next) {
+        navigate("game", next.game_id);
+        if (next.status !== "ended") {
+          writeActiveGameId(next.game_id);
+        } else {
+          writeActiveGameId(null);
+        }
       } else {
         writeActiveGameId(null);
       }
       void refreshGames();
     },
-    [refreshGames],
+    [refreshGames, navigate],
   );
 
   useEffect(() => {
     setLoadingModels(true);
-    void getJson<ModelInfo[]>(`${PLAY_API}/models`)
+    void getJson<ModelInfo[]>(`${PLAY_API}/agents`)
       .then((m) => {
         setModels(m);
         setLoadingModels(false);
@@ -295,17 +357,27 @@ function PlayAppLoggedIn({ username }: { username: string }) {
   useEffect(() => {
     if (resumeDoneForUser.current === username) return;
     resumeDoneForUser.current = username;
-    const persisted = readActiveGameId();
-    if (!persisted) return;
-    void getJsonAuth<PlayView>(`${PLAY_API}/games/${persisted}`, username)
-      .then((v) => {
-        setPanel("lobby");
-        setShowSetup(false);
-        setView(v);
-      })
-      .catch(() => {
-        writeActiveGameId(null);
-      });
+    // If hash points to a game, load it.
+    const { panel: initPanel, gameId } = parseHash();
+    const toLoad = gameId || readActiveGameId();
+    if (toLoad) {
+      void getJsonAuth<PlayView>(`${PLAY_API}/games/${toLoad}`, username)
+        .then((v) => {
+          setView(v);
+          setPanel("game");
+          if (!gameId) {
+            // Only push hash if it wasn't already set.
+            window.history.replaceState(null, "", `#game/${toLoad}`);
+          }
+          setShowSetup(false);
+        })
+        .catch(() => {
+          writeActiveGameId(null);
+          if (initPanel === "game") {
+            navigate("lobby");
+          }
+        });
+    }
   }, [username]);
 
   const handleLoadGame = useCallback(
@@ -316,7 +388,6 @@ function PlayAppLoggedIn({ username }: { username: string }) {
         const v = await getJsonAuth<PlayView>(`${PLAY_API}/games/${gid}`, username);
         updateView(v);
         setShowSetup(false);
-        setPanel("lobby");
       } catch (e: unknown) {
         setActionError(String(e));
       } finally {
@@ -349,18 +420,52 @@ function PlayAppLoggedIn({ username }: { username: string }) {
       if (!view) return;
       setBusy(true);
       setActionError(null);
+
       try {
-        const v = await postJsonAuth<PlayView>(
+        // Step 1: Apply human move only — returns immediately with updated
+        // game state (scores, tokens, action log) reflecting the human's action.
+        const afterHuman = await postJsonAuth<PlayView>(
           `${PLAY_API}/games/${view.game_id}/action`,
           username,
           { action },
         );
-        updateView(v);
-        if (v.status === "ended" && v.elo_update) {
+
+        // Show the post-human-action state immediately.
+        setView(afterHuman);
+
+        // If game ended from the human move, or it's still the human's turn
+        // (sub-phase like discard/noble pick), we're done.
+        if (afterHuman.status === "ended") {
+          updateView(afterHuman);
+          if (afterHuman.elo_update) {
+            void refreshMe();
+            void refreshLeaderboard();
+          }
+          setBusy(false);
+          return;
+        }
+        if (afterHuman.status === "human_turn") {
+          // Sub-phase: human still needs to act (discard, noble pick).
+          updateView(afterHuman);
+          setBusy(false);
+          return;
+        }
+
+        // Step 2: It's the AI's turn — call step-ai which blocks until
+        // all AI moves complete, then returns the final state.
+        const afterAi = await postJsonAuth<PlayView>(
+          `${PLAY_API}/games/${view.game_id}/step-ai`,
+          username,
+          {},
+        );
+        updateView(afterAi);
+        if (afterAi.status === "ended" && afterAi.elo_update) {
           void refreshMe();
           void refreshLeaderboard();
         }
       } catch (e: unknown) {
+        // Revert to last known good state on error.
+        setView(view);
         setActionError(String(e));
       } finally {
         setBusy(false);
@@ -370,20 +475,51 @@ function PlayAppLoggedIn({ username }: { username: string }) {
   );
 
   const handleNew = useCallback(() => {
-    updateView(null);
+    setView(null);
     setShowSetup(false);
     setStartError(null);
     setActionError(null);
+    navigate("lobby");
     void refreshGames();
-  }, [refreshGames, updateView]);
+  }, [refreshGames, navigate]);
 
   const goLobby = useCallback(() => {
     writeActiveGameId(null);
     setView(null);
     setShowSetup(false);
-    setPanel("lobby");
+    navigate("lobby");
     void refreshGames();
-  }, [refreshGames]);
+  }, [refreshGames, navigate]);
+
+  // Recovery: if we load a game in "ai_thinking" state (e.g. page refresh
+  // between the action and step-ai calls), trigger step-ai to unstick it.
+  // Skip while busy (our own two-call flow is in progress).
+  useEffect(() => {
+    if (!view || view.status !== "ai_thinking" || busy) return;
+    let cancelled = false;
+    const recover = async () => {
+      try {
+        const data = await postJsonAuth<PlayView>(
+          `${PLAY_API}/games/${view.game_id}/step-ai`,
+          username,
+          {},
+        );
+        if (!cancelled) {
+          setView(data);
+          if (data.status === "ended") {
+            writeActiveGameId(null);
+            void refreshMe();
+            void refreshLeaderboard();
+          }
+          void refreshGames();
+        }
+      } catch {
+        // Ignore errors; user can reload.
+      }
+    };
+    void recover();
+    return () => { cancelled = true; };
+  }, [view?.status, view?.game_id, busy, username, refreshGames, refreshMe, refreshLeaderboard]);
 
   const activeGames = games.filter(
     (g) => g.status === "human_turn" || g.status === "ai_thinking",
@@ -417,13 +553,19 @@ function PlayAppLoggedIn({ username }: { username: string }) {
         }}
       >
         {(["lobby", "leaderboard"] as Panel[]).map((p) => {
-          const isLeaderboardTab = p === "leaderboard";
-          const tabActive = panel === p && isLeaderboardTab;
+          const tabActive = panel === p || (p === "lobby" && panel === "game");
           return (
             <button
               key={p}
               type="button"
-              onClick={() => setPanel(p)}
+              onClick={() => {
+                if (p === "lobby") {
+                  goLobby();
+                } else {
+                  setView(null);
+                  navigate(p);
+                }
+              }}
               style={{
                 background: tabActive ? "#e8c848" : "#0f3460",
                 color: tabActive ? "#0a1830" : "#e0e6f0",
@@ -442,7 +584,11 @@ function PlayAppLoggedIn({ username }: { username: string }) {
         <span style={{ flex: 1 }} />
         <span style={{ fontSize: 12, color: "#7a94b8" }}>
           {meUser?.username ?? username}
-          {meUser?.rating != null ? ` (${meUser.rating.toFixed(0)} Elo)` : ""}
+          {meUser?.placed
+            ? ` (${(meUser.rating ?? 0).toFixed(0)} Elo)`
+            : meUser
+              ? ` (Unplaced · ${meUser.wins}/5 wins)`
+              : ""}
         </span>
       </div>
 
@@ -462,21 +608,24 @@ function PlayAppLoggedIn({ username }: { username: string }) {
         </div>
       )}
 
-      {view ? (
+      {panel === "game" && view ? (
         <PlayGame
           view={view}
           busy={busy}
           actionError={actionError}
           onAction={handleAction}
           onNew={handleNew}
-          onLobby={goLobby}
+          placed={meUser?.placed ?? false}
+          wins={meUser?.wins ?? 0}
         />
       ) : panel === "leaderboard" ? (
         <div style={{ overflow: "auto", padding: 16, flex: 1 }}>
           <h2 style={{ color: "#e8c848", marginTop: 0 }}>Leaderboard</h2>
-          {!leaderboard && (
+          {leaderboardLoading ? (
+            <LoadingSpinner text="Loading leaderboard..." />
+          ) : !leaderboard ? (
             <div style={{ color: "#7a94b8" }}>Could not load leaderboard.</div>
-          )}
+          ) : (
           <table style={{ borderCollapse: "collapse", width: "100%", maxWidth: 900 }}>
             <thead>
               <tr style={{ color: "#7a94b8", textAlign: "left" }}>
@@ -488,19 +637,20 @@ function PlayAppLoggedIn({ username }: { username: string }) {
               </tr>
             </thead>
             <tbody>
-              {(leaderboard?.combined ?? []).map((row, i) => (
+              {(leaderboard?.entities ?? []).map((row, i) => (
                 <tr key={`${row.entity_id ?? row.model_id ?? row.label}-${i}`}>
                   <td style={{ padding: "4px 8px", color: "#e0e6f0" }}>{i + 1}</td>
                   <td style={{ padding: "4px 8px", color: "#e0e6f0" }}>{row.label}</td>
                   <td style={{ padding: "4px 8px", color: "#e0e6f0" }}>{row.kind}</td>
                   <td style={{ padding: "4px 8px", color: "#e8c848" }}>
-                    {(row.rating ?? row.elo).toFixed(0)}
+                    {row.rating != null ? row.rating.toFixed(0) : "Unplaced"}
                   </td>
-                  <td style={{ padding: "4px 8px", color: "#e0e6f0" }}>{row.games}</td>
+                  <td style={{ padding: "4px 8px", color: "#e0e6f0" }}>{row.kind === "human" && row.games != null ? row.games : ""}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+          )}
         </div>
       ) : (
         <div style={{ overflow: "auto", flex: 1, padding: 16 }}>
@@ -563,7 +713,7 @@ function PlayAppLoggedIn({ username }: { username: string }) {
                 starting={starting}
                 startError={startError}
                 onStart={handleStart}
-                humanRating={meUser?.rating ?? meUser?.elo ?? null}
+                humanRating={meUser?.rating ?? null}
               />
             </div>
           ) : null}
@@ -613,7 +763,7 @@ function PlayAppLoggedIn({ username }: { username: string }) {
                           fontWeight: current ? 600 : 400,
                         }}
                       >
-                        {current ? `${formatGameStatus(g.status)} (current)` : formatGameStatus(g.status)}
+                        {current ? `${formatGameStatus(g)} (current)` : formatGameStatus(g)}
                       </td>
                       <td style={{ padding: "8px", color: "#e0e6f0", fontFamily: "monospace", fontSize: 12 }}>
                         {g.game_id}

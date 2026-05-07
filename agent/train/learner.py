@@ -30,6 +30,7 @@ def step(
     entropy_bonus: float = 0.0,
     device: str = "cpu",
     generator: Optional[torch.Generator] = None,
+    grad_scaler: Optional[torch.amp.GradScaler] = None,
 ) -> dict:
     net.train()
     batch = buffer.sample(batch_size, generator=generator)
@@ -44,29 +45,42 @@ def step(
     sums = target_p.sum(dim=-1, keepdim=True).clamp_min(1e-8)
     target_p = target_p / sums
 
-    logits, value = net(g, c, mask)
-    log_probs = torch.log_softmax(logits, dim=-1)
-    policy_loss = -(target_p * log_probs).sum(dim=-1).mean()
+    use_amp = grad_scaler is not None
 
-    # Only supervise active seats in value loss; active seats are those with
-    # abs(target_v) > 1e-6
-    active = target_v.abs() > 1e-6
-    if active.any():
-        value_loss = F.mse_loss(value[active], target_v[active])
-    else:
-        value_loss = torch.zeros((), device=device)
+    # Forward pass — optionally under AMP autocast for mixed precision.
+    with torch.amp.autocast("cuda", enabled=use_amp):
+        logits, value = net(g, c, mask)
+        log_probs = torch.log_softmax(logits, dim=-1)
+        policy_loss = -(target_p * log_probs).sum(dim=-1).mean()
+
+        # Only supervise active seats in value loss; active seats are those with
+        # abs(target_v) > 1e-6
+        active = target_v.abs() > 1e-6
+        if active.any():
+            value_loss = F.mse_loss(value[active], target_v[active])
+        else:
+            value_loss = torch.zeros((), device=device)
+
+        loss = policy_loss_weight * policy_loss + value_loss_weight * value_loss
 
     with torch.no_grad():
         probs = log_probs.exp()
         ent = -(probs * log_probs).sum(dim=-1).mean()
-    loss = policy_loss_weight * policy_loss + value_loss_weight * value_loss
     if entropy_bonus > 0:
         loss = loss - entropy_bonus * ent
 
     optim.zero_grad(set_to_none=True)
-    loss.backward()
-    grad_norm = torch.nn.utils.clip_grad_norm_(net.parameters(), max_norm=5.0)
-    optim.step()
+
+    if grad_scaler is not None:
+        grad_scaler.scale(loss).backward()
+        grad_scaler.unscale_(optim)
+        grad_norm = torch.nn.utils.clip_grad_norm_(net.parameters(), max_norm=5.0)
+        grad_scaler.step(optim)
+        grad_scaler.update()
+    else:
+        loss.backward()
+        grad_norm = torch.nn.utils.clip_grad_norm_(net.parameters(), max_norm=5.0)
+        optim.step()
 
     return {
         "loss": float(loss.item()),

@@ -44,6 +44,9 @@ class GameSession:
         self.saved_num_sims = 8
         self.lock = threading.Lock()
         self.engine = BE.BatchedEngine(1, num_players, device=device, seed=seed)
+        # In human play, seat 0 always goes first (deterministic turn order).
+        # The random first-player selection is only for training.
+        self.engine.current_player[:] = 0
         self.initial_state = (
             initial_state_override
             if initial_state_override is not None
@@ -52,6 +55,7 @@ class GameSession:
         self.steps: list[dict[str, Any]] = [] if steps is None else list(steps)
         self.aborted = aborted
         self.elo_update = elo_update
+        self.ai_thinking_since: str | None = None
 
     def player_descriptors(self) -> list[dict[str, Any]]:
         out: list[dict[str, Any]] = []
@@ -64,12 +68,11 @@ class GameSession:
                         "label": "You",
                         "model_id": None,
                         "rating": None,
-                        "elo": None,
                     }
                 )
             else:
                 m = self.seat_models[seat]
-                rating = float(m.get("rating", m.get("elo", 1500.0)))
+                rating = float(m.get("rating", 1500.0))
                 out.append(
                     {
                         "seat": seat,
@@ -77,7 +80,6 @@ class GameSession:
                         "label": m["label"],
                         "model_id": m["id"],
                         "rating": rating,
-                        "elo": rating,
                     }
                 )
         return out
@@ -202,7 +204,7 @@ class GameSession:
         if not self.steps:
             view_snap = init
 
-        return {
+        result = {
             "game_id": self.game_id,
             "num_players": self.num_players,
             "human_seat": self.human_seat,
@@ -222,3 +224,6 @@ class GameSession:
             "elo_update": self.elo_update,
             "aborted": self.aborted,
         }
+        if status == "ai_thinking" and self.ai_thinking_since is not None:
+            result["ai_thinking_since"] = self.ai_thinking_since
+        return result

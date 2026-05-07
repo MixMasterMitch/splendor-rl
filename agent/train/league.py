@@ -49,7 +49,50 @@ class League:
         self.manifest.setdefault("entries", [])
         self.manifest.setdefault("results", [])
         self.manifest.setdefault("anchors", dict(anchors or R.DEFAULT_ANCHORS))
+        self._migrate_absolute_paths()
         self._migrate_legacy_manifest_if_needed()
+
+    def _resolve_path(self, stored: str) -> pathlib.Path:
+        """Resolve a stored path (relative to league root) to an absolute path."""
+        p = pathlib.Path(stored)
+        if p.is_absolute():
+            return p
+        return self.root / p
+
+    def _to_relative_path(self, p: pathlib.Path | str) -> str:
+        """Convert an absolute path to a relative path from the league root.
+
+        If the path lives under ``self.root``, store it as a relative path so
+        the workspace is portable across machines.  Otherwise fall back to the
+        absolute string (shouldn't happen in practice).
+        """
+        try:
+            return str(pathlib.Path(p).relative_to(self.root))
+        except ValueError:
+            return str(p)
+
+    def _migrate_absolute_paths(self) -> None:
+        """One-time migration: convert any legacy absolute paths to relative."""
+        changed = False
+        for entry in self.manifest.get("entries", []):
+            raw = entry.get("path", "")
+            p = pathlib.Path(raw)
+            if p.is_absolute():
+                # Try to find the file under self.root by its filename.
+                candidate = self.root / p.name
+                if candidate.exists():
+                    entry["path"] = p.name
+                    changed = True
+                else:
+                    # File doesn't exist locally either way; store relative
+                    # form so future loads give a clear error.
+                    try:
+                        entry["path"] = str(p.relative_to(self.root))
+                    except ValueError:
+                        entry["path"] = p.name
+                    changed = True
+        if changed:
+            self._save_manifest()
 
     def _save_manifest(self) -> None:
         tmp = self.manifest_path.with_suffix(".json.tmp")
@@ -121,7 +164,7 @@ class League:
             self.recompute_ratings()
 
     def _drop_entry(self, entry: dict) -> None:
-        path = pathlib.Path(entry["path"])
+        path = self._resolve_path(entry["path"])
         if path.exists():
             path.unlink()
         for key in list(self._net_cache):
@@ -180,7 +223,7 @@ class League:
             {
                 "idx": idx,
                 "tag": tag,
-                "path": str(path),
+                "path": self._to_relative_path(path),
                 "elo": float(self.manifest["anchors"]["heuristic"]),
                 "rating": float(self.manifest["anchors"]["heuristic"]),
                 "games": 0,
@@ -215,7 +258,8 @@ class League:
         path: str | pathlib.Path,
         device: torch.device | str,
     ) -> M.SplendorNet:
-        path_str = str(path)
+        resolved = self._resolve_path(str(path))
+        path_str = str(resolved)
         device_t = torch.device(device)
         key = (path_str, str(device_t))
         cached = self._net_cache.get(key)

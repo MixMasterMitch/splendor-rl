@@ -12,6 +12,13 @@ interface PlayerPanelProps {
   cardDb: CardData[];
   nobleDb: NobleData[];
   isWinner: boolean;
+  // Interactive props
+  affordableReservedSlots?: Set<number>;
+  onReservedClick?: (rslot: number) => void;
+  discardableTokens?: Set<number>;
+  onTokenDiscard?: (colorIdx: number) => void;
+  // Cost display
+  getDisplayCosts?: (card: CardData, affordable: boolean) => number[] | undefined;
 }
 
 // Each color column is this wide so all 6 fit neatly and panels never reflow.
@@ -27,6 +34,11 @@ export function PlayerPanel({
   currentPhase,
   cardDb,
   isWinner,
+  affordableReservedSlots,
+  onReservedClick,
+  discardableTokens,
+  onTokenDiscard,
+  getDisplayCosts,
 }: PlayerPanelProps) {
   const phaseLabel = isCurrentPlayer
     ? currentPhase === 0 ? " (Main)" : currentPhase === 1 ? " (Discard)" : " (Noble Pick)"
@@ -102,15 +114,18 @@ export function PlayerPanel({
           const count = snapshot.tokens[i] ?? 0;
           const bg = GEM_COLORS[i] ?? "#888";
           const fg = GEM_TEXT_COLORS[i] ?? "#fff";
+          const canDiscard = discardableTokens?.has(i) ?? false;
           return (
             <div
               key={`tok-${i}`}
-              title={`${COLOR_NAMES[i] ?? "?"} tokens: ${count}`}
+              title={`${COLOR_NAMES[i] ?? "?"} tokens: ${count}${canDiscard ? " (click to discard)" : ""}`}
+              onClick={canDiscard ? () => onTokenDiscard?.(i) : undefined}
               style={{
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
                 gap: 2,
+                cursor: canDiscard ? "pointer" : undefined,
               }}
             >
               {/* Gem icon */}
@@ -120,7 +135,8 @@ export function PlayerPanel({
                   height: 26,
                   borderRadius: "50%",
                   background: bg,
-                  border: "2px solid rgba(255,255,255,0.15)",
+                  border: canDiscard ? "2.5px solid #ef5350" : "2px solid rgba(255,255,255,0.15)",
+                  boxShadow: canDiscard ? "0 0 6px rgba(239,83,80,0.5)" : undefined,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -187,12 +203,16 @@ export function PlayerPanel({
         {snapshot.reserved.map((cardId, r) => {
           const card = cardId != null ? (cardDb[cardId] ?? null) : null;
           const isHidden = !!snapshot.reserved_hidden[r];
+          const isAffordable = affordableReservedSlots?.has(r) ?? false;
           return (
             <CardTile
               key={r}
               card={card}
               hidden={isHidden}
               small
+              affordable={isAffordable}
+              onClick={isAffordable ? () => onReservedClick?.(r) : undefined}
+              displayCosts={card && getDisplayCosts ? getDisplayCosts(card, isAffordable) : undefined}
             />
           );
         })}

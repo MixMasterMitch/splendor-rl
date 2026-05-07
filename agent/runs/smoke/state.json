@@ -1,7 +1,0 @@
-{
-  "iter": 2,
-  "last_checkpoint": "/Users/mloeppky/Documents/splendor/agent/runs/smoke/checkpoints/latest_resume.pt",
-  "last_archive_checkpoint": "/Users/mloeppky/Documents/splendor/agent/runs/smoke/checkpoints/iter_000002.pt",
-  "decision": "continue",
-  "finished_burst": true
-}

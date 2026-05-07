@@ -2,19 +2,43 @@
 
 from __future__ import annotations
 
+import logging
 import pathlib
 import threading
 import time
 import uuid
-from typing import Any
+from typing import Any, Protocol, Iterable
 
 from play import auth as AU
 from play import human_elo as HE
 from play import models as MD
 from replay import players as POL
 from play import ratings as RT
+from play.llm.policy import LLMBedrockPolicy
+from play.llm.rate_limiter import LLMRateLimiter, RateLimitExceeded
 from play.state import GameSession
 from play.store import GameStatus, JsonPlayStore
+
+logger = logging.getLogger(__name__)
+
+
+class PlayStore(Protocol):
+    """Protocol defining the store interface accepted by PlayService.
+
+    Both JsonPlayStore and DynamoPlayStore satisfy this protocol,
+    allowing PlayService to work with either backend without code changes.
+
+    Requirements: 2.7, 3.1
+    """
+
+    def load_game(self, game_id: str) -> dict[str, Any] | None: ...
+    def save_game(self, record: dict[str, Any]) -> None: ...
+    def list_games_for_user(
+        self, username: str, status: Iterable[GameStatus] | None = None
+    ) -> list[dict[str, Any]]: ...
+    def load_user_rating_blob(self, username: str) -> dict[str, Any] | None: ...
+    def save_user_rating_blob(self, username: str, data: dict[str, Any]) -> None: ...
+    def list_all_user_rating_blobs(self) -> list[dict[str, Any]]: ...
 
 
 _GAME_SCHEMA_VERSION = 1
@@ -50,6 +74,14 @@ def build_policy_cached(
             )
             _NET_CACHE[key] = policy
             return policy
+    if kind == "llm_bedrock":
+        # Do NOT cache LLM policies — each game gets its own instance
+        return LLMBedrockPolicy(
+            model_id=model["id"],
+            bedrock_model_id=model["bedrock_model_id"],
+            region="us-west-2",
+            debug=True,
+        )
     raise ValueError(f"unsupported model kind: {kind!r}")
 
 
@@ -73,7 +105,7 @@ class PlayService:
     def __init__(
         self,
         workspace_root: pathlib.Path,
-        play_store: JsonPlayStore,
+        play_store: PlayStore,
         device: str = "cpu",
     ) -> None:
         self.workspace_root = workspace_root
@@ -81,9 +113,25 @@ class PlayService:
         self.device = device
         self._session_lock = threading.Lock()
         self._sessions: dict[str, GameSession] = {}
+        self._llm_rate_limiter = LLMRateLimiter()
 
     def list_models(self) -> list[dict[str, Any]]:
-        return MD.discover_models(self.workspace_root)
+        all_models = MD.discover_models(self.workspace_root)
+        # Only expose built-ins + the single highest-rated net checkpoint.
+        builtins = [m for m in all_models if m["kind"] != "net"]
+        nets = [m for m in all_models if m["kind"] == "net"]
+        if nets:
+            best_net = max(nets, key=lambda m: m.get("rating", 0))
+            builtins.append(best_net)
+        # Enrich with unified ratings computed from all match data
+        # (league eval games + human interactive games).
+        ratings = RT.combined_ratings(self.workspace_root, self.play_store)
+        for m in builtins:
+            entity_id = MD.model_entity_id(m)
+            lookup_id = RT._normalize_entity(entity_id)
+            if lookup_id in ratings:
+                m["rating"] = ratings[lookup_id]
+        return builtins
 
     def human_rating_store(self, identity: AU.UserIdentity) -> HE.HumanRatingStore:
         path = self.play_store.user_rating_path(identity.username)
@@ -93,15 +141,21 @@ class PlayService:
         hr = self.human_rating_store(identity)
         hr.set_profile(identity.username)
         snap = hr.snapshot()
+        # Strip internal "ties" field from results for the API response.
+        results = [
+            {k: v for k, v in r.items() if k != "ties"}
+            for r in snap.get("results", [])
+        ]
         return {
             "username": identity.username,
             "rating": snap["rating"],
-            "elo": snap["elo"],
             "games": snap["games"],
+            "wins": snap["wins"],
+            "placed": snap["placed"],
             "rating_system": snap.get("rating_system"),
             "anchors": snap.get("anchors"),
             "history": snap.get("history"),
-            "results": snap.get("results"),
+            "results": results,
         }
 
     def leaderboard(self) -> dict[str, Any]:
@@ -138,7 +192,7 @@ class PlayService:
             m = session.seat_models[seat]
             latest = MD.model_by_id(latest_models, m["id"])
             source = latest if latest is not None else m
-            rating = float(source.get("rating", source.get("elo", MD.HEURISTIC_ANCHOR_RATING)))
+            rating = float(source.get("rating", MD.HEURISTIC_ANCHOR_RATING))
             if m["kind"] == "random":
                 rating = MD.RANDOM_ANCHOR_RATING
             elif m["kind"] == "heuristic":
@@ -164,6 +218,10 @@ class PlayService:
             seed=session.seed,
             meta={"game_id": session.game_id},
         )
+        # Also record pairwise results into the shared league so that bot
+        # ratings (e.g. bedrock_claude_sonnet) reflect actual game outcomes
+        # on the leaderboard instead of staying at the static default.
+        self._record_to_league(session, ranks, identity)
         session.elo_update = {
             "old_elo": update["old_rating"],
             "new_elo": update["new_rating"],
@@ -173,6 +231,56 @@ class PlayService:
             "games": update["games"],
             "per_opponent": update["per_opponent"],
         }
+
+    def _record_to_league(
+        self,
+        session: "GameSession",
+        ranks: list[int],
+        identity: AU.UserIdentity,
+    ) -> None:
+        """Record pairwise results into the shared league for bot rating.
+
+        Only records results for LLM bots (kind=llm_bedrock) since other bots
+        have fixed anchor ratings. Requires at least 3 games against the bot
+        before recording to avoid extreme MLE estimates.
+        """
+        from agent.train import league as LG
+
+        league_root = self.workspace_root / "agent" / "runs" / "league"
+        if not league_root.exists():
+            return
+        # Only record for LLM bots
+        llm_seats = [
+            seat for seat in range(session.num_players)
+            if seat != session.human_seat
+            and session.seat_models[seat].get("kind") == "llm_bedrock"
+        ]
+        if not llm_seats:
+            return
+        try:
+            league = LG.League(league_root)
+        except Exception:
+            return
+        human_entity = AU.human_entity_id(identity)
+        human_rank = ranks[session.human_seat]
+        for seat in llm_seats:
+            m = session.seat_models[seat]
+            bot_entity = MD.model_entity_id(m)
+            bot_rank = ranks[seat]
+            if human_rank < bot_rank:
+                league.record_result(human_entity, bot_entity, 1.0, 0.0, 0.0)
+            elif human_rank > bot_rank:
+                league.record_result(human_entity, bot_entity, 0.0, 1.0, 0.0)
+            else:
+                league.record_result(human_entity, bot_entity, 0.0, 0.0, 1.0)
+        # Add the human as an anchor using their current fitted rating so the
+        # bot's rating can be solved relative to the known rating scale.
+        hr = self.human_rating_store(identity)
+        snap = hr.snapshot()
+        human_rating = snap.get("rating")
+        if human_rating is not None:
+            league.manifest["anchors"][human_entity] = float(human_rating)
+        league.recompute_ratings()
 
     def _touch_session_save(
         self,
@@ -267,6 +375,8 @@ class PlayService:
                 raise ValueError("human-vs-human games are not supported")
             if num_players > 2 and m["kind"] == "net":
                 raise ValueError("net checkpoints are only allowed in 2-player games")
+            if num_players > 2 and m["kind"] == "llm_bedrock":
+                raise ValueError("LLM Bedrock agents are only available in 2-player games")
             seat_models[seat] = m
             try:
                 build_policy_cached(
@@ -302,6 +412,16 @@ class PlayService:
         seat_models = self.validate_and_build_opponents(
             num_players, human_seat, opponents, num_sims, policy_seed_basis=seed
         )
+
+        # Rate-limit LLM game creation
+        has_llm_opponent = any(
+            m.get("kind") == "llm_bedrock" for m in seat_models.values()
+        )
+        if has_llm_opponent:
+            try:
+                self._llm_rate_limiter.check_and_record(identity.username)
+            except RateLimitExceeded as exc:
+                raise ValueError(str(exc)) from exc
         seat_policies: dict[int, POL.PlayerPolicy] = {}
         for seat, m in seat_models.items():
             seat_policies[seat] = build_policy_cached(
@@ -319,7 +439,11 @@ class PlayService:
             device=self.device,
         )
         session.saved_num_sims = num_sims
-        session.step_ai_until_human_or_end()
+
+        # After session creation, step AI if needed
+        if session.current_seat() != human_seat:
+            self._step_ai_sync(session, identity)
+
         record_full = {
             **self._record_from_session_views(session),
             "user_sub": identity.username,
@@ -366,6 +490,20 @@ class PlayService:
         for row in rows:
             gid = str(row["game_id"])
             st = row.get("status", "in_flight")
+            # Determine game result for completed games
+            result: str | None = None
+            if st == "completed":
+                elo_update = row.get("elo_update")
+                if elo_update and "per_opponent" in elo_update:
+                    scores = [opp.get("score", 0.5) for opp in elo_update["per_opponent"]]
+                    if all(s == 1.0 for s in scores):
+                        result = "victory"
+                    else:
+                        result = "loss"
+                else:
+                    result = "completed"
+            elif st == "aborted":
+                result = "aborted"
             summaries.append(
                 {
                     "game_id": gid,
@@ -373,19 +511,52 @@ class PlayService:
                     "human_seat": int(row.get("human_seat", 0)),
                     "seed": int(row.get("seed", 0)),
                     "status": st,
+                    "result": result,
                     "step_count": len(row.get("steps") or []),
                     "updated_at": row.get("updated_at"),
                 }
             )
         return summaries
 
-    def apply_human_action(self, identity: AU.UserIdentity, game_id: str, action: int) -> GameSession:
+    def apply_human_action(
+        self, identity: AU.UserIdentity, game_id: str, action: int
+    ) -> GameSession:
+        """Apply the human's action only. Does NOT step AI.
+
+        Returns the session with the human move applied so the client can
+        immediately see the updated game state (scores, tokens, action log).
+        The client should then call step_ai() to advance AI seats.
+        """
         session = self.get_or_load_session(game_id, identity)
         with session.lock:
             if session.aborted or session.ended():
                 raise ValueError("game is not playable")
             session.apply_human_action(int(action))
-            session.step_ai_until_human_or_end()
+
+            # If game ended from the human move alone, finalize immediately.
+            if session.ended():
+                self._finalize_rating_if_needed(session, identity)
+
+            self._touch_session_save(identity, session, self._infer_status(session))
+        return session
+
+    def step_ai(self, identity: AU.UserIdentity, game_id: str) -> GameSession:
+        """Step all AI seats synchronously until it's the human's turn or game ends.
+
+        Should be called after apply_human_action when the game is not ended
+        and it's not the human's turn. Safe to call when it's already the
+        human's turn (no-op).
+        """
+        session = self.get_or_load_session(game_id, identity)
+        with session.lock:
+            if session.aborted or session.ended():
+                self._touch_session_save(identity, session, self._infer_status(session))
+                return session
+            if session.current_seat() == session.human_seat:
+                # Already human's turn — nothing to do.
+                return session
+
+            self._step_ai_sync(session, identity)
             self._finalize_rating_if_needed(session, identity)
             self._touch_session_save(identity, session, self._infer_status(session))
         return session
@@ -394,3 +565,47 @@ class PlayService:
         session = self.get_or_load_session(game_id, identity)
         with session.lock:
             return session.view()
+
+    def _step_ai_sync(self, session: GameSession, identity: AU.UserIdentity) -> None:
+        """Step all AI seats synchronously until it's the human's turn or game ends.
+
+        For LLM policies, calls Bedrock inline (blocking the request).
+        For non-LLM policies, uses the fast local choose() method.
+        Handles discard/noble-pick sub-phases for LLM seats too.
+        """
+        import random as _random
+
+        engine = session.engine
+
+        while not session.ended() and session.current_seat() != session.human_seat:
+            seat = session.current_seat()
+            policy = session.seat_policies.get(seat)
+
+            if isinstance(policy, LLMBedrockPolicy):
+                # LLM policy — call synchronously (blocks the request)
+                try:
+                    action_tensor = policy.choose(engine)
+                    session._record_and_apply(int(action_tensor[0].item()))
+                except Exception as e:
+                    # On any failure, fall back to random legal action
+                    logger.warning(
+                        "LLM call failed (game=%s, seat=%d): %s — using random fallback",
+                        session.game_id, seat, e,
+                    )
+                    mask = engine.legal_action_mask()
+                    legal_indices = mask[0].nonzero(as_tuple=False).squeeze(-1).tolist()
+                    if isinstance(legal_indices, int):
+                        legal_indices = [legal_indices]
+                    pick = _random.choice(legal_indices)
+                    session._record_and_apply(pick)
+                    if session.steps:
+                        session.steps[-1]["llm_fallback"] = {
+                            "reason": "api_error",
+                            "attempts": 1,
+                            "raw_responses": [str(e)],
+                            "latency_ms": 0,
+                        }
+            else:
+                # Non-LLM policy — fast local call
+                action_tensor = policy.choose(engine)
+                session._record_and_apply(int(action_tensor[0].item()))

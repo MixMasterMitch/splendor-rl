@@ -31,6 +31,7 @@ from ..net import model as M
 from ..obs import journal as J
 from ..obs.run import Run
 from replay import players as P
+from .async_eval import AsyncEvalConfig, AsyncEvalHandle
 from .checkpointing import (
     checkpoint_net_spec,
     checkpoint_net_state_dict,
@@ -39,8 +40,7 @@ from .checkpointing import (
     save_checkpoint,
 )
 from .device import (
-    configure_cpu_threads,
-    device_info,
+    configure_device,
     resolve_device,
 )
 from .health import decide_next_action
@@ -64,7 +64,7 @@ class LoopConfig:
     replay_capacity: int = 600_000
     learner_batch: int = 256
     learner_steps_per_iter: int = 192
-    entropy_bonus: float = 0.0
+    entropy_bonus: float = 0.015
     # eval_games split evenly by seat; each seat rotation runs B = eval_games //
     # num_players. Keep per_seat >= 128 so CPU batch-throughput is near optimum.
     eval_every: int = 2
@@ -96,18 +96,84 @@ class LoopConfig:
     rating_random_anchor: float = 1000.0
     rating_heuristic_anchor: float = 2500.0
     # Exploration hyperparameters for self-play root MCTS.
-    dirichlet_alpha: float = 0.3  # AlphaZero-style root prior noise; 0 to disable
-    dirichlet_mix: float = 0.25  # fraction of prior replaced by Dirichlet at root
+    dirichlet_alpha: float = 0.15  # AlphaZero-style root prior noise; tuned via Optuna
+    dirichlet_mix: float = 0.40  # fraction of prior replaced by Dirichlet at root
     # Value-target shaping: per-turn discount of the terminal reward. Values
     # closer to 1 mean less pressure to end the game quickly.
     time_discount: float = 0.995
     # MCTS root Q-value scaling. Following Danihelka et al. (2022), the final
     # improved policy target is `softmax(logits + gumbel + q_scale * q)`; a
     # large q_scale makes the search results dominate the prior once the game
-    # has produced signal. 1.0 is far too weak (gumbel noise swamps Q); 10
-    # gives the search roughly 1-2 nats of pull, similar to AlphaZero-style
-    # c_visit=50, c_scale=0.2 at low visit counts.
-    q_scale: float = 10.0
+    # has produced signal. Tuned via Optuna: top trials converged on 19-25.
+    q_scale: float = 22.0
+    use_amp: bool = False
+    async_eval: bool = False
+    # Wall-clock-based eval interval.  When > 0, eval triggers every N minutes
+    # of elapsed wall time instead of every ``eval_every`` iterations.
+    eval_every_mins: float = 0.0
+    # Number of recent archive checkpoints (iter_*.pt) to keep.  Older ones
+    # are deleted after each new checkpoint save.  League checkpoints in the
+    # league/ subdirectory are never touched.  0 = keep all (no cleanup).
+    keep_recent_checkpoints: int = 3
+    # Mixed player-count training.  When non-empty, selfplay rotates through
+    # these player counts each iteration (e.g. [2, 3, 4] trains all three).
+    # When empty, uses ``num_players`` for every iteration.
+    mixed_players: list[int] = dataclasses.field(default_factory=list)
+
+
+# GPU-optimized defaults applied when the resolved device is CUDA.
+# Tuned via Optuna cold-phase search (study gpu-tune-cold, 56 trials).
+_GPU_DEFAULTS: dict[str, object] = {
+    "selfplay_games": 4096,
+    "selfplay_sims": 32,
+    "learner_batch": 4096,
+    "replay_capacity": 820_000,
+    "learner_steps_per_iter": 64,
+    "async_eval": True,
+}
+
+
+def apply_device_defaults(cfg: LoopConfig, device: str) -> LoopConfig:
+    """Return a new LoopConfig with device-conditional defaults applied.
+
+    Only overrides fields that still hold their LoopConfig dataclass defaults.
+    CLI-provided values (which differ from defaults) are preserved.
+
+    GPU defaults (when device starts with "cuda"):
+        selfplay_games=4096, selfplay_sims=32, learner_batch=16384,
+        replay_capacity=800_000, learner_steps_per_iter=48,
+        async_eval=True
+
+    CPU defaults remain unchanged from LoopConfig.__init__.
+    """
+    if not device.startswith("cuda"):
+        # CPU path: return an identical copy without any changes.
+        return dataclasses.replace(cfg)
+
+    # Build a dict of overrides: only apply GPU defaults for fields where the
+    # user hasn't provided an explicit CLI value (i.e. the field still matches
+    # the LoopConfig() default).
+    factory_defaults = LoopConfig()
+    overrides: dict[str, object] = {}
+    for field_name, gpu_value in _GPU_DEFAULTS.items():
+        current_value = getattr(cfg, field_name)
+        default_value = getattr(factory_defaults, field_name)
+        if current_value == default_value:
+            overrides[field_name] = gpu_value
+
+    return dataclasses.replace(cfg, **overrides)
+
+
+def _validate_buffer_capacity(cfg: LoopConfig, run: Run) -> None:
+    """Log a warning if replay_capacity < selfplay_games * 200."""
+    estimated_max_samples = cfg.selfplay_games * 200
+    if cfg.replay_capacity < estimated_max_samples:
+        run.event("buffer_capacity_warning", {
+            "replay_capacity": cfg.replay_capacity,
+            "selfplay_games": cfg.selfplay_games,
+            "estimated_max_samples": estimated_max_samples,
+            "recommendation": f"Consider replay_capacity >= {estimated_max_samples}",
+        }, level="WARN")
 
 
 def _latest_ckpt(ckpt_dir: pathlib.Path) -> Optional[pathlib.Path]:
@@ -116,6 +182,24 @@ def _latest_ckpt(ckpt_dir: pathlib.Path) -> Optional[pathlib.Path]:
         return resume_ckpt
     ckpts = sorted(ckpt_dir.glob("iter_*.pt"))
     return ckpts[-1] if ckpts else None
+
+
+def _cleanup_old_checkpoints(ckpt_dir: pathlib.Path, keep: int, run: Run) -> None:
+    """Delete old archive checkpoints, keeping the most recent *keep*.
+
+    Only removes ``iter_*.pt`` files in the top-level checkpoint directory.
+    ``latest_resume.pt`` and everything under ``league/`` are untouched.
+    """
+    if keep <= 0:
+        return
+    ckpts = sorted(ckpt_dir.glob("iter_*.pt"))
+    to_remove = ckpts[:-keep] if len(ckpts) > keep else []
+    for path in to_remove:
+        try:
+            path.unlink()
+            run.event("checkpoint_cleaned", {"path": str(path)})
+        except OSError:
+            pass
 
 
 def _eval_priority(row: dict) -> tuple[float, float, float, float, float]:
@@ -236,9 +320,10 @@ def _rate_new_league_entry(
         for offset, opp in enumerate(candidates):
             opp_idx = int(opp["idx"])
             opp_name = f"league_{opp_idx}"
+            resolved_path = str(league._resolve_path(opp["path"]))
             opponents = {
                 opp_name: (
-                    lambda path=str(opp["path"]): P.NetPolicy(
+                    lambda path=resolved_path: P.NetPolicy(
                         path,
                         num_sims=cfg.league_rating_sims,
                         device=device,
@@ -307,22 +392,46 @@ def run_loop(run: Run, cfg: LoopConfig) -> dict:
     run.event("loop_start", {"config": dataclasses.asdict(cfg)})
 
     device = resolve_device(cfg.device)
-    thread_info = configure_cpu_threads()
+    dev_info = configure_device(device)
     run.event(
         "device_selected",
         {
             "requested": cfg.device,
             "device": device,
             "compile_net": cfg.compile_net,
-            **thread_info,
-            **device_info(device),
+            **dev_info,
         },
     )
+
+    # Apply device-conditional defaults and validate buffer capacity.
+    cfg = apply_device_defaults(cfg, device)
+    _validate_buffer_capacity(cfg, run)
+    run.event("effective_config", dataclasses.asdict(cfg))
+
     net = M.SplendorNet(hidden=cfg.hidden, arch=cfg.arch).to(device)
     if cfg.compile_net:
         net.enable_compile()
     optim = make_optimizer(net, lr=cfg.lr, weight_decay=cfg.weight_decay)
     buffer = ReplayBuffer(capacity=cfg.replay_capacity, device=device)
+
+    # Inject human-flagged training replays into the buffer at startup.
+    from .replay_injection import inject_replays_into_buffer
+    n_injected = inject_replays_into_buffer(buffer, time_discount=cfg.time_discount)
+    if n_injected > 0:
+        run.event("replay_injection", {"samples_injected": n_injected})
+
+    # AMP mixed-precision: create GradScaler only when use_amp is True and
+    # the resolved device is CUDA.  On CPU, log a warning and skip.
+    grad_scaler: Optional[torch.amp.GradScaler] = None
+    if cfg.use_amp:
+        if device.startswith("cuda"):
+            grad_scaler = torch.amp.GradScaler("cuda")
+            run.event("amp_enabled", {"device": device})
+        else:
+            run.event("amp_skipped_cpu", {
+                "device": device,
+                "reason": "use_amp=True but device is CPU; skipping GradScaler",
+            })
 
     start_iter = 0
     ckpt = _latest_ckpt(run.ckpt_dir)
@@ -376,7 +485,7 @@ def run_loop(run: Run, cfg: LoopConfig) -> dict:
         )
 
     league = League(
-        run.ckpt_dir / "league",
+        run.root.parent / "league",
         max_entries=cfg.league_max_entries,
         keep_recent=cfg.league_keep_recent,
         anchors={
@@ -399,9 +508,76 @@ def run_loop(run: Run, cfg: LoopConfig) -> dict:
     cur_iter = start_iter
     last_eval_row: dict | None = None
 
+    # Async eval handle: created when cfg.async_eval is True so that eval
+    # runs in a CPU subprocess while the GPU continues selfplay + learning.
+    async_eval_handle: Optional[AsyncEvalHandle] = None
+    if cfg.async_eval:
+        async_eval_handle = AsyncEvalHandle(
+            AsyncEvalConfig(
+                eval_games=cfg.eval_games,
+                eval_sims=cfg.eval_sims,
+                eval_max_turns=cfg.eval_max_turns,
+                num_players=cfg.num_players,
+            )
+        )
+        run.event("async_eval_enabled", {"config": dataclasses.asdict(cfg)})
+
+    # Wall-clock eval tracking: when eval_every_mins > 0, eval triggers based
+    # on elapsed wall time rather than iteration count.
+    last_eval_wall_min: float = -999.0  # force initial eval
+
+    # Initial eval on the starting net (baseline for learning curves).
+    if cfg.eval_every_mins > 0 and cfg.eval_games > 0:
+        if async_eval_handle is not None:
+            snapshot = {k: v.detach().cpu().clone() for k, v in net.state_dict().items()}
+            async_eval_handle.launch(snapshot, cur_iter, seed=0)
+            run.event("async_eval_launched", {"iteration": cur_iter, "reason": "initial_baseline"})
+        else:
+            eval_metrics = LAD.evaluate(
+                net,
+                num_players=cfg.num_players,
+                num_games=cfg.eval_games,
+                device=device,
+                num_sims=cfg.eval_sims,
+                max_turns=cfg.eval_max_turns,
+                seed=0,
+            )
+            row = {
+                "iter": cur_iter,
+                "elapsed_min": 0.0,
+                **eval_metrics,
+            }
+            run.metric(row)
+            metrics_history.append(row)
+            run.event("initial_eval_done", {"iter": cur_iter, **eval_metrics})
+        last_eval_wall_min = 0.0
+
     while True:
         elapsed_min = (time.monotonic() - t_start) / 60.0
         iters_done = cur_iter - start_iter
+
+        # -- Collect completed async eval results at each iteration boundary --
+        if async_eval_handle is not None:
+            result = async_eval_handle.try_collect()
+            if result is not None:
+                iter_tag, eval_results = result
+                if "error" in eval_results:
+                    run.event("async_eval_failed", {
+                        "iteration": iter_tag,
+                        "error": eval_results["error"],
+                    })
+                else:
+                    run.event("async_eval_results", {
+                        "iteration": iter_tag,
+                        **eval_results,
+                    })
+                    run.metric({
+                        "iter": iter_tag,
+                        "async_eval": True,
+                        "elapsed_min": elapsed_min,
+                        **eval_results,
+                    })
+
         if iters_done >= cfg.max_iters:
             run.event("loop_max_iters_reached", {"iter": cur_iter})
             break
@@ -420,6 +596,12 @@ def run_loop(run: Run, cfg: LoopConfig) -> dict:
             }
         )
 
+        # Determine player count for this iteration.
+        if cfg.mixed_players:
+            iter_num_players = cfg.mixed_players[(cur_iter - 1) % len(cfg.mixed_players)]
+        else:
+            iter_num_players = cfg.num_players
+
         use_league = (
             cfg.league_selfplay_every > 0
             and cur_iter % cfg.league_selfplay_every == 0
@@ -430,7 +612,7 @@ def run_loop(run: Run, cfg: LoopConfig) -> dict:
                 net,
                 buffer,
                 league,
-                num_players=cfg.num_players,
+                num_players=iter_num_players,
                 num_games=cfg.selfplay_games,
                 device=device,
                 max_turns=cfg.selfplay_max_turns,
@@ -439,12 +621,12 @@ def run_loop(run: Run, cfg: LoopConfig) -> dict:
                 league_prob=cfg.league_opponent_prob,
                 time_discount=cfg.time_discount,
             )
-            run.event("league_selfplay_done", {"iter": cur_iter, **sp_metrics})
+            run.event("league_selfplay_done", {"iter": cur_iter, "num_players": iter_num_players, **sp_metrics})
         else:
             sp_metrics = run_selfplay(
                 net,
                 buffer,
-                num_players=cfg.num_players,
+                num_players=iter_num_players,
                 num_games=cfg.selfplay_games,
                 device=device,
                 max_turns=cfg.selfplay_max_turns,
@@ -455,7 +637,7 @@ def run_loop(run: Run, cfg: LoopConfig) -> dict:
                 dirichlet_mix=cfg.dirichlet_mix,
                 q_scale=cfg.q_scale,
             )
-            run.event("selfplay_done", {"iter": cur_iter, **sp_metrics})
+            run.event("selfplay_done", {"iter": cur_iter, "num_players": iter_num_players, **sp_metrics})
 
         # Train
         train_metrics = {}
@@ -469,6 +651,7 @@ def run_loop(run: Run, cfg: LoopConfig) -> dict:
                     batch_size=cfg.learner_batch,
                     entropy_bonus=cfg.entropy_bonus,
                     device=device,
+                    grad_scaler=grad_scaler,
                 )
                 for k, v in m.items():
                     accum[k] = accum.get(k, 0.0) + v
@@ -482,54 +665,74 @@ def run_loop(run: Run, cfg: LoopConfig) -> dict:
 
         # Eval
         checkpoint_reasons: list[str] = []
-        if cur_iter % cfg.eval_every == 0:
-            run.write_heartbeat({"iter": cur_iter, "phase": "eval"})
-            eval_metrics = LAD.evaluate(
-                net,
-                num_players=cfg.num_players,
-                num_games=cfg.eval_games,
-                device=device,
-                num_sims=cfg.eval_sims,
-                max_turns=cfg.eval_max_turns,
-                seed=cur_iter * 7,
-            )
-            row = {
-                "iter": cur_iter,
-                "elapsed_min": (time.monotonic() - t_start) / 60.0,
-                "lr": optim.param_groups[0]["lr"],
-                **train_metrics,
-                **eval_metrics,
-                "buffer_size": len(buffer),
-            }
-            wants_rank_eval = (
-                cfg.rank_eval_games > 0
-                and (cur_iter % cfg.checkpoint_every == 0 or _is_new_best_eval(metrics_history, row))
-            )
-            if wants_rank_eval:
-                rank_metrics = _run_rank_eval(net, cfg, device, seed=cur_iter * 11)
-                row.update(rank_metrics)
-                run.event("rank_eval_done", {"iter": cur_iter, **rank_metrics})
-            is_new_best_eval = _is_new_best_eval(metrics_history, row)
-            run.metric(row)
-            metrics_history.append(row)
-            decision = decide_next_action(metrics_history)
-            run.event("eval_done", {"iter": cur_iter, "decision": decision, **eval_metrics})
-            last_eval_row = row
-            if is_new_best_eval:
-                checkpoint_reasons.append("new_best_eval")
-            J.append_entry(
-                run.journal_path,
-                f"iter {cur_iter} eval decision: {decision}",
-                body=f"metrics: {row}\nhistory_len: {len(metrics_history)}",
-            )
+        # Determine whether eval is due: wall-clock mode or iteration mode.
+        eval_due = False
+        if cfg.eval_every_mins > 0:
+            eval_due = (elapsed_min - last_eval_wall_min) >= cfg.eval_every_mins
+        else:
+            eval_due = cur_iter % cfg.eval_every == 0
+        if eval_due:
+            last_eval_wall_min = elapsed_min
+            if async_eval_handle is not None:
+                # -- Async eval path: launch CPU subprocess, don't block GPU --
+                run.write_heartbeat({"iter": cur_iter, "phase": "async_eval_launch"})
+                snapshot = {k: v.detach().cpu().clone() for k, v in net.state_dict().items()}
+                if not async_eval_handle.launch(snapshot, cur_iter, seed=cur_iter * 7):
+                    run.event("async_eval_skipped", {
+                        "iteration": cur_iter,
+                        "reason": "previous eval still active",
+                    }, level="WARN")
+                else:
+                    run.event("async_eval_launched", {"iteration": cur_iter})
+            else:
+                # -- Synchronous eval path (original behavior) --
+                run.write_heartbeat({"iter": cur_iter, "phase": "eval"})
+                eval_metrics = LAD.evaluate(
+                    net,
+                    num_players=cfg.num_players,
+                    num_games=cfg.eval_games,
+                    device=device,
+                    num_sims=cfg.eval_sims,
+                    max_turns=cfg.eval_max_turns,
+                    seed=cur_iter * 7,
+                )
+                row = {
+                    "iter": cur_iter,
+                    "elapsed_min": (time.monotonic() - t_start) / 60.0,
+                    "lr": optim.param_groups[0]["lr"],
+                    **train_metrics,
+                    **eval_metrics,
+                    "buffer_size": len(buffer),
+                }
+                wants_rank_eval = (
+                    cfg.rank_eval_games > 0
+                    and (cur_iter % cfg.checkpoint_every == 0 or _is_new_best_eval(metrics_history, row))
+                )
+                if wants_rank_eval:
+                    rank_metrics = _run_rank_eval(net, cfg, device, seed=cur_iter * 11)
+                    row.update(rank_metrics)
+                    run.event("rank_eval_done", {"iter": cur_iter, **rank_metrics})
+                is_new_best_eval = _is_new_best_eval(metrics_history, row)
+                run.metric(row)
+                metrics_history.append(row)
+                decision = decide_next_action(metrics_history)
+                run.event("eval_done", {"iter": cur_iter, "decision": decision, **eval_metrics})
+                last_eval_row = row
+                if is_new_best_eval:
+                    checkpoint_reasons.append("new_best_eval")
+                J.append_entry(
+                    run.journal_path,
+                    f"iter {cur_iter} eval decision: {decision}",
+                    body=f"metrics: {row}\nhistory_len: {len(metrics_history)}",
+                )
 
-            if decision == "reduce_lr":
-                for pg in optim.param_groups:
-                    pg["lr"] = pg["lr"] * 0.1
-                run.event("lr_reduced", {"new_lr": optim.param_groups[0]["lr"]})
-            elif decision in ("stop_regressing", "stop_converged"):
-                run.event("loop_stopping", {"decision": decision})
-                break
+                if decision == "reduce_lr":
+                    for pg in optim.param_groups:
+                        pg["lr"] = pg["lr"] * 0.1
+                    run.event("lr_reduced", {"new_lr": optim.param_groups[0]["lr"]})
+                elif decision in ("stop_regressing", "stop_converged"):
+                    run.event("loop_stopping", {"decision": decision})
+                    break
 
         # Checkpoint
         if cur_iter % cfg.checkpoint_every == 0:
@@ -563,6 +766,10 @@ def run_loop(run: Run, cfg: LoopConfig) -> dict:
                     "decision": decision,
                 }
             )
+
+            # Clean up old archive checkpoints to save disk space.
+            if cfg.keep_recent_checkpoints > 0:
+                _cleanup_old_checkpoints(run.ckpt_dir, cfg.keep_recent_checkpoints, run)
 
         if cur_iter % cfg.league_ckpt_every == 0:
             entry_eval_row = (
@@ -618,6 +825,52 @@ def run_loop(run: Run, cfg: LoopConfig) -> dict:
             )
             if rating is not None:
                 run.event("league_rating_done", {"iter": cur_iter, **rating})
+
+    # -- Collect any remaining async eval results before final checkpoint --
+    if async_eval_handle is not None:
+        result = async_eval_handle.wait_and_collect()
+        if result is not None:
+            iter_tag, eval_results = result
+            if "error" in eval_results:
+                run.event("async_eval_failed", {
+                    "iteration": iter_tag,
+                    "error": eval_results["error"],
+                })
+            else:
+                run.event("async_eval_results", {
+                    "iteration": iter_tag,
+                    **eval_results,
+                })
+                run.metric({
+                    "iter": iter_tag,
+                    "async_eval": True,
+                    "elapsed_min": (time.monotonic() - t_start) / 60.0,
+                    **eval_results,
+                })
+        async_eval_handle.cleanup()
+
+    # -- Final eval at loop end (ensures a data point at the very end) --
+    if cfg.eval_every_mins > 0 and cfg.eval_games > 0:
+        final_elapsed = (time.monotonic() - t_start) / 60.0
+        run.write_heartbeat({"iter": cur_iter, "phase": "final_eval"})
+        eval_metrics = LAD.evaluate(
+            net,
+            num_players=cfg.num_players,
+            num_games=cfg.eval_games,
+            device=device,
+            num_sims=cfg.eval_sims,
+            max_turns=cfg.eval_max_turns,
+            seed=cur_iter * 7 + 1,
+        )
+        row = {
+            "iter": cur_iter,
+            "elapsed_min": final_elapsed,
+            "final_eval": True,
+            **eval_metrics,
+        }
+        run.metric(row)
+        metrics_history.append(row)
+        run.event("final_eval_done", {"iter": cur_iter, **eval_metrics})
 
     # Final checkpoint + state
     final_path = run.ckpt_dir / f"iter_{cur_iter:06d}.pt"

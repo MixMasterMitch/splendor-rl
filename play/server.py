@@ -109,7 +109,7 @@ class _Handler(BaseHTTPRequestHandler):
         if p == "/api/health":
             self._send_json(200, {"ok": True})
             return
-        if p == "/api/models":
+        if p == "/api/agents":
             self._send_json(200, svc.list_models())
             return
         identity = AU.identity_from_headers(self._header_map())
@@ -152,6 +152,11 @@ class _Handler(BaseHTTPRequestHandler):
                 if not isinstance(action, int):
                     raise ValueError("body must include integer 'action'")
                 session = svc.apply_human_action(identity, game_id, action)
+                with session.lock:
+                    self._send_json(200, session.view())
+                return
+            if verb == "step-ai":
+                session = svc.step_ai(identity, game_id)
                 with session.lock:
                     self._send_json(200, session.view())
                 return

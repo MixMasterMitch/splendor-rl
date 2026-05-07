@@ -25,8 +25,6 @@ Each returned model dict has the shape:
         "score_hint": float | None,
         "winrate_vs_heuristic": float | None,
     }
-
-The "elo" field is kept as an alias for "rating" for the frontend.
 """
 
 from __future__ import annotations
@@ -85,12 +83,16 @@ def _scan_league_json(path: pathlib.Path, run_id: str) -> list[dict[str, Any]]:
     data = _read_json_resilient(path)
     if data is None:
         return []
+    league_root = path.parent
     out: list[dict[str, Any]] = []
     for entry in data.get("entries", []):
         ckpt_path_str = str(entry.get("path", ""))
         if not ckpt_path_str:
             continue
         ckpt_path = pathlib.Path(ckpt_path_str)
+        # Paths may be stored relative to the league root directory.
+        if not ckpt_path.is_absolute():
+            ckpt_path = league_root / ckpt_path
         if not ckpt_path.exists():
             continue
         tag = str(entry.get("tag", f"idx{entry.get('idx', '?')}"))
@@ -100,14 +102,13 @@ def _scan_league_json(path: pathlib.Path, run_id: str) -> list[dict[str, Any]]:
         out.append(
             {
                 "id": model_id,
-                "label": f"{run_id}/{tag} (rating {rating:.0f})",
+                "label": "ML Bot",
                 "kind": "net",
                 "run": run_id,
                 "tag": tag,
                 "idx": idx,
                 "ckpt": str(ckpt_path),
                 "rating": rating,
-                "elo": rating,
                 "games": int(entry.get("games", 0)),
                 "hidden": entry.get("hidden"),
                 "arch": entry.get("arch"),
@@ -121,14 +122,29 @@ def _scan_league_json(path: pathlib.Path, run_id: str) -> list[dict[str, Any]]:
 def _builtins() -> list[dict[str, Any]]:
     return [
         {
+            "id": "bedrock_claude_sonnet",
+            "label": "Claude Sonnet Bot",
+            "kind": "llm_bedrock",
+            "run": None,
+            "tag": None,
+            "ckpt": None,
+            "rating": 2500.0,
+            "games": 0,
+            "hidden": None,
+            "arch": None,
+            "score_hint": None,
+            "winrate_vs_heuristic": None,
+            "bedrock_model_id": "global.anthropic.claude-sonnet-4-6",
+        },
+
+        {
             "id": "heuristic_opus",
-            "label": f"Heuristic-opus V15 (rating {HEURISTIC_OPUS_RATING:.0f})",
+            "label": "Heuristic Opus Bot",
             "kind": "heuristic_opus",
             "run": None,
             "tag": None,
             "ckpt": None,
             "rating": HEURISTIC_OPUS_RATING,
-            "elo": HEURISTIC_OPUS_RATING,
             "games": 0,
             "hidden": None,
             "arch": None,
@@ -137,13 +153,12 @@ def _builtins() -> list[dict[str, Any]]:
         },
         {
             "id": "heuristic",
-            "label": f"Heuristic bot (anchor {HEURISTIC_ANCHOR_RATING:.0f})",
+            "label": "Heuristic Bot",
             "kind": "heuristic",
             "run": None,
             "tag": None,
             "ckpt": None,
             "rating": HEURISTIC_ANCHOR_RATING,
-            "elo": HEURISTIC_ANCHOR_RATING,
             "games": 0,
             "hidden": None,
             "arch": None,
@@ -152,13 +167,12 @@ def _builtins() -> list[dict[str, Any]]:
         },
         {
             "id": "random",
-            "label": f"Random bot (anchor {RANDOM_ANCHOR_RATING:.0f})",
+            "label": "Random Bot",
             "kind": "random",
             "run": None,
             "tag": None,
             "ckpt": None,
             "rating": RANDOM_ANCHOR_RATING,
-            "elo": RANDOM_ANCHOR_RATING,
             "games": 0,
             "hidden": None,
             "arch": None,
@@ -176,6 +190,12 @@ def discover_models(workspace_root: pathlib.Path) -> list[dict[str, Any]]:
     if not runs_root.exists():
         return models
 
+    # Check for shared league at agent/runs/league/league.json
+    shared_league = runs_root / "league" / "league.json"
+    if shared_league.exists():
+        models.extend(_scan_league_json(shared_league, "league"))
+
+    # Also check per-run leagues at agent/runs/<run>/checkpoints/league/league.json
     for run_dir in sorted(p for p in runs_root.iterdir() if p.is_dir()):
         league_json = run_dir / "checkpoints" / "league" / "league.json"
         if league_json.exists():

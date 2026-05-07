@@ -51,19 +51,97 @@ def configure_cpu_threads(num_threads: Optional[int] = None) -> Dict[str, int]:
 def resolve_device(requested: str) -> str:
     """Return a concrete torch device string given a user request.
 
-    The maintained trainer is CPU-only. "auto" and "cpu" both resolve to "cpu";
-    any other device request is rejected so stale GPU commands fail fast.
+    Accepted values:
+    - ``"cpu"``      → ``"cpu"``
+    - ``"cuda"``     → ``"cuda:0"`` (requires CUDA)
+    - ``"cuda:N"``   → ``"cuda:N"`` after validating *N* < device_count
+    - ``"auto"``/``""`` → ``"cuda:0"`` when CUDA is available, else ``"cpu"``
+
+    Any other string raises :class:`ValueError`.
     """
-    req = (requested or "auto").lower()
-    if req in ("", "auto", "cpu"):
+    req = (requested or "auto").strip().lower()
+
+    if req in ("", "auto"):
+        if torch.cuda.is_available():
+            return "cuda:0"
         return "cpu"
+
+    if req == "cpu":
+        return "cpu"
+
+    if req == "cuda":
+        if not torch.cuda.is_available():
+            raise ValueError(
+                "CUDA requested but torch.cuda.is_available() is False. "
+                "Check your PyTorch installation and GPU drivers."
+            )
+        return "cuda:0"
+
+    # Handle "cuda:N"
+    if req.startswith("cuda:"):
+        if not torch.cuda.is_available():
+            raise ValueError(
+                f"CUDA requested ({req}) but torch.cuda.is_available() is False"
+            )
+        try:
+            idx = int(req.split(":")[1])
+        except ValueError:
+            raise ValueError(
+                f"unsupported device {requested!r}; use cpu, cuda, cuda:N, or auto"
+            )
+        count = torch.cuda.device_count()
+        if idx < 0 or idx >= count:
+            raise ValueError(
+                f"CUDA device {idx} not found; {count} devices available"
+            )
+        return req
+
     raise ValueError(
-        f"unsupported device {requested!r}; the maintained Splendor trainer is CPU-only"
+        f"unsupported device {requested!r}; use cpu, cuda, cuda:N, or auto"
     )
 
 
 def device_info(device: str) -> Dict[str, object]:
-    return {
+    """Return metadata about the active device.
+
+    For CUDA devices the dict additionally contains GPU name, VRAM, and
+    CUDA / cuDNN version information.
+    """
+    info: Dict[str, object] = {
         "device": device,
         "torch": torch.__version__,
     }
+    if device.startswith("cuda"):
+        idx = 0
+        if ":" in device:
+            idx = int(device.split(":")[1])
+        props = torch.cuda.get_device_properties(idx)
+        mem_total = props.total_memory / (1024 ** 3)
+        mem_free = (props.total_memory - torch.cuda.memory_allocated(idx)) / (1024 ** 3)
+        info["gpu_name"] = props.name
+        info["gpu_vram_total_gb"] = round(mem_total, 2)
+        info["gpu_vram_free_gb"] = round(mem_free, 2)
+        info["cuda_version"] = torch.version.cuda or "N/A"
+        info["cudnn_version"] = str(torch.backends.cudnn.version()) if torch.backends.cudnn.is_available() else "N/A"
+    return info
+
+
+def configure_device(device: str) -> Dict[str, object]:
+    """One-time device setup.
+
+    For CUDA devices: enables ``cudnn.benchmark`` and clears the CUDA cache.
+    For CPU: configures thread pools via :func:`configure_cpu_threads`.
+
+    Returns the result of :func:`device_info` merged with any setup metadata.
+    """
+    info = device_info(device)
+
+    if device.startswith("cuda"):
+        torch.backends.cudnn.benchmark = True
+        torch.cuda.empty_cache()
+        info["cudnn_benchmark"] = True
+    else:
+        thread_info = configure_cpu_threads()
+        info.update(thread_info)
+
+    return info

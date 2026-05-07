@@ -8,11 +8,19 @@ dependencies = [
     "numpy",
     "pyyaml",
     "tqdm",
+    "optuna",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest",
+    "hypothesis>=6.0",
+    "moto[dynamodb]>=4.0",
+]
+aws = [
+    "boto3>=1.28",
+    "aws-cdk-lib>=2.100.0",
+    "constructs>=10.0",
 ]
 
 [project.scripts]
@@ -23,6 +31,9 @@ splendor-status = "agent.scripts.status:main"
 splendor-eval = "agent.scripts.eval_ckpt:main"
 splendor-league = "agent.scripts.league_table:main"
 splendor-play = "play.server:main"
+splendor-benchmark = "agent.scripts.benchmark:main"
+splendor-tune = "agent.scripts.tune:main"
+splendor-sync = "play.sync:main"
 
 [tool.pytest.ini_options]
 testpaths = ["agent/tests", "play/tests"]

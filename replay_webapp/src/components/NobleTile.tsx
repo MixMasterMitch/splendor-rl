@@ -3,16 +3,18 @@ import { GemIcon } from "./GemIcon";
 
 interface NobleTileProps {
   noble: NobleData | null;
-  size?: number;
+  highlight?: boolean;
+  onClick?: () => void;
+  displayRequirements?: number[]; // optional override for displayed requirements (length 5)
 }
 
-export function NobleTile({ noble, size = 84 }: NobleTileProps) {
+export function NobleTile({ noble, highlight = false, onClick, displayRequirements }: NobleTileProps) {
   if (!noble) {
     return (
       <div
         style={{
-          width: size,
-          minHeight: size,
+          width: 120,
+          minHeight: 48,
           borderRadius: 6,
           border: "1px dashed #2a4a7f",
           flexShrink: 0,
@@ -21,46 +23,25 @@ export function NobleTile({ noble, size = 84 }: NobleTileProps) {
     );
   }
 
-  const nonZeroReqs = noble.requirement
+  const reqs = displayRequirements ?? noble.requirement;
+  const nonZeroReqs = reqs
     .map((c, i) => ({ count: c, color: i }))
     .filter((x) => x.count > 0);
 
-  // Split requirements into two columns for compact display.
-  const col1 = nonZeroReqs.slice(0, Math.ceil(nonZeroReqs.length / 2));
-  const col2 = nonZeroReqs.slice(Math.ceil(nonZeroReqs.length / 2));
-
-  const ReqItem = ({ count, color }: { count: number; color: number }) => (
-    <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
-      <div
-        style={{
-          width: 15,
-          height: 15,
-          borderRadius: "50%",
-          background: GEM_COLORS[color] ?? "#888",
-          border: "1px solid rgba(255,255,255,0.2)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexShrink: 0,
-        }}
-      >
-        <GemIcon colorIdx={color} size={9} fill={GEM_TEXT_COLORS[color] ?? "#fff"} />
-      </div>
-      <span style={{ fontSize: 11, color: "#e0e6f0", fontWeight: "bold" }}>{count}</span>
-    </div>
-  );
-
   return (
     <div
+      onClick={onClick}
       style={{
-        width: size,
+        width: 120,
         borderRadius: 6,
-        border: "2px solid #9a4a7c",
+        border: `2px solid ${highlight ? "#e8c848" : "#9a4a7c"}`,
         background: "#2a1a3e",
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",
         flexShrink: 0,
+        cursor: onClick ? "pointer" : undefined,
+        boxShadow: highlight ? "0 0 8px #e8c848" : undefined,
       }}
     >
       {/* Header: name left, PV right */}
@@ -68,18 +49,20 @@ export function NobleTile({ noble, size = 84 }: NobleTileProps) {
         style={{
           background: "#9a4a7c",
           display: "flex",
-          alignItems: "flex-start",
+          alignItems: "center",
           justifyContent: "space-between",
-          padding: "3px 5px",
+          padding: "3px 6px",
           gap: 4,
         }}
       >
         <span
           style={{
-            fontSize: 9,
+            fontSize: 10,
             color: "#fff",
-            lineHeight: 1.25,
-            wordBreak: "break-word",
+            lineHeight: 1.2,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
             flex: 1,
           }}
         >
@@ -90,26 +73,36 @@ export function NobleTile({ noble, size = 84 }: NobleTileProps) {
         </span>
       </div>
 
-      {/* Body: requirements in two columns */}
+      {/* Body: requirements in a single row */}
       <div
         style={{
-          padding: "5px 5px",
+          padding: "4px 6px",
           display: "flex",
           gap: 6,
+          alignItems: "center",
+          flexWrap: "nowrap",
         }}
       >
-        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-          {col1.map(({ count, color }) => (
-            <ReqItem key={color} count={count} color={color} />
-          ))}
-        </div>
-        {col2.length > 0 && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            {col2.map(({ count, color }) => (
-              <ReqItem key={color} count={count} color={color} />
-            ))}
+        {nonZeroReqs.map(({ count, color }) => (
+          <div key={color} style={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <div
+              style={{
+                width: 14,
+                height: 14,
+                borderRadius: "50%",
+                background: GEM_COLORS[color] ?? "#888",
+                border: "1px solid rgba(255,255,255,0.2)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              <GemIcon colorIdx={color} size={9} fill={GEM_TEXT_COLORS[color] ?? "#fff"} />
+            </div>
+            <span style={{ fontSize: 11, color: "#e0e6f0", fontWeight: "bold" }}>{count}</span>
           </div>
-        )}
+        ))}
       </div>
     </div>
   );
