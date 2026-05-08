@@ -30,34 +30,25 @@ This is a full-stack system for training, evaluating, and deploying a Splendor-p
 - **Rating** — A unified Bradley-Terry rating system that spans ML bots, heuristic bots, LLM agents, and human players
 - **Deployment** — AWS CDK stack with Lambda, DynamoDB, S3, CloudFront, and API Gateway
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        GPU Training Host                         │
-│  ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌────────────┐  │
-│  │ Self-Play│──▶│  Replay  │──▶│ Learner  │──▶│ Checkpoint │  │
-│  │  (GPU)   │   │  Buffer  │   │  (GPU)   │   │   + League │  │
-│  └──────────┘   └──────────┘   └──────────┘   └────────────┘  │
-│       │                                              │          │
-│       ▼                                              ▼          │
-│  ┌──────────────────────────────────────────────────────────┐  │
-│  │         Unified Eval (CPU subprocess, async)              │  │
-│  │   512 games × {random, heuristic, opus, league ckpts}    │  │
-│  └──────────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                    deploy.sh │ (CDK + sync)
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                         AWS Cloud                                │
-│  ┌────────────┐  ┌──────────┐  ┌──────────┐  ┌─────────────┐  │
-│  │ CloudFront │──│ S3 (SPA) │  │ DynamoDB │  │ S3 (Models) │  │
-│  └────────────┘  └──────────┘  │ Games +  │  └─────────────┘  │
-│       │                         │ Users    │        │           │
-│       ▼                         └──────────┘        │           │
-│  ┌────────────┐                      ▲              │           │
-│  │ API GW v2  │──▶ Lambda (Docker) ──┘──────────────┘           │
-│  └────────────┘    (PyTorch + Bedrock)                          │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    subgraph GPU["GPU Training Host"]
+        SP["Self-Play (GPU)"] --> RB["Replay Buffer"]
+        RB --> LR["Learner (GPU)"]
+        LR --> CK["Checkpoint + League"]
+        SP --> EV["Unified Eval (CPU subprocess, async)<br/>512 games × {random, heuristic, opus, league ckpts}"]
+        CK --> EV
+    end
+
+    GPU -->|"deploy.sh (CDK + sync)"| AWS
+
+    subgraph AWS["AWS Cloud"]
+        CF["CloudFront"] --> S3F["S3 (SPA)"]
+        CF --> APIGW["API Gateway v2"]
+        APIGW --> Lambda["Lambda (Docker)<br/>PyTorch + Bedrock"]
+        Lambda --> DDB["DynamoDB<br/>Games + Users"]
+        Lambda --> S3M["S3 (Models)"]
+    end
 ```
 
 ---
@@ -141,21 +132,14 @@ This is fully batched: all B×K child expansions happen in one engine step and o
 
 Each training run is a bounded burst of iterations. One iteration consists of:
 
-```
-1. Self-play burst (GPU)
-   - Play N games in parallel using current network + Gumbel MCTS
-   - Record (state, improved_policy, value_target) tuples
-   - Write samples to replay buffer
-
-2. Learner steps (GPU)
-   - Sample minibatches from replay buffer
-   - Minimize: policy_KL_loss + value_MSE_loss - entropy_bonus
-   - AdamW optimizer with gradient clipping
-
-3. Checkpoint + Eval (every K iterations)
-   - Save checkpoint atomically
-   - Add checkpoint to league
-   - Launch unified eval on CPU subprocess (non-blocking)
+```mermaid
+graph TD
+    A["1. Self-play burst (GPU)<br/>Play N games in parallel<br/>using current network + Gumbel MCTS"] --> B["Record (state, improved_policy, value_target)<br/>Write samples to replay buffer"]
+    B --> C["2. Learner steps (GPU)<br/>Sample minibatches from replay buffer<br/>Minimize: policy_KL + value_MSE - entropy_bonus<br/>AdamW + gradient clipping"]
+    C --> D{"Every K iterations?"}
+    D -->|Yes| E["3. Checkpoint + Eval<br/>Save checkpoint atomically<br/>Add to league<br/>Launch unified eval on CPU (non-blocking)"]
+    D -->|No| A
+    E --> A
 ```
 
 ### Self-Play (`selfplay.py`)
@@ -238,7 +222,7 @@ All ratings in the system use **anchored Bradley-Terry maximum likelihood estima
 - **Anchors** (fixed): `random = 1000`, `heuristic = 2500`
 - **Free parameters**: Every other entity's rating is fit by maximizing the likelihood of observed pairwise results
 - **Solver**: L-BFGS optimization on the log-likelihood
-- **Scale**: 400 points per order of magnitude in win probability (same scale as Elo)
+- **Scale**: 1000 points per order of magnitude in win probability (10× wider than standard Elo's 400)
 
 The key property: ratings are **order-independent**. Every refit uses the full history of pairwise results, so the rating reflects all available evidence regardless of when games were played.
 
@@ -275,18 +259,15 @@ All results are aggregated as `{a, b, wins_a, wins_b, ties, games}` records. The
 
 The web app follows a **service layer pattern**:
 
-```
-HTTP Layer (Flask/Lambda)
-    │
-    ▼
-PlayService (play/service.py)
-    │
-    ├── GameSession (play/state.py) — in-memory game state
-    ├── PlayStore (protocol) — persistence abstraction
-    │     ├── JsonPlayStore — local file storage
-    │     └── DynamoPlayStore — AWS DynamoDB
-    ├── HumanRatingStore — per-user rating persistence
-    └── Policy cache — loaded neural nets + LLM clients
+```mermaid
+graph TD
+    HTTP["HTTP Layer (Flask/Lambda)"] --> PS["PlayService (play/service.py)"]
+    PS --> GS["GameSession (play/state.py)<br/>In-memory game state"]
+    PS --> Store["PlayStore (protocol)"]
+    Store --> JSON["JsonPlayStore<br/>Local file storage"]
+    Store --> Dynamo["DynamoPlayStore<br/>AWS DynamoDB"]
+    PS --> HR["HumanRatingStore<br/>Per-user rating persistence"]
+    PS --> PC["Policy cache<br/>Loaded neural nets + LLM clients"]
 ```
 
 ### Game Flow
@@ -325,8 +306,12 @@ Neural network policies are cached by `(checkpoint_path, num_sims, device)`. Onc
 
 ### Pipeline
 
-```
-GameStateRenderer → User Prompt → BedrockClient → ActionParser → Action Index
+```mermaid
+graph LR
+    R["GameStateRenderer"] --> P["User Prompt"]
+    P --> B["BedrockClient"]
+    B --> AP["ActionParser"]
+    AP --> AI["Action Index"]
 ```
 
 1. **Renderer** (`renderer.py`): Converts the raw engine tensor state into a human-readable text description (your gems, available cards, opponent state, legal actions list)
@@ -460,35 +445,44 @@ Checkpoints are uploaded to S3 during CDK deploy. A `manifest.json` in the model
 
 ### Training → Leaderboard
 
-```
-Self-play games → Replay buffer → Learner updates → New checkpoint
-    → Added to league → Unified eval (512 games vs opponent pool)
-    → Pairwise results → League recompute_ratings()
-    → league.json updated with new ratings
-    → deploy.sh uploads to S3 → Lambda reads for leaderboard
+```mermaid
+graph LR
+    SP["Self-play games"] --> RB["Replay buffer"]
+    RB --> LU["Learner updates"]
+    LU --> NC["New checkpoint"]
+    NC --> League["Added to league"]
+    League --> UE["Unified eval<br/>(512 games vs opponent pool)"]
+    UE --> PR["Pairwise results"]
+    PR --> RR["league.recompute_ratings()"]
+    RR --> LJ["league.json updated"]
+    LJ --> Deploy["deploy.sh → S3"]
+    Deploy --> Lambda["Lambda serves leaderboard"]
 ```
 
 ### Human Game → Rating
 
-```
-Human plays game in webapp → Game ends
-    → Pairwise decomposition (human vs each opponent)
-    → Added to user's results table
-    → fit_human_rating() from full history
-    → Rating persisted to JSON/DynamoDB
-    → Leaderboard combines with league data via combined_ratings()
+```mermaid
+graph LR
+    HG["Human plays game"] --> GE["Game ends"]
+    GE --> PD["Pairwise decomposition<br/>(human vs each opponent)"]
+    PD --> RT["Added to user's results table"]
+    RT --> FIT["fit_human_rating()<br/>from full history"]
+    FIT --> PERSIST["Rating persisted<br/>to JSON/DynamoDB"]
+    PERSIST --> LB["Leaderboard combines<br/>with league data"]
 ```
 
 ### LLM Rating Game → Leaderboard
 
-```
-llm_rating_games.py plays N games → Each game result
-    → Pairwise results recorded in league.record_result()
-    → league.recompute_ratings() after all games
-    → LLM entity gets a rating in league.json
-    → deploy.sh uploads → Lambda serves on leaderboard
+```mermaid
+graph LR
+    SCRIPT["llm_rating_games.py<br/>plays N games"] --> RESULT["Each game result"]
+    RESULT --> RECORD["Pairwise results recorded<br/>in league.record_result()"]
+    RECORD --> REFIT["league.recompute_ratings()"]
+    REFIT --> ENTITY["LLM entity gets rating<br/>in league.json"]
+    ENTITY --> DEPLOY["deploy.sh → S3"]
+    DEPLOY --> SERVE["Lambda serves<br/>on leaderboard"]
 ```
 
 ### Key Invariant
 
-All ratings — ML checkpoints, heuristic bots, LLM agents, and human players — are computed on the **same Bradley-Terry scale** anchored to `random=1000` and `heuristic=2500`. A human rated 2600 is expected to beat the heuristic bot ~65% of the time, same as an ML checkpoint rated 2600.
+All ratings — ML checkpoints, heuristic bots, LLM agents, and human players — are computed on the **same Bradley-Terry scale** anchored to `random=1000` and `heuristic=2500`. With a scale of 1000 points per order of magnitude, a human rated 2600 is expected to beat the heuristic bot ~56% of the time, same as an ML checkpoint rated 2600.
