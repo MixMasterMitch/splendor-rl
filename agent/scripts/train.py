@@ -45,7 +45,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Enable torch.compile on the net forward (experimental on this machine)",
     )
     p.set_defaults(compile_net=False)
-    p.add_argument("--hidden", type=int, default=192)
+    p.add_argument("--hidden", type=int, default=256)
     p.add_argument(
         "--arch",
         choices=["attn", "flat"],
@@ -75,7 +75,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Small policy-entropy bonus added during learning to slow premature collapse.",
     )
     p.add_argument("--checkpoint-every", type=int, default=25)
-    p.add_argument("--lr", type=float, default=3e-5)
+    p.add_argument("--lr", type=float, default=2e-5)
     p.add_argument("--weight-decay", type=float, default=1e-4)
     p.add_argument("--max-iters", type=int, default=5000)
     p.add_argument("--max-wall-minutes", type=float, default=720.0)
@@ -142,7 +142,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--eval-games",
         type=int,
-        default=512,
+        default=1024,
         help="Total games in unified eval (mixed 2p/3p/4p).",
     )
     p.add_argument(
