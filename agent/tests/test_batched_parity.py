@@ -41,6 +41,7 @@ def _aligned_reset(single_seed: int, batched: BE.BatchedEngine) -> E.GameState:
         nobles=nobles,
         players=[E.PlayerState.empty() for _ in range(nP)],
         current_player=cp,
+        first_player=cp,
         phase=0,
         turn_count=0,
         last_round_trigger_player=-1,

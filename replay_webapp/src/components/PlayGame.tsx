@@ -84,6 +84,7 @@ export function PlayGame({
   const playerInfos: PlayerInfo[] = view.players.map((p) => ({
     name: p.kind === "human" ? "You" : p.label,
     kind: p.kind,
+    description: p.description,
   }));
 
   const replaySteps: ReplayStep[] = view.steps.map((s) => ({
@@ -146,6 +147,7 @@ export function PlayGame({
                 marginRight: 12,
                 fontWeight: view.current_player === p.seat ? "bold" : "normal",
               }}
+              title={p.description ?? undefined}
             >
               {seatLabel(p)}
               {p.rating != null ? ` [${p.rating.toFixed(0)}]` : ""}

@@ -80,6 +80,7 @@ export function PlayerPanel({
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
           }}
+          title={info.description ?? undefined}
         >
           P{playerIdx}: {info.name}{phaseLabel}
         </span>

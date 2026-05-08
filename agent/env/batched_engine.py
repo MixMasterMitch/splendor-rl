@@ -71,6 +71,7 @@ _STATE_TENSOR_ATTRS = (
     "nobles_claimed",
     "active_mask",
     "current_player",
+    "first_player",
     "phase",
     "last_trigger",
     "turns_since_trigger",
@@ -175,6 +176,7 @@ class BatchedEngine:
         self.nobles_claimed = torch.zeros((B, P), dtype=torch.int8, device=d)
         self.active_mask = torch.zeros((B, P), dtype=torch.bool, device=d)
         self.current_player = torch.zeros((B,), dtype=torch.int8, device=d)
+        self.first_player = torch.zeros((B,), dtype=torch.int8, device=d)
         self.phase = torch.zeros((B,), dtype=torch.int8, device=d)
         self.last_trigger = torch.full((B,), -1, dtype=torch.int8, device=d)
         self.turns_since_trigger = torch.zeros((B,), dtype=torch.int8, device=d)
@@ -233,6 +235,7 @@ class BatchedEngine:
 
         first_players = torch.randint(0, nP, (B,), generator=self.generator).to(torch.int8)
         self.current_player[:] = first_players.to(d)
+        self.first_player[:] = first_players.to(d)
         self.phase.zero_()
         self.last_trigger.fill_(-1)
         self.turns_since_trigger.zero_()
@@ -479,7 +482,13 @@ class BatchedEngine:
         has_trigger = self.last_trigger >= 0
         inc = (mask & has_trigger).to(self.turns_since_trigger.dtype)
         self.turns_since_trigger = self.turns_since_trigger + inc
-        end_now = mask & has_trigger & (self.turns_since_trigger >= nP)
+
+        # Game ends when current_player wraps back to first_player, meaning
+        # the round is complete and everyone has had equal turns. This correctly
+        # handles the case where the last player in a round triggers — the
+        # game ends immediately since the round is already complete.
+        stop_at = self.first_player
+        end_now = mask & has_trigger & (self.current_player == stop_at)
         self.ended = self.ended | end_now
 
     def _nobles_and_end_mask(self, mask: torch.Tensor) -> None:
@@ -730,6 +739,7 @@ def snapshot_from_single(
                 for p in range(nP)
             ],
             current_player=int(engine.current_player[b]),
+            first_player=int(engine.first_player[b]),
             phase=int(engine.phase[b]),
             turn_count=0,
             last_round_trigger_player=int(engine.last_trigger[b]),

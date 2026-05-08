@@ -64,10 +64,11 @@ class GameState:
     nobles: List[int]  # noble_ids currently on table (not yet claimed); -1 = claimed slot
     players: List[PlayerState]
     current_player: int
+    first_player: int  # who went first this game (round boundary)
     phase: int
     turn_count: int
     last_round_trigger_player: int  # -1 if not triggered; otherwise the player who first crossed 15
-    round_actions_since_trigger: int  # decremented from num_players * 1 down when trigger happens? We track turns since trigger
+    round_actions_since_trigger: int  # turns elapsed since trigger (for NN feature / diagnostics)
     ended: bool
 
     def copy(self) -> "GameState":
@@ -105,6 +106,7 @@ def create_game(num_players: int, rng: Optional[random.Random] = None) -> GameSt
 
     players = [PlayerState.empty() for _ in range(num_players)]
 
+    first_player = rng.randrange(num_players)
     return GameState(
         num_players=num_players,
         gem_pool=supply,
@@ -112,7 +114,8 @@ def create_game(num_players: int, rng: Optional[random.Random] = None) -> GameSt
         decks=decks,
         nobles=nobles,
         players=players,
-        current_player=rng.randrange(num_players),
+        current_player=first_player,
+        first_player=first_player,
         phase=0,
         turn_count=0,
         last_round_trigger_player=-1,
@@ -303,23 +306,13 @@ def _end_turn(state: GameState) -> None:
     nxt = (cur + 1) % state.num_players
     state.current_player = nxt
 
-    # If last-round trigger is set, and nxt is the player AFTER the trigger
-    # such that everyone has had equal turns: game ends when we wrap back to
-    # (trigger_player + 1) % num_players, i.e. the starting player of the next round.
-    # We end when nxt equals the player immediately after the trigger player
-    # and we've already played one full round after the trigger.
+    # Game ends when current_player wraps back to first_player, meaning the
+    # round is complete and everyone has had equal turns. This correctly handles
+    # the case where the last player in a round triggers — the game ends
+    # immediately since the round is already complete.
     if state.last_round_trigger_player >= 0:
-        # End-of-round: game ends when the first player of the "original" round
-        # order would act again. We treat it as: after the trigger, every player
-        # takes exactly one more turn. Since players rotate in order, the game
-        # ends when current_player equals (trigger_player + 1) % num_players
-        # AFTER the trigger player's turn. To make this robust we count turns
-        # since trigger:
         state.round_actions_since_trigger += 1
-        # Number of turns remaining after trigger = (num_players - 1)
-        # so when actions_since_trigger reaches num_players (includes the
-        # triggering player's own turn already counted), game ends.
-        if state.round_actions_since_trigger >= state.num_players:
+        if state.current_player == state.first_player:
             state.ended = True
 
 

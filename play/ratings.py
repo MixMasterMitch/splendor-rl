@@ -214,6 +214,7 @@ def agent_leaderboard_rows(
                 "bot_kind": str(m["kind"]),
                 "rating": rating,
                 "games": games,
+                "description": m.get("description"),
             }
         )
     return rows

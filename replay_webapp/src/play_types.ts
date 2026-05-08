@@ -23,6 +23,7 @@ export interface ModelInfo {
   arch?: string | null;
   score_hint?: number | null;
   winrate_vs_heuristic?: number | null;
+  description?: string | null;
 }
 
 export interface HumanRatingHistoryOpponent {
@@ -80,6 +81,7 @@ export interface LeaderboardCombinedEntry {
   username?: string;
   model_id?: string;
   bot_kind?: string;
+  description?: string | null;
 }
 
 export interface LeaderboardResponse {
@@ -95,6 +97,7 @@ export interface PlaySeatInfo {
   label: string;
   model_id: string | null;
   rating: number | null;
+  description?: string | null;
 }
 
 export interface PlayStep {

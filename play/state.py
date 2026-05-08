@@ -47,6 +47,7 @@ class GameSession:
         # In human play, seat 0 always goes first (deterministic turn order).
         # The random first-player selection is only for training.
         self.engine.current_player[:] = 0
+        self.engine.first_player[:] = 0
         self.initial_state = (
             initial_state_override
             if initial_state_override is not None
@@ -69,6 +70,7 @@ class GameSession:
                         "label": "You",
                         "model_id": None,
                         "rating": None,
+                        "description": None,
                     }
                 )
             else:
@@ -81,6 +83,7 @@ class GameSession:
                         "label": m["label"],
                         "model_id": m["id"],
                         "rating": rating,
+                        "description": m.get("description"),
                     }
                 )
         return out

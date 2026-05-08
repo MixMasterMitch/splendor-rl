@@ -194,33 +194,43 @@ export function PlaySetup({
         <span style={{ fontSize: 12, color: "#7a94b8" }}>Opponents</span>
         {Array.from({ length: numPlayers }, (_, i) => i)
           .filter((s) => s !== humanSeat)
-          .map((s) => (
+          .map((s) => {
+            const selectedModel = pickableModels.find((m) => m.id === seatModels[s]);
+            return (
             <label
               key={s}
               style={{
                 display: "flex",
-                alignItems: "center",
+                alignItems: "flex-start",
                 gap: 8,
                 fontSize: 13,
               }}
             >
               <span style={{ minWidth: 60 }}>Seat {s + 1}</span>
-              <select
-                value={seatModels[s] ?? ""}
-                onChange={(e) =>
-                  setSeatModels((prev) => ({ ...prev, [s]: e.target.value }))
-                }
-                style={{ flex: 1 }}
-                disabled={loadingModels}
-              >
-                {pickableModels.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.label} ({m.rating.toFixed(0)})
-                  </option>
-                ))}
-              </select>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+                <select
+                  value={seatModels[s] ?? ""}
+                  onChange={(e) =>
+                    setSeatModels((prev) => ({ ...prev, [s]: e.target.value }))
+                  }
+                  style={{ width: "100%" }}
+                  disabled={loadingModels}
+                >
+                  {pickableModels.map((m) => (
+                    <option key={m.id} value={m.id} title={m.description ?? ""}>
+                      {m.label} ({m.rating.toFixed(0)})
+                    </option>
+                  ))}
+                </select>
+                {selectedModel?.description && (
+                  <span style={{ fontSize: 11, color: "#5a7a9a", fontStyle: "italic", marginTop: 4 }}>
+                    {selectedModel.description}
+                  </span>
+                )}
+              </div>
             </label>
-          ))}
+            );
+          })}
       </div>
 
       {tooManySonnets && (

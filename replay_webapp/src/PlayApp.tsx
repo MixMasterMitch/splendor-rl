@@ -657,7 +657,7 @@ function PlayAppLoggedIn({ username }: { username: string }) {
               {(leaderboard?.entities ?? []).map((row, i) => (
                 <tr key={`${row.entity_id ?? row.model_id ?? row.label}-${i}`}>
                   <td style={{ padding: "4px 8px", color: "#e0e6f0" }}>{i + 1}</td>
-                  <td style={{ padding: "4px 8px", color: "#e0e6f0" }}>{row.label}</td>
+                  <td style={{ padding: "4px 8px", color: "#e0e6f0" }} title={row.description ?? undefined}>{row.label}</td>
                   <td style={{ padding: "4px 8px", color: "#e0e6f0" }}>{row.kind}</td>
                   <td style={{ padding: "4px 8px", color: "#e8c848" }}>
                     {row.rating != null ? row.rating.toFixed(0) : "Unplaced"}

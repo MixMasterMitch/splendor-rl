@@ -29,6 +29,7 @@ export interface PlayerInfo {
   checkpoint?: string;
   num_sims?: number;
   seed?: number;
+  description?: string | null;
 }
 
 export interface PlayerSnapshot {

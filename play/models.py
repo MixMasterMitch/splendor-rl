@@ -111,6 +111,7 @@ def _scan_league_json(path: pathlib.Path, run_id: str) -> list[dict[str, Any]]:
                 "arch": entry.get("arch"),
                 "score_hint": entry.get("score_hint"),
                 "winrate_vs_heuristic": entry.get("winrate_vs_heuristic"),
+                "description": "Trained neural network that learned to play through self-play",
             }
         )
     return out
@@ -132,6 +133,7 @@ def _builtins() -> list[dict[str, Any]]:
             "score_hint": None,
             "winrate_vs_heuristic": None,
             "bedrock_model_id": "global.anthropic.claude-sonnet-4-6",
+            "description": "An LLM-powered bot that reasons about each move using Claude Sonnet",
         },
 
         {
@@ -147,6 +149,7 @@ def _builtins() -> list[dict[str, Any]]:
             "arch": None,
             "score_hint": None,
             "winrate_vs_heuristic": None,
+            "description": "A hand-crafted strategy bot written by Claude Opus",
         },
         {
             "id": "heuristic",
@@ -161,6 +164,7 @@ def _builtins() -> list[dict[str, Any]]:
             "arch": None,
             "score_hint": None,
             "winrate_vs_heuristic": None,
+            "description": "A simple rule-based bot that buys affordable cards and takes tokens",
         },
         {
             "id": "random",
@@ -175,6 +179,7 @@ def _builtins() -> list[dict[str, Any]]:
             "arch": None,
             "score_hint": None,
             "winrate_vs_heuristic": None,
+            "description": "A bot that picks a random legal action each turn",
         },
     ]
 
