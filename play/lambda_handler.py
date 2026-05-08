@@ -221,7 +221,7 @@ def _compute_unified_ratings() -> dict[str, float]:
 
 def _enrich_models_with_ratings(models: list[dict[str, Any]]) -> None:
     """Enrich a list of model dicts with unified ratings and game counts in-place."""
-    from play.models import model_entity_id
+    from play.models import model_entity_id, DEFAULT_INITIAL_RATING
     from play.ratings import _normalize_entity
 
     unified = _compute_unified_ratings()
@@ -238,14 +238,14 @@ def _enrich_models_with_ratings(models: list[dict[str, Any]]) -> None:
         if fe is not None:
             m["games"] = int(fe.get("games", m.get("games", 0)))
             if lookup_id not in unified:
-                m["rating"] = float(fe.get("rating", m.get("rating", 2500.0)))
+                m["rating"] = float(fe.get("rating", m.get("rating", DEFAULT_INITIAL_RATING)))
 
 
 def _enrich_game_view_ratings(view: dict[str, Any]) -> None:
     """Enrich player ratings in a game view dict with unified ratings.
 
     Fixes ratings for games that were persisted with hardcoded defaults
-    (e.g. bedrock_claude_sonnet at 2500).
+    (e.g. bedrock_claude_sonnet at 1500).
     """
     from play.ratings import _normalize_entity
 
@@ -283,7 +283,7 @@ def _make_manifest_list_models():
     _cached_display: list[dict[str, Any]] | None = None
 
     def _net_models() -> list[dict[str, Any]]:
-        from play.models import HEURISTIC_ANCHOR_RATING as _HAR
+        from play.models import DEFAULT_INITIAL_RATING as _HAR
         net_models: list[dict[str, Any]] = []
         for entry in _load_manifest():
             run = entry.get("run", "unknown")

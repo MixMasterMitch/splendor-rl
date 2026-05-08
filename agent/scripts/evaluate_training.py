@@ -126,12 +126,31 @@ def _trend_arrow(values: list[float]) -> str:
     return "↑" if diff > 0 else "↓"
 
 
+def _detect_format(metrics: list[dict]) -> str:
+    """Detect whether metrics use the old or new format.
+
+    Old format: winrate_vs_random, winrate_vs_heuristic, winrate_vs_heuristic_opus
+    New format: rating, eval_winrate_2p, eval_winrate_3p, eval_winrate_4p
+    """
+    if not metrics:
+        return "unknown"
+    last = metrics[-1]
+    if "rating" in last or "eval_winrate_2p" in last:
+        return "new"
+    if "winrate_vs_random" in last:
+        return "old"
+    return "unknown"
+
+
 def _analyze_metrics(metrics: list[dict]) -> dict[str, Any]:
-    """Extract key statistics from metric rows."""
+    """Extract key statistics from metric rows (supports both old and new format)."""
     analysis: dict[str, Any] = {}
 
     if not metrics:
         return analysis
+
+    fmt = _detect_format(metrics)
+    analysis["format"] = fmt
 
     # Iteration range
     iters = [m.get("iter", 0) for m in metrics]
@@ -156,28 +175,81 @@ def _analyze_metrics(metrics: list[dict]) -> dict[str, Any]:
     if elapsed_vals:
         analysis["total_elapsed_min"] = max(elapsed_vals)
 
-    # Winrates
-    for opponent in ("random", "heuristic", "heuristic_opus"):
-        key = f"winrate_vs_{opponent}"
-        vals = [m[key] for m in metrics if key in m]
-        if vals:
-            analysis[f"{opponent}_winrate_latest"] = vals[-1]
-            analysis[f"{opponent}_winrate_mean"] = sum(vals) / len(vals)
-            analysis[f"{opponent}_winrate_trend"] = _trend_arrow(vals)
+    if fmt == "new":
+        # --- New format: rating + per-player-count winrates ---
+        # Rating (from eval league games)
+        rating_vals = [m["rating"] for m in metrics if "rating" in m]
+        if rating_vals:
+            analysis["rating_latest"] = rating_vals[-1]
+            analysis["rating_max"] = max(rating_vals)
+            analysis["rating_mean"] = sum(rating_vals) / len(rating_vals)
+            analysis["rating_trend"] = _trend_arrow(rating_vals)
 
-    # Game length (avg turns vs heuristic_opus as proxy for efficiency)
-    turn_key = "avg_turns_vs_heuristic_opus"
-    turn_vals = [m[turn_key] for m in metrics if turn_key in m]
-    if turn_vals:
-        analysis["avg_game_length_latest"] = turn_vals[-1]
-        analysis["avg_game_length_trend"] = _trend_arrow(
-            [-v for v in turn_vals]  # invert so shorter = up
-        )
+        # Per-player-count winrates
+        for n in (2, 3, 4):
+            key = f"eval_winrate_{n}p"
+            vals = [m[key] for m in metrics if key in m]
+            if vals:
+                analysis[f"winrate_{n}p_latest"] = vals[-1]
+                analysis[f"winrate_{n}p_mean"] = sum(vals) / len(vals)
+                analysis[f"winrate_{n}p_trend"] = _trend_arrow(vals)
 
-    # Eval throughput
-    gps_vals = [m.get("eval_games_per_s", 0) for m in metrics if "eval_games_per_s" in m]
-    if gps_vals:
-        analysis["eval_games_per_s"] = sum(gps_vals) / len(gps_vals)
+        # Per-player-count avg turns
+        for n in (2, 3, 4):
+            key = f"avg_turns_{n}p"
+            vals = [m[key] for m in metrics if key in m]
+            if vals:
+                analysis[f"avg_turns_{n}p_latest"] = vals[-1]
+                analysis[f"avg_turns_{n}p_trend"] = _trend_arrow(
+                    [-v for v in vals]  # invert so shorter = up
+                )
+
+        # Eval wall time and throughput
+        wall_vals = [m["eval_wall_s"] for m in metrics if "eval_wall_s" in m]
+        if wall_vals:
+            analysis["eval_wall_s_mean"] = sum(wall_vals) / len(wall_vals)
+
+        total_vals = [m["eval_games_total"] for m in metrics if "eval_games_total" in m]
+        if total_vals and wall_vals:
+            analysis["eval_games_per_s"] = (
+                sum(total_vals) / len(total_vals)
+            ) / (sum(wall_vals) / len(wall_vals))
+
+        # Completion rates
+        for n in (2, 3, 4):
+            games_key = f"games_{n}p"
+            finished_key = f"finished_{n}p"
+            games_vals = [m.get(games_key, 0) for m in metrics if games_key in m]
+            finished_vals = [m.get(finished_key, 0) for m in metrics if finished_key in m]
+            if games_vals and finished_vals:
+                total_games = sum(games_vals)
+                total_finished = sum(finished_vals)
+                if total_games > 0:
+                    analysis[f"completion_{n}p"] = total_finished / total_games
+
+    else:
+        # --- Old format: winrate_vs_* ---
+        for opponent in ("random", "heuristic", "heuristic_opus"):
+            key = f"winrate_vs_{opponent}"
+            vals = [m[key] for m in metrics if key in m]
+            if vals:
+                analysis[f"{opponent}_winrate_latest"] = vals[-1]
+                analysis[f"{opponent}_winrate_mean"] = sum(vals) / len(vals)
+                analysis[f"{opponent}_winrate_trend"] = _trend_arrow(vals)
+
+        # Game length
+        turn_key = "avg_turns_vs_heuristic_opus"
+        turn_vals = [m[turn_key] for m in metrics if turn_key in m]
+        if turn_vals:
+            analysis["avg_game_length_latest"] = turn_vals[-1]
+            analysis["avg_game_length_trend"] = _trend_arrow(
+                [-v for v in turn_vals]
+            )
+
+        # Eval throughput
+        gps_vals = [m.get("eval_games_per_s", 0) for m in metrics if "eval_games_per_s" in m]
+        if gps_vals:
+            analysis["eval_games_per_s"] = sum(gps_vals) / len(gps_vals)
 
     return analysis
 
@@ -273,7 +345,7 @@ def evaluate_training(
             except (ValueError, TypeError):
                 pass
 
-    # Performance vs reference bots
+    # Performance
     if analysis:
         sections.append("\nPerformance (last {} evals, iters {}-{}):".format(
             analysis.get("num_evals", "?"),
@@ -281,31 +353,84 @@ def evaluate_training(
             analysis.get("iter_range", ("?", "?"))[1],
         ))
 
-        for opponent, label in [
-            ("random", "Random"),
-            ("heuristic", "Heuristic"),
-            ("heuristic_opus", "Opus"),
-        ]:
-            wr = analysis.get(f"{opponent}_winrate_latest")
-            mean = analysis.get(f"{opponent}_winrate_mean")
-            trend = analysis.get(f"{opponent}_winrate_trend", "—")
-            if wr is not None:
+        fmt = analysis.get("format", "unknown")
+
+        if fmt == "new":
+            # Rating from eval
+            rating = analysis.get("rating_latest")
+            rating_max = analysis.get("rating_max")
+            rating_trend = analysis.get("rating_trend", "—")
+            if rating is not None:
                 sections.append(
-                    f"  vs {label:<12} {wr*100:5.1f}% (avg {mean*100:.1f}%) {trend}"
+                    f"  Eval rating: {rating:.0f} (peak {rating_max:.0f}, "
+                    f"avg {analysis.get('rating_mean', 0):.0f}) {rating_trend}"
                 )
 
-        gl = analysis.get("avg_game_length_latest")
-        gl_trend = analysis.get("avg_game_length_trend", "—")
-        if gl is not None:
-            sections.append(f"  Avg game length: {gl:.1f} turns {gl_trend}")
+            # Per-player-count winrates
+            sections.append("  Winrates by player count:")
+            for n in (2, 3, 4):
+                wr = analysis.get(f"winrate_{n}p_latest")
+                mean = analysis.get(f"winrate_{n}p_mean")
+                trend = analysis.get(f"winrate_{n}p_trend", "—")
+                if wr is not None:
+                    # Expected winrate for random play
+                    expected = 1.0 / n
+                    sections.append(
+                        f"    {n}p: {wr*100:5.1f}% (avg {mean*100:.1f}%, "
+                        f"random={expected*100:.0f}%) {trend}"
+                    )
 
+            # Avg turns
+            turns_parts = []
+            for n in (2, 3, 4):
+                t = analysis.get(f"avg_turns_{n}p_latest")
+                trend = analysis.get(f"avg_turns_{n}p_trend", "")
+                if t is not None:
+                    turns_parts.append(f"{n}p={t:.0f}{trend}")
+            if turns_parts:
+                sections.append(f"  Avg turns: {', '.join(turns_parts)}")
+
+            # Completion rates
+            comp_parts = []
+            for n in (2, 3, 4):
+                c = analysis.get(f"completion_{n}p")
+                if c is not None and c < 1.0:
+                    comp_parts.append(f"{n}p={c*100:.0f}%")
+            if comp_parts:
+                sections.append(f"  Completion: {', '.join(comp_parts)}")
+
+        else:
+            # Old format: vs reference bots
+            for opponent, label in [
+                ("random", "Random"),
+                ("heuristic", "Heuristic"),
+                ("heuristic_opus", "Opus"),
+            ]:
+                wr = analysis.get(f"{opponent}_winrate_latest")
+                mean = analysis.get(f"{opponent}_winrate_mean")
+                trend = analysis.get(f"{opponent}_winrate_trend", "—")
+                if wr is not None:
+                    sections.append(
+                        f"  vs {label:<12} {wr*100:5.1f}% (avg {mean*100:.1f}%) {trend}"
+                    )
+
+            gl = analysis.get("avg_game_length_latest")
+            gl_trend = analysis.get("avg_game_length_trend", "—")
+            if gl is not None:
+                sections.append(f"  Avg game length: {gl:.1f} turns {gl_trend}")
+
+        # Eval throughput (both formats)
         gps = analysis.get("eval_games_per_s")
+        eval_wall = analysis.get("eval_wall_s_mean")
         if gps:
-            sections.append(f"  Eval throughput: {gps:.1f} games/s")
+            throughput_str = f"  Eval throughput: {gps:.1f} games/s"
+            if eval_wall:
+                throughput_str += f" ({eval_wall:.0f}s/eval)"
+            sections.append(throughput_str)
 
     # League standings
     if league.get("entries"):
-        sections.append(f"\nLeague Top-10 (anchors: random=1000, heuristic=2500):")
+        sections.append(f"\nLeague Top-10 (anchor: random=1000):")
         sections.append(_format_league_table(league, top_n=10))
 
         # Best rating
@@ -319,28 +444,71 @@ def evaluate_training(
     # Quick assessment
     sections.append("\nAssessment:")
     if analysis:
-        opus_wr = analysis.get("heuristic_opus_winrate_latest", 0)
-        opus_trend = analysis.get("heuristic_opus_winrate_trend", "→")
-        if opus_wr >= 0.75:
-            sections.append("  Strong play vs Opus (≥75% winrate).")
-        elif opus_wr >= 0.60:
-            sections.append("  Solid play vs Opus (60-75% winrate).")
-        else:
-            sections.append("  Struggling vs Opus (<60% winrate).")
+        fmt = analysis.get("format", "unknown")
 
-        if opus_trend == "↑":
-            sections.append("  Trend: improving.")
-        elif opus_trend == "↓":
-            sections.append("  Trend: declining — may need hyperparameter adjustment.")
-        else:
-            sections.append("  Trend: stable/flat.")
+        if fmt == "new":
+            # Assess based on rating and winrates
+            rating = analysis.get("rating_latest", 0)
+            rating_trend = analysis.get("rating_trend", "→")
+            rating_max = analysis.get("rating_max", 0)
 
+            # 2p winrate is the clearest signal (1v1 vs league opponents)
+            wr_2p = analysis.get("winrate_2p_latest", 0)
+            wr_2p_trend = analysis.get("winrate_2p_trend", "→")
+
+            if wr_2p >= 0.70:
+                sections.append(f"  Strong 2p winrate ({wr_2p*100:.0f}%) — dominating opponents.")
+            elif wr_2p >= 0.55:
+                sections.append(f"  Solid 2p winrate ({wr_2p*100:.0f}%) — winning majority.")
+            elif wr_2p >= 0.45:
+                sections.append(f"  Competitive 2p winrate ({wr_2p*100:.0f}%) — roughly even.")
+            else:
+                sections.append(f"  Weak 2p winrate ({wr_2p*100:.0f}%) — losing to opponents.")
+
+            if rating_trend == "↑":
+                sections.append("  Rating trend: improving.")
+            elif rating_trend == "↓":
+                sections.append(
+                    f"  Rating trend: declining (latest {rating:.0f}, peak {rating_max:.0f})."
+                )
+            else:
+                sections.append("  Rating trend: stable/flat.")
+
+            # Check for rating plateau/decline
+            if rating_max > 0 and rating < rating_max * 0.95:
+                drop_pct = (1 - rating / rating_max) * 100
+                sections.append(
+                    f"  Note: current rating {drop_pct:.0f}% below window peak — "
+                    f"possible oscillation or regression."
+                )
+
+        else:
+            # Old format assessment
+            opus_wr = analysis.get("heuristic_opus_winrate_latest", 0)
+            opus_trend = analysis.get("heuristic_opus_winrate_trend", "→")
+            if opus_wr >= 0.75:
+                sections.append("  Strong play vs Opus (≥75% winrate).")
+            elif opus_wr >= 0.60:
+                sections.append("  Solid play vs Opus (60-75% winrate).")
+            else:
+                sections.append("  Struggling vs Opus (<60% winrate).")
+
+            if opus_trend == "↑":
+                sections.append("  Trend: improving.")
+            elif opus_trend == "↓":
+                sections.append("  Trend: declining — may need hyperparameter adjustment.")
+            else:
+                sections.append("  Trend: stable/flat.")
+
+        # League assessment (applies to both formats)
         if league.get("entries"):
             best_rating = max(e.get("rating", 0) for e in league["entries"])
-            if best_rating > 2700:
+            if best_rating > 2400:
                 sections.append(f"  League peak {best_rating:.0f} — strong overall.")
-            elif best_rating > 2600:
+            elif best_rating > 2000:
                 sections.append(f"  League peak {best_rating:.0f} — good, room to grow.")
+            elif best_rating > 1600:
+                sections.append(f"  League peak {best_rating:.0f} — progressing.")
             else:
                 sections.append(f"  League peak {best_rating:.0f} — early stage.")
     else:

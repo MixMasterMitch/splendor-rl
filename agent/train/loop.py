@@ -74,7 +74,6 @@ class LoopConfig:
     league_max_entries: int = 24
     league_keep_recent: int = 8
     rating_random_anchor: float = 1000.0
-    rating_heuristic_anchor: float = 2500.0
     # Exploration hyperparameters for self-play root MCTS.
     dirichlet_alpha: float = 0.15
     dirichlet_mix: float = 0.40
@@ -203,8 +202,10 @@ def _apply_eval_results_to_league(
         winner_entity = _to_entity(result["winner"])
         loser_entity = _to_entity(result["loser"])
         weight = float(result["weight"])
-        # Record as fractional wins
-        league.record_result(winner_entity, loser_entity, weight, 0.0, 0.0)
+        num_players = int(result.get("num_players", 2))
+        # Record as fractional wins with player count
+        league.record_result(winner_entity, loser_entity, weight, 0.0, 0.0,
+                             num_players=num_players)
 
     ratings = league.recompute_ratings()
     return ratings
@@ -307,7 +308,6 @@ def run_loop(run: Run, cfg: LoopConfig) -> dict:
         keep_recent=cfg.league_keep_recent,
         anchors={
             "random": cfg.rating_random_anchor,
-            "heuristic": cfg.rating_heuristic_anchor,
         },
     )
 

@@ -2,9 +2,10 @@
 
 A "league" is a directory with numbered checkpoint files and a manifest JSON
 describing checkpoint metadata plus an aggregated head-to-head result table.
-Checkpoint ratings are fit in batch from that result table, anchored so
-`random=1000` and `heuristic=2500`. This makes the resulting leaderboard
-agnostic to the order in which the matches were played.
+Checkpoint ratings are fit per player count from that result table, anchored so
+`random=1000`. Per-PC ratings are calibrated by (n-1) and averaged to produce
+a combined rating. This makes the resulting leaderboard agnostic to the order
+in which the matches were played.
 
 The exploiter is a separate network trained to specifically target the latest
 main agent (its reward signal is the agent's loss, not general self-play).
@@ -130,7 +131,7 @@ class League:
         return float(
             entry.get(
                 "rating",
-                self.manifest["anchors"].get("heuristic", R.HEURISTIC_ANCHOR_RATING),
+                R.DEFAULT_INITIAL_RATING,
             )
         )
 
@@ -232,7 +233,7 @@ class League:
                 "idx": idx,
                 "tag": tag,
                 "path": self._to_relative_path(path),
-                "rating": float(self.manifest["anchors"]["heuristic"]),
+                "rating": float(R.DEFAULT_INITIAL_RATING),
                 "games": 0,
                 "hidden": int(net.hidden),
                 "arch": str(net.arch),
@@ -288,12 +289,12 @@ class League:
         if not entries:
             return None
         # Weight by recency (newer = heavier) times a softened rating factor.
-        # Ratings are anchored at random=1000, heuristic=2500, so we center the
-        # sampling weights around the heuristic anchor rather than absolute 0.
+        # Ratings are centered around DEFAULT_INITIAL_RATING so we use that
+        # as the reference point for sampling weights.
         weights = []
         for i, e in enumerate(entries):
             recency = 1.0 + i
-            rel = (self._entry_rating(e) - R.HEURISTIC_ANCHOR_RATING) / 800.0
+            rel = (self._entry_rating(e) - R.DEFAULT_INITIAL_RATING) / 800.0
             rel = max(min(rel, 4.0), -4.0)
             weights.append(recency * (10 ** rel))
         tot = sum(weights)
@@ -340,7 +341,8 @@ class League:
         entity_b: str,
         wins_a: float,
         wins_b: float,
-        ties: float,
+        ties: float = 0.0,
+        num_players: int = 2,
     ) -> None:
         R.add_match_result(
             self.manifest["results"],
@@ -349,6 +351,7 @@ class League:
             wins_a,
             wins_b,
             ties,
+            num_players=num_players,
         )
 
     def record_checkpoint_baselines(
@@ -380,36 +383,69 @@ class League:
         anchors = dict(self.manifest["anchors"])
         if extra_anchors:
             anchors.update(extra_anchors)
-        ratings = R.fit_anchored_ratings(
+        ratings_data = R.compute_ratings(
             self.manifest["results"],
             anchors=anchors,
             initial=initial,
         )
-        games_by_entity: dict[str, int] = {key: 0 for key in ratings}
+        # Extract combined ratings
+        ratings: dict[str, float] = {}
+        for entity, data in ratings_data.items():
+            if data["rating"] is not None:
+                ratings[entity] = data["rating"]
+
+        # Count actual games per entity.
+        # In a K-player game, one physical game produces (K-1) pairwise
+        # result entries per participant.  Each result row for player count
+        # `pc` contributes (wins_a + wins_b) pairwise entries, but those
+        # represent the same physical games — so divide by (pc - 1) to
+        # avoid overcounting.
+        games_by_entity: dict[str, float] = {key: 0.0 for key in ratings}
         for row in self.manifest["results"]:
-            total = int(round(float(row.get("games", 0.0))))
-            games_by_entity[row["a"]] = games_by_entity.get(row["a"], 0) + total
-            games_by_entity[row["b"]] = games_by_entity.get(row["b"], 0) + total
+            row_total = 0.0
+            for pc in (2, 3, 4):
+                wa = float(row.get(f"wins_a_{pc}p", 0.0))
+                wb = float(row.get(f"wins_b_{pc}p", 0.0))
+                pairwise_count = wa + wb
+                if pairwise_count > 0:
+                    row_total += pairwise_count / (pc - 1)
+            # Legacy format fallback
+            if row_total == 0:
+                row_total = float(row.get("games", 0.0))
+            games_by_entity[row["a"]] = games_by_entity.get(row["a"], 0.0) + row_total
+            games_by_entity[row["b"]] = games_by_entity.get(row["b"], 0.0) + row_total
+
         for entry in self.manifest["entries"]:
             entity = self._entry_entity_id(int(entry["idx"]))
             if entity in ratings:
                 entry["rating"] = float(ratings[entity])
                 entry.pop("elo", None)
                 entry["games"] = int(games_by_entity.get(entity, 0))
+                # Store per-PC ratings on the entry for visibility
+                data = ratings_data.get(entity, {})
+                for pc in (2, 3, 4):
+                    cal_key = f"calibrated_{pc}p"
+                    if cal_key in data:
+                        entry[f"rating_{pc}p"] = data[cal_key]
+
         # Persist fitted ratings for floating entities (non-anchor, non-checkpoint
         # participants like heuristic_opus that appear in results).
         entry_entities = {self._entry_entity_id(int(e["idx"])) for e in self.manifest["entries"]}
         anchor_entities = set(self.manifest["anchors"])
         floating: dict[str, dict] = {}
-        for entity, rating in ratings.items():
+        for entity, data in ratings_data.items():
             if entity not in entry_entities and entity not in anchor_entities:
                 floating[entity] = {
-                    "rating": float(rating),
+                    "rating": data["rating"],
                     "games": int(games_by_entity.get(entity, 0)),
                 }
+                for pc in (2, 3, 4):
+                    cal_key = f"calibrated_{pc}p"
+                    if cal_key in data:
+                        floating[entity][f"rating_{pc}p"] = data[cal_key]
         if floating:
             self.manifest["floating_entities"] = floating
-        self.manifest["rating_system"] = "anchored_bt"
+        self.manifest["rating_system"] = "anchored_bt_per_pc"
         self._save_manifest()
         return ratings
 

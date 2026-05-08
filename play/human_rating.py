@@ -7,8 +7,8 @@ have ever played, and after each finished game we refit the human's rating
 from the full table by maximum likelihood, anchored to fixed ratings:
 
     random    -> 1000
-    heuristic -> 2500
     each net  -> the rating reported in that net's source league.json
+    other bots -> their league rating at game time
 
 Because every refit uses the full result history, the rating is independent
 of the order games were played in. There is no per-game k-factor update.
@@ -17,7 +17,7 @@ Storage (JSON) at play/human_rating.json:
 
     {
         "rating_system": "anchored_bt",
-        "anchors": {"random": 1000.0, "heuristic": 2500.0},
+        "anchors": {"random": 1000.0},
         "results": [
             {"a": "human", "b": "<entity_id>",
              "wins_a": .., "wins_b": .., "ties": .., "games": ..},
@@ -44,19 +44,18 @@ import threading
 from typing import Any, Iterable
 
 RANDOM_ANCHOR_RATING: float = 1000.0
-HEURISTIC_ANCHOR_RATING: float = 2500.0
+DEFAULT_INITIAL_RATING: float = 1500.0
 RATING_SCALE: float = 1000.0
 HUMAN_ENTITY: str = "human"
-DEFAULT_INITIAL_RATING: float = 1500.0
 
 # Bayesian regularization: imagine the human starts with this many "ghost"
 # games at 50 percent against a virtual reference opponent rated at
 # ``PRIOR_MEAN_RATING``. With Bradley-Terry these ghost games give a proper
 # prior over the human's rating (much stronger than a Gaussian prior on the
 # rating, because Gaussians don't scale with the logistic likelihood). With
-# 6 ghost games, a single real win against heuristic (2500) settles the
+# 6 ghost games, a single real win against heuristic settles the
 # rating around the mid-1700s instead of running off to +infinity.
-PRIOR_MEAN_RATING: float = 2500.0
+PRIOR_MEAN_RATING: float = 1500.0
 PRIOR_GHOST_GAMES: float = 4.0
 
 # Minimum number of wins required before the human is "placed" and their
@@ -211,7 +210,6 @@ class HumanRatingStore:
             "anchors",
             {
                 "random": RANDOM_ANCHOR_RATING,
-                "heuristic": HEURISTIC_ANCHOR_RATING,
             },
         )
         self._data.setdefault("results", [])
@@ -241,7 +239,6 @@ class HumanRatingStore:
             "rating_system": "anchored_bt",
             "anchors": {
                 "random": RANDOM_ANCHOR_RATING,
-                "heuristic": HEURISTIC_ANCHOR_RATING,
             },
             "results": [],
             "history": [],
@@ -341,7 +338,7 @@ class HumanRatingStore:
             for opp in opponents:
                 opp_seat = int(opp["seat"])
                 entity_id = str(opp["entity_id"])
-                opp_rating = float(opp.get("rating", HEURISTIC_ANCHOR_RATING))
+                opp_rating = float(opp.get("rating", DEFAULT_INITIAL_RATING))
                 self._set_anchor_locked(entity_id, opp_rating)
                 opp_rank = ranks[opp_seat]
                 if human_rank < opp_rank:

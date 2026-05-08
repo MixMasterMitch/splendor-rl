@@ -257,7 +257,7 @@ def compute_rating_objective(
     # --- Fit ratings ---------------------------------------------------------
     ratings = RK.fit_anchored_ratings(
         match_results,
-        anchors={"random": 1000, "heuristic": 2500},
+        anchors=dict(RK.DEFAULT_ANCHORS),
     )
 
     return ratings.get(AGENT_ENTITY, 0.0)

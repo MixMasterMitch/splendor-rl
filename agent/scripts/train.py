@@ -138,7 +138,6 @@ def build_parser() -> argparse.ArgumentParser:
         help="Number of newest league checkpoints always preserved when culling.",
     )
     p.add_argument("--rating-random-anchor", type=float, default=1000.0)
-    p.add_argument("--rating-heuristic-anchor", type=float, default=2500.0)
     # --- Unified eval args ---
     p.add_argument(
         "--eval-games",
@@ -192,7 +191,6 @@ def main(argv: list[str] | None = None) -> int:
         league_max_entries=args.league_max_entries,
         league_keep_recent=args.league_keep_recent,
         rating_random_anchor=args.rating_random_anchor,
-        rating_heuristic_anchor=args.rating_heuristic_anchor,
         dirichlet_alpha=args.dirichlet_alpha,
         dirichlet_mix=args.dirichlet_mix,
         time_discount=args.time_discount,

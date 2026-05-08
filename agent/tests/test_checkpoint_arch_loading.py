@@ -190,7 +190,7 @@ def test_fit_anchored_ratings_is_order_invariant() -> None:
     ratings_b = R.fit_anchored_ratings(results_b)
 
     assert ratings_a["random"] == pytest.approx(1000.0)
-    assert ratings_a["heuristic"] == pytest.approx(2500.0)
+    assert ratings_a["heuristic"] > ratings_a["random"]
     assert ratings_a["ckpt:a"] > ratings_a["heuristic"]
     assert ratings_a["ckpt:b"] > ratings_a["random"]
     assert ratings_a["ckpt:a"] > ratings_a["ckpt:b"]
@@ -224,7 +224,7 @@ def test_league_recompute_ratings_updates_entry_fields(tmp_path: pathlib.Path) -
     entries = {int(entry["idx"]): entry for entry in league.list_entries()}
 
     assert ratings["random"] == pytest.approx(1000.0)
-    assert ratings["heuristic"] == pytest.approx(2500.0)
+    assert ratings["heuristic"] > ratings["random"]
     assert float(entries[0]["rating"]) > float(entries[1]["rating"])
     assert int(entries[0]["games"]) == 192
     assert int(entries[1]["games"]) == 192
@@ -263,7 +263,6 @@ def test_league_migrates_legacy_entries_into_results(tmp_path: pathlib.Path) -> 
     entry = league.list_entries()[0]
 
     assert league.manifest["anchors"]["random"] == pytest.approx(1000.0)
-    assert league.manifest["anchors"]["heuristic"] == pytest.approx(2500.0)
     assert len(league.manifest["results"]) == 2
-    assert float(entry["rating"]) > 2500.0
+    assert float(entry["rating"]) > 1500.0
     assert int(entry["games"]) == 1024

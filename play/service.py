@@ -138,7 +138,7 @@ class PlayService:
             if fe is not None:
                 m["games"] = int(fe.get("games", m.get("games", 0)))
                 if lookup_id not in ratings:
-                    m["rating"] = float(fe.get("rating", m.get("rating", 2500.0)))
+                    m["rating"] = float(fe.get("rating", m.get("rating", MD.DEFAULT_INITIAL_RATING)))
         return builtins
 
     def human_rating_store(self, identity: AU.UserIdentity) -> HE.HumanRatingStore:
@@ -201,11 +201,9 @@ class PlayService:
             m = session.seat_models[seat]
             latest = MD.model_by_id(latest_models, m["id"])
             source = latest if latest is not None else m
-            rating = float(source.get("rating", MD.HEURISTIC_ANCHOR_RATING))
+            rating = float(source.get("rating", MD.DEFAULT_INITIAL_RATING))
             if m["kind"] == "random":
                 rating = MD.RANDOM_ANCHOR_RATING
-            elif m["kind"] == "heuristic":
-                rating = MD.HEURISTIC_ANCHOR_RATING
             opponents_payload.append(
                 {
                     "seat": seat,

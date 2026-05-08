@@ -25,8 +25,11 @@ from .replay_buffer import ReplayBuffer
 
 def _final_rank_values(engine: BE.BatchedEngine) -> torch.Tensor:
     """For each game, return (B, MAX_PLAYERS) where inactive seats are 0 and
-    active seats carry values in [-1, +1] based on ranking. Highest rank gets
-    +1, ties share the top, others get -1 (simple binary win/loss signal).
+    active seats carry zero-mean normalized rewards based on ranking.
+
+    Normalization: win = +(n-1)/n, loss = -1/n, where n = number of active
+    players. This ensures the expected value of a random policy is 0.0
+    regardless of player count, giving balanced gradient signal across 2p/3p/4p.
     """
     B = engine.batch_size
     pts = engine.points.to(torch.int32)
@@ -37,11 +40,14 @@ def _final_rank_values(engine: BE.BatchedEngine) -> torch.Tensor:
     )
     best = score.max(dim=-1).values.unsqueeze(-1)
     winners = (score == best) & engine.active_mask
-    values = torch.where(
-        winners,
-        torch.ones_like(score, dtype=torch.float32),
-        torch.full_like(score, -1.0, dtype=torch.float32),
-    )
+
+    # Number of active players per game (B,)
+    n_players = engine.active_mask.sum(dim=-1, dtype=torch.float32).unsqueeze(-1)  # (B, 1)
+    # Zero-mean rewards: win = +(n-1)/n, loss = -1/n
+    win_reward = (n_players - 1.0) / n_players   # (B, 1)
+    loss_reward = -1.0 / n_players                # (B, 1)
+
+    values = torch.where(winners, win_reward, loss_reward)
     values = torch.where(
         engine.active_mask, values, torch.zeros_like(values, dtype=torch.float32)
     )

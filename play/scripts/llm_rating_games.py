@@ -21,20 +21,30 @@ from typing import Any
 
 import torch
 
+from agent.env import actions as A
 from agent.env import batched_engine as BE
 from agent.train import league as LG
 from play.llm.policy import LLMBedrockPolicy
 from replay import players as POL
 
-# Suppress verbose LLM/boto logging — only show warnings+
+# Suppress verbose LLM/boto logging — only show errors
 import logging
-logging.getLogger("play.llm").setLevel(logging.WARNING)
+logging.getLogger("play.llm").setLevel(logging.ERROR)
 logging.getLogger("botocore").setLevel(logging.WARNING)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 
 WORKSPACE_ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 LEAGUE_ROOT = WORKSPACE_ROOT / "agent" / "runs" / "league"
+
+# ANSI color codes
+_CYAN = "\033[96m"
+_GREEN = "\033[92m"
+_RED = "\033[91m"
+_YELLOW = "\033[93m"
+_BOLD = "\033[1m"
+_DIM = "\033[2m"
+_RESET = "\033[0m"
 
 # Available opponents and their league entity IDs
 OPPONENT_SPECS: dict[str, dict[str, Any]] = {
@@ -135,17 +145,42 @@ def _play_one_game(
         policy = seat_policies[cp]
 
         if cp == llm_seat:
+            # Capture scores before the move
+            pts_before = engine.points[0].tolist()[:num_players]
             t0 = time.time()
             action_tensor = policy.choose(engine)
             elapsed = time.time() - t0
             llm_moves += 1
             llm_time_total += elapsed
-            if verbose and int(engine.phase[0]) == 0:
-                action_val = int(action_tensor[0])
+            action_val = int(action_tensor[0])
+            act_name = A.action_name(action_val)
+            reasoning = policy.last_reasoning or ""
+
+            # Build score string with LLM player highlighted
+            score_parts = []
+            for s in range(num_players):
+                pt = int(pts_before[s])
+                if s == llm_seat:
+                    score_parts.append(f"{_CYAN}{_BOLD}{pt}{_RESET}")
+                else:
+                    score_parts.append(str(pt))
+            score_str = "/".join(score_parts)
+
+            if not verbose:
+                # Compact one-line log
+                print(
+                    f"{_DIM}[LLM]{_RESET} {act_name:<22} "
+                    f"{_DIM}({int(elapsed*1000)}ms){_RESET} "
+                    f"pts=[{score_str}] "
+                    f"{_DIM}{reasoning}{_RESET}",
+                    flush=True,
+                )
+            else:
                 raw = policy.last_raw_response or "(no response)"
-                reasoning = policy.last_reasoning
                 print(f"\n{'='*60}")
                 print(f"[LLM Agent Turn {llm_moves}] ({elapsed:.1f}s)")
+                print(f"  Scores: [{score_str}]")
+                print(f"  Action: {action_val} = {act_name}")
                 print(f"{'='*60}")
                 print(f"[LLM Agent Prompt]")
                 print(policy._last_user_prompt or "(not captured)")
@@ -155,15 +190,15 @@ def _play_one_game(
                 if reasoning and not reasoning.startswith("[fallback:"):
                     print(f"[Parsed Response]")
                     print(f"  THINKING: {reasoning}")
-                    print(f"  ACTION:   {action_val}")
+                    print(f"  ACTION:   {action_val} = {act_name}")
                 elif reasoning and reasoning.startswith("[fallback:"):
                     print(f"[Failed to parse LLM response]")
                     print(f"  Fallback: {reasoning}")
-                    print(f"  ACTION (random): {action_val}")
+                    print(f"  ACTION (random): {action_val} = {act_name}")
                 else:
                     print(f"[Parsed Response]")
                     print(f"  THINKING: (none)")
-                    print(f"  ACTION:   {action_val}")
+                    print(f"  ACTION:   {action_val} = {act_name}")
                 print(f"{'='*60}\n")
         else:
             action_tensor = policy.choose(engine)
@@ -224,6 +259,10 @@ def main() -> int:
     )
     parser.add_argument("--verbose", action="store_true")
     parser.add_argument(
+        "--no-ml", action="store_true",
+        help="Exclude ML bot opponents (only use random/heuristic/heuristic_opus)",
+    )
+    parser.add_argument(
         "--debug", action="store_true",
         help="Enable LLM debug mode: ask for one-sentence justification per move",
     )
@@ -250,9 +289,11 @@ def main() -> int:
 
     # Load league
     league = LG.League(LEAGUE_ROOT)
-    ml_entry = _find_latest_ml_bot(league)
+    ml_entry = _find_latest_ml_bot(league) if not args.no_ml else None
     if ml_entry:
         print(f"Latest ML bot: idx={ml_entry['idx']}, rating={ml_entry.get('rating', '?')}")
+    elif args.no_ml:
+        print("ML bot excluded (--no-ml)")
     else:
         print("No ML bot found in league")
     print()
@@ -275,7 +316,8 @@ def main() -> int:
     for game_num in range(args.games):
         # Re-find the latest ML bot before each game so new checkpoints
         # from parallel training are picked up immediately.
-        ml_entry = _find_latest_ml_bot(league)
+        if not args.no_ml:
+            ml_entry = _find_latest_ml_bot(league)
 
         # Random player count: 2, 3, or 4
         num_players = rng.choice([2, 3, 4])
@@ -299,9 +341,10 @@ def main() -> int:
         game_seed = rng.randint(0, 2**31)
         opp_desc = ", ".join(opponent_names)
         print(
-            f"Game {game_num + 1}/{args.games}: "
-            f"{num_players}p, LLM seat {llm_seat}, vs [{opp_desc}]",
-            end="",
+            f"\n{_BOLD}{'─'*60}{_RESET}\n"
+            f"{_BOLD}Game {game_num + 1}/{args.games}{_RESET}: "
+            f"{num_players}p, LLM seat {_CYAN}{llm_seat}{_RESET}, "
+            f"vs [{opp_desc}]",
             flush=True,
         )
         if args.verbose:
@@ -322,46 +365,87 @@ def main() -> int:
 
         # Determine outcome
         if result["tied"]:
-            outcome = "TIE"
+            outcome = f"{_YELLOW}TIE{_RESET}"
             total_ties += 1
         elif result["llm_won"]:
-            outcome = "WIN"
+            outcome = f"{_GREEN}WIN{_RESET}"
             total_wins += 1
         else:
-            outcome = "LOSS"
+            outcome = f"{_RED}LOSS{_RESET}"
             total_losses += 1
+
+        # Build final score string with LLM highlighted
+        final_pts = result["points"]
+        final_score_parts = []
+        for s in range(num_players):
+            pt = int(final_pts[s])
+            if s == llm_seat:
+                final_score_parts.append(f"{_CYAN}{_BOLD}{pt}{_RESET}")
+            else:
+                final_score_parts.append(str(pt))
+        final_score_str = "/".join(final_score_parts)
 
         if not args.verbose:
             print(
-                f" → {outcome} "
-                f"(pts={result['points']}, turns={result['turns']}, "
-                f"llm_avg={result['llm_avg_time']:.1f}s, "
-                f"game={game_time:.0f}s)"
+                f"  {_BOLD}→ {outcome} "
+                f"{_RESET}pts=[{final_score_str}] "
+                f"turns={result['turns']} "
+                f"llm_avg={result['llm_avg_time']:.1f}s "
+                f"game={game_time:.0f}s"
             )
         else:
             print(
-                f"  Result: {outcome}, points={result['points']}, "
+                f"  {_BOLD}Result: {outcome}{_RESET}, "
+                f"pts=[{final_score_str}], "
                 f"turns={result['turns']}, llm_avg={result['llm_avg_time']:.1f}s, "
                 f"game_time={game_time:.0f}s"
             )
 
-        # Record pairwise results into the league immediately after each game.
-        # Normalize by (num_players - 1) so each game contributes equal total
-        # weight regardless of player count.
-        weight = 1.0 / (num_players - 1)
-        for opp_entity in opponent_entities:
-            if opp_entity not in results_by_opponent:
-                results_by_opponent[opp_entity] = {"wins": 0, "losses": 0, "ties": 0}
+        # Record pairwise results into the league.
+        # Correct pairwise decomposition: the winner beats every other player.
+        # That produces (n-1) pairwise results per game, all involving the winner.
+        # We record:
+        #   - winner vs each loser (winner gets a win, loser gets a loss)
+        # This includes opponent-vs-opponent pairs when the winner is an opponent.
+        winner_seat = result["winner_seat"]
 
-            if result["tied"]:
+        # Build a mapping of seat → entity for all players
+        seat_entities: list[str] = [None] * num_players  # type: ignore
+        seat_entities[llm_seat] = llm_entity
+        opp_idx = 0
+        for s in range(num_players):
+            if s != llm_seat:
+                seat_entities[s] = opponent_entities[opp_idx]
+                opp_idx += 1
+
+        if result["tied"]:
+            # Tie: record tie between LLM and each opponent
+            for opp_entity in opponent_entities:
+                if opp_entity not in results_by_opponent:
+                    results_by_opponent[opp_entity] = {"wins": 0, "losses": 0, "ties": 0}
                 results_by_opponent[opp_entity]["ties"] += 1
-                league.record_result(llm_entity, opp_entity, 0.0, 0.0, weight)
-            elif result["llm_won"]:
-                results_by_opponent[opp_entity]["wins"] += 1
-                league.record_result(llm_entity, opp_entity, weight, 0.0, 0.0)
+                league.record_result(llm_entity, opp_entity, 0.0, 0.0,
+                                     ties=1.0, num_players=num_players)
+        else:
+            # Winner beats every other player — record all (n-1) pairs
+            winner_entity = seat_entities[winner_seat]
+            for s in range(num_players):
+                if s == winner_seat:
+                    continue
+                loser_entity = seat_entities[s]
+                league.record_result(winner_entity, loser_entity, 1.0, 0.0,
+                                     num_players=num_players)
+
+            # Track LLM-specific stats for display
+            if result["llm_won"]:
+                for opp_entity in opponent_entities:
+                    if opp_entity not in results_by_opponent:
+                        results_by_opponent[opp_entity] = {"wins": 0, "losses": 0, "ties": 0}
+                    results_by_opponent[opp_entity]["wins"] += 1
             else:
-                results_by_opponent[opp_entity]["losses"] += 1
-                league.record_result(llm_entity, opp_entity, 0.0, weight, 0.0)
+                if winner_entity not in results_by_opponent:
+                    results_by_opponent[winner_entity] = {"wins": 0, "losses": 0, "ties": 0}
+                results_by_opponent[winner_entity]["losses"] += 1
 
         # Recompute ratings after each game so the floating entity rating
         # stays current (and results survive crashes).

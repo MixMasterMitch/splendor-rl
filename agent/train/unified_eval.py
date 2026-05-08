@@ -96,6 +96,7 @@ class PairwiseResult:
     winner: str
     loser: str
     weight: float  # 1/(num_players - 1) normalization
+    num_players: int = 2
 
 
 def extract_pairwise_results(
@@ -134,6 +135,7 @@ def extract_pairwise_results(
                 winner=winner_name,
                 loser=loser_name,
                 weight=norm,
+                num_players=num_players_per_game,
             ))
     return results
 
@@ -364,15 +366,15 @@ def run_unified_eval(
     all_metrics["eval_wall_s"] = round(wall_s, 3)
     all_metrics["eval_games_total"] = float(n2 + n3 + n4)
 
-    # Aggregate pairwise into {(winner, loser): weight} for the rating system
-    pairwise_agg: Dict[Tuple[str, str], float] = {}
+    # Aggregate pairwise into {(winner, loser, num_players): weight} for the rating system
+    pairwise_agg: Dict[Tuple[str, str, int], float] = {}
     for pr in all_pairwise:
-        key = (pr.winner, pr.loser)
+        key = (pr.winner, pr.loser, pr.num_players)
         pairwise_agg[key] = pairwise_agg.get(key, 0.0) + pr.weight
 
     # Convert to serializable list
     pairwise_list = [
-        {"winner": k[0], "loser": k[1], "weight": v}
+        {"winner": k[0], "loser": k[1], "num_players": k[2], "weight": v}
         for k, v in pairwise_agg.items()
     ]
 

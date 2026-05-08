@@ -2,7 +2,7 @@
 
 Ratings are computed by combining ALL available match data — league eval
 games (checkpoints vs bots) and human interactive games — into a single
-Bradley-Terry MLE fit anchored to random=1000 and heuristic=2500.
+Bradley-Terry MLE fit anchored to random=1000.
 """
 
 from __future__ import annotations
@@ -74,7 +74,7 @@ def combined_ratings(
     fit_anchored_ratings call. This gives every entity (checkpoints, bots,
     LLM agents, humans) a rating on the same unified scale.
 
-    Anchors: random=1000, heuristic=2500 (fixed).
+    Anchors: random=1000 (fixed).
     """
     from agent.train import league as LG
     from agent.train import ranking as R

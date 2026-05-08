@@ -82,9 +82,9 @@ class HeuristicOpusPolicy:
     lookahead variants and a 192-game V15-vs-V20 head-to-head settled
     at 49.3% / 48.4% (statistically tied). The added compute cost of
     lookahead is not justified by measurable strength gains. Further
-    gains beyond ~2645 require learned evaluators (trained-net + MCTS),
-    not more elaborate heuristics. Anchored aggregate rating ~2645 vs
-    heuristic (2500) and random (1000).
+    gains beyond ~2050 require learned evaluators (trained-net + MCTS),
+    not more elaborate heuristics. Anchored aggregate rating ~2050 vs
+    heuristic and random (anchor=1000).
     """
 
     def __init__(self) -> None:

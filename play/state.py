@@ -11,6 +11,7 @@ from agent.env import actions as A
 from agent.env import batched_engine as BE
 from replay import players as POL
 from play import views as V
+from play.models import DEFAULT_INITIAL_RATING
 
 
 class GameSession:
@@ -75,7 +76,7 @@ class GameSession:
                 )
             else:
                 m = self.seat_models[seat]
-                rating = float(m.get("rating", 1500.0))
+                rating = float(m.get("rating", DEFAULT_INITIAL_RATING))
                 out.append(
                     {
                         "seat": seat,

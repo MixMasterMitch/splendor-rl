@@ -15,7 +15,7 @@ from typing import Any
 
 from play.dynamo_store import DynamoPlayStore
 from play.human_rating import (
-    HEURISTIC_ANCHOR_RATING,
+    DEFAULT_INITIAL_RATING,
     RANDOM_ANCHOR_RATING,
     fit_human_rating,
     _add_match,
@@ -62,7 +62,6 @@ def _build_results_table(
     results: list[dict[str, Any]] = []
     anchors: dict[str, float] = {
         "random": RANDOM_ANCHOR_RATING,
-        "heuristic": HEURISTIC_ANCHOR_RATING,
     }
 
     # Deduplicate by game_id
@@ -93,7 +92,7 @@ def _build_results_table(
 
         for opp in per_opponent:
             entity_id = str(opp["entity_id"])
-            opp_rating = float(opp.get("opp_rating", HEURISTIC_ANCHOR_RATING))
+            opp_rating = float(opp.get("opp_rating", DEFAULT_INITIAL_RATING))
             score = float(opp.get("score", 0.5))
 
             # Set anchor for this opponent
@@ -195,7 +194,7 @@ def sync_local_to_cloud(
     rating_after = fit_human_rating(
         results=results,
         anchors=anchors,
-        initial=rating_before if rating_before > 0 else 1500.0,
+        initial=rating_before if rating_before > 0 else DEFAULT_INITIAL_RATING,
         human_entity=human_entity,
     )
 

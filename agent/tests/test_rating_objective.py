@@ -62,7 +62,7 @@ def test_compute_rating_objective_returns_finite_float(rating_result: dict) -> N
 
 def test_compute_rating_objective_uses_correct_anchors(rating_result: dict) -> None:
     """Verify that fit_anchored_ratings is called with the correct anchors."""
-    assert rating_result["anchors"] == {"random": 1000, "heuristic": 2500}
+    assert rating_result["anchors"] == {"random": 1000}
     assert isinstance(rating_result["rating"], float)
 
 

@@ -19,7 +19,7 @@ from typing import Any
 
 from play.dynamo_store import DynamoPlayStore
 from play.human_rating import (
-    HEURISTIC_ANCHOR_RATING,
+    DEFAULT_INITIAL_RATING,
     RANDOM_ANCHOR_RATING,
     fit_human_rating,
 )
@@ -157,7 +157,7 @@ def sync_all(
         rating_after = fit_human_rating(
             results=results,
             anchors=anchors,
-            initial=rating_before if rating_before > 0 else 1500.0,
+            initial=rating_before if rating_before > 0 else DEFAULT_INITIAL_RATING,
             human_entity=human_entity,
         )
 

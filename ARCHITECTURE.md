@@ -27,7 +27,7 @@ This is a full-stack system for training, evaluating, and deploying a Splendor-p
 - **Evaluation** — Async CPU-based tournament play against reference bots and historical checkpoints
 - **League** — A persistent pool of checkpoints with Bradley-Terry ratings
 - **Web App** — A Flask/Lambda-based play server where humans and LLMs play against trained agents
-- **Rating** — A unified Bradley-Terry rating system that spans ML bots, heuristic bots, LLM agents, and human players
+- **Rating** — A per-player-count Bradley-Terry rating system (anchored to random=1000) that spans ML bots, heuristic bots, LLM agents, and human players
 - **Deployment** — AWS CDK stack with Lambda, DynamoDB, S3, CloudFront, and API Gateway
 
 ```mermaid
@@ -101,7 +101,21 @@ The encoder (`encoder.py`) converts raw engine tensors into the feature vectors 
 
 ### Scale
 
-The production model is `attn/192` with ~407K parameters — small enough for fast inference during MCTS but expressive enough to learn strong play.
+Two production model sizes exist:
+
+| Variant | Hidden | Heads | Params | Status |
+|---------|--------|-------|--------|--------|
+| `attn/192` | 192 | 4 | ~407K | Current league champion |
+| `attn/256` | 256 | 5 | ~700K | New, in training |
+
+The `attn/256` model was created via **output-gated expansion** (`agent/scripts/expand_model.py`) from a trained `attn/192` checkpoint. The expansion strategy:
+
+1. All layers are widened to the new hidden dimension
+2. New neurons are initialized with small random weights (std=0.01) and replicated LayerNorm statistics
+3. The final output layers (policy and value heads) have **zero weights** for all new input dimensions — this gates the new capacity so the model starts at approximately the same playing strength
+4. Gradient flow during training activates the dormant neurons
+
+This avoids training from scratch while giving the model more representational capacity. The expanded model starts near the original's strength and is expected to surpass it as training progresses. Both variants coexist in the league and are rated on the same scale.
 
 ---
 
@@ -202,7 +216,7 @@ The eval runs in a `forkserver` subprocess with a 15-minute timeout. Results are
 ### Reference Bots (`eval/bots.py`, `eval/heuristic_opus.py`)
 
 - **RandomBot**: Uniform random over legal actions (rating anchor: 1000)
-- **HeuristicBot**: Greedy buy-if-affordable policy (rating anchor: 2500)
+- **HeuristicBot**: Greedy buy-if-affordable policy (rating ~1500)
 - **HeuristicOpusV15**: Sophisticated multi-step heuristic with noble targeting, reservation strategy, and gem efficiency scoring
 
 ### Standalone Eval (`scripts/eval_ckpt.py`)
@@ -215,39 +229,56 @@ Evaluates any checkpoint at high simulation budget (64+ sims) against the full o
 
 **Location:** `agent/train/league.py`, `agent/train/ranking.py`
 
-### Bradley-Terry Rating
+### Per-Player-Count Bradley-Terry Rating
 
-All ratings in the system use **anchored Bradley-Terry maximum likelihood estimation**:
+All ratings in the system use **anchored Bradley-Terry maximum likelihood estimation with per-player-count decomposition**:
 
-- **Anchors** (fixed): `random = 1000`, `heuristic = 2500`
+- **Anchor** (fixed): `random = 1000`
 - **Free parameters**: Every other entity's rating is fit by maximizing the likelihood of observed pairwise results
-- **Solver**: L-BFGS optimization on the log-likelihood
+- **Solver**: L-BFGS optimization on the log-likelihood with a Gaussian prior (σ=600) to prevent divergence on sparse records
 - **Scale**: 1000 points per order of magnitude in win probability (10× wider than standard Elo's 400)
+
+**Per-player-count fitting**: Rather than pooling all results into a single fit, the system fits **separate ratings for each player count** (2p, 3p, 4p). This accounts for the fact that winning a 4-player game is fundamentally harder than winning a 2-player game — a pairwise win extracted from a 4p game represents beating one of three opponents, not a head-to-head victory.
+
+**Calibration and combination**:
+1. Each per-PC rating is calibrated to a common scale using fixed multipliers: `{2p: 1.0, 3p: 1.25, 4p: 5.0}`
+2. The combined rating is a **weighted average** of calibrated per-PC ratings, weighted by the actual number of games played at each player count
+
+This means an entity that dominates 4-player games gets properly credited even if it's mediocre at 2-player, and vice versa. The calibration multipliers were empirically tuned so that the combined rating reflects overall strength across game formats.
+
+**Result storage format**: Results are stored with per-player-count win fields:
+```json
+{"a": "ckpt:42", "b": "random", "wins_a_2p": 10, "wins_b_2p": 6, "wins_a_3p": 15, "wins_b_3p": 9, ...}
+```
 
 The key property: ratings are **order-independent**. Every refit uses the full history of pairwise results, so the rating reflects all available evidence regardless of when games were played.
 
 ### League Management (`league.py`)
 
 The league is a persistent directory (`agent/runs/league/`) containing:
-- Checkpoint `.pt` files (network weights)
+- Checkpoint `.pt` files (network weights + config including `hidden` and `arch`)
 - `league.json` manifest with entries, pairwise results, and fitted ratings
 
+Each entry stores architecture metadata (`hidden`, `arch`) alongside its rating, enabling heterogeneous leagues where `attn/192` and `attn/256` checkpoints compete on the same scale.
+
 **Operations:**
-- `add_checkpoint()` — Saves a new checkpoint, prunes old entries if over capacity
-- `record_result()` — Adds pairwise win/loss/tie data to the results table
-- `recompute_ratings()` — Refits all ratings from the full results table
+- `add_checkpoint()` — Saves a new checkpoint with arch metadata, prunes old entries if over capacity
+- `record_result()` — Adds pairwise win/loss data with player count to the results table
+- `recompute_ratings()` — Refits all per-PC ratings from the full results table, stores calibrated per-PC ratings on each entry
 - `sample_opponent()` — Weighted sampling (recency × rating) for league self-play
 - `rating_candidates()` — Selects a mix of recent + strongest entries for eval
 
 **Pruning**: The league maintains up to `max_entries` (24) checkpoints. When full, it keeps the `keep_recent` (8) most recent plus the strongest older entries, deleting the rest from disk.
 
+**Floating entities**: Non-checkpoint participants (like `heuristic_opus` or `bedrock_claude_sonnet`) that appear in results but have no checkpoint file are tracked as "floating entities" in the manifest — they get a rating but no stored weights.
+
 ### Result Recording
 
 Results flow into the league from two sources:
-1. **Unified eval** — Every checkpoint eval produces pairwise results for all participants
+1. **Unified eval** — Every checkpoint eval produces pairwise results for all participants, tagged by player count
 2. **League self-play** — Training iterations where the current net plays against league opponents
 
-All results are aggregated as `{a, b, wins_a, wins_b, ties, games}` records. The rating system treats these as sufficient statistics — individual game outcomes are not stored.
+All results are aggregated as `{a, b, wins_a_2p, wins_b_2p, wins_a_3p, wins_b_3p, wins_a_4p, wins_b_4p}` records. The rating system treats these as sufficient statistics — individual game outcomes are not stored.
 
 ---
 
@@ -340,7 +371,7 @@ Each human player has a persistent `HumanRatingStore` that maintains:
 ```json
 {
   "rating_system": "anchored_bt",
-  "anchors": {"random": 1000.0, "heuristic": 2500.0, "net:league:1926": 2683.5},
+  "anchors": {"random": 1000.0, "net:league:2649": 2567.7},
   "results": [
     {"a": "human", "b": "heuristic", "wins_a": 12, "wins_b": 8, "ties": 0, "games": 20}
   ],
@@ -354,10 +385,10 @@ Each human player has a persistent `HumanRatingStore` that maintains:
 **Key design choices:**
 
 - **Full-history refit**: After every game, the human's rating is refit from scratch using all pairwise results. No per-game K-factor — the rating is a maximum-likelihood estimate given all evidence.
-- **Bayesian prior**: 4 "ghost games" at 50% against a virtual opponent rated 2500. This prevents the rating from exploding to ±∞ after a single game.
+- **Bayesian prior**: 4 "ghost games" at 50% against a virtual opponent rated 1500. This prevents the rating from exploding to ±∞ after a single game.
 - **Placement threshold**: Rating is hidden until the player has 5 wins (prevents noisy early ratings from appearing on the leaderboard).
 - **Pairwise decomposition**: A 4-player game where the human finishes 1st produces 3 pairwise wins (human beat each opponent). Each is weighted by `1/(num_opponents)` so a single 4-player game contributes the same total weight as a single 2-player game.
-- **Opponent anchoring**: Each opponent's rating at game time is stored as an anchor. For ML bots, this is their current league rating. For built-in bots, it's the canonical anchor (1000 or 2500).
+- **Opponent anchoring**: Each opponent's rating at game time is stored as an anchor. For ML bots, this is their current league rating. For built-in bots, it's their league-fitted rating.
 
 ### Sonnet (LLM) Rating Games (`play/scripts/llm_rating_games.py`)
 
@@ -373,18 +404,18 @@ This gives the LLM agent a rating on the same scale as ML checkpoints. The LLM's
 
 ### Unified Leaderboard (`play/ratings.py`)
 
-The leaderboard combines ALL match data into a single Bradley-Terry fit:
+The leaderboard combines ALL match data into a single per-player-count Bradley-Terry fit:
 
-1. **League results**: Checkpoint-vs-checkpoint and checkpoint-vs-bot results from training eval
+1. **League results**: Checkpoint-vs-checkpoint and checkpoint-vs-bot results from training eval (with per-PC win counts)
 2. **Human results**: Every human's pairwise game records (normalized entity IDs to match league format)
 3. **LLM results**: Sonnet's games recorded in the league
 
 Entity ID normalization maps between formats:
-- Human rating system uses `net:league:1926`
-- League uses `ckpt:1926`
+- Human rating system uses `net:league:2649`
+- League uses `ckpt:2649`
 - The `_normalize_entity()` function bridges these
 
-The result: humans, ML bots, heuristic bots, and Claude Sonnet all appear on one leaderboard with ratings on the same scale.
+The result: humans, ML bots (both `attn/192` and `attn/256`), heuristic bots, and Claude Sonnet all appear on one leaderboard with per-PC and combined ratings on the same scale.
 
 ### Storage & Sync
 
@@ -449,11 +480,11 @@ Checkpoints are uploaded to S3 during CDK deploy. A `manifest.json` in the model
 graph LR
     SP["Self-play games"] --> RB["Replay buffer"]
     RB --> LU["Learner updates"]
-    LU --> NC["New checkpoint"]
-    NC --> League["Added to league"]
-    League --> UE["Unified eval<br/>(512 games vs opponent pool)"]
-    UE --> PR["Pairwise results"]
-    PR --> RR["league.recompute_ratings()"]
+    LU --> NC["New checkpoint<br/>(attn/192 or attn/256)"]
+    NC --> League["Added to league<br/>(with arch metadata)"]
+    League --> UE["Unified eval<br/>(512 games × 2p/3p/4p)"]
+    UE --> PR["Per-PC pairwise results"]
+    PR --> RR["league.recompute_ratings()<br/>(fit per-PC, calibrate, combine)"]
     RR --> LJ["league.json updated"]
     LJ --> Deploy["deploy.sh → S3"]
     Deploy --> Lambda["Lambda serves leaderboard"]
@@ -485,4 +516,4 @@ graph LR
 
 ### Key Invariant
 
-All ratings — ML checkpoints, heuristic bots, LLM agents, and human players — are computed on the **same Bradley-Terry scale** anchored to `random=1000` and `heuristic=2500`. With a scale of 1000 points per order of magnitude, a human rated 2600 is expected to beat the heuristic bot ~56% of the time, same as an ML checkpoint rated 2600.
+All ratings — ML checkpoints (both `attn/192` and `attn/256`), heuristic bots, LLM agents, and human players — are computed on the **same per-player-count Bradley-Terry scale** anchored to `random=1000`. Per-PC ratings are calibrated and combined into a single number weighted by actual game distribution. A checkpoint rated 2500 is expected to dominate random play and compete strongly against heuristic bots across all player counts.

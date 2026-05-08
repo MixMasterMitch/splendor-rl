@@ -45,7 +45,7 @@ def _load_league_checkpoints() -> list[dict]:
                 "tag": entry.get("tag", f"idx{entry['idx']}"),
                 "path": str(ckpt_path),
                 "filename": entry["path"],
-                "rating": float(entry.get("rating", 2500.0)),
+                "rating": float(entry.get("rating", 1500.0)),
                 "hidden": entry.get("hidden"),
                 "arch": entry.get("arch"),
             })

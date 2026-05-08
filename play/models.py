@@ -1,7 +1,7 @@
 """Discover available opponent models for the play server.
 
 Sources:
-1. Built-ins: 'random' (anchored at 1000) and 'heuristic' (anchored at 2500).
+1. Built-ins: 'random' (anchored at 1000) and 'heuristic' (rating from eval data).
    These match the anchors used by the league rating system in
    agent/train/ranking.
 2. Every entry in every league.json under
@@ -35,7 +35,7 @@ import time
 from typing import Any, Optional
 
 RANDOM_ANCHOR_RATING: float = 1000.0
-HEURISTIC_ANCHOR_RATING: float = 2500.0
+DEFAULT_INITIAL_RATING: float = 1500.0
 
 
 def _runs_root(workspace_root: pathlib.Path) -> pathlib.Path:
@@ -95,7 +95,7 @@ def _scan_league_json(path: pathlib.Path, run_id: str) -> list[dict[str, Any]]:
         tag = str(entry.get("tag", f"idx{entry.get('idx', '?')}"))
         idx = int(entry.get("idx", -1))
         model_id = f"net:{run_id}:{idx}"
-        rating = _entry_rating(entry, HEURISTIC_ANCHOR_RATING)
+        rating = _entry_rating(entry, DEFAULT_INITIAL_RATING)
         out.append(
             {
                 "id": model_id,
@@ -126,7 +126,7 @@ def _builtins() -> list[dict[str, Any]]:
             "run": None,
             "tag": None,
             "ckpt": None,
-            "rating": 2500.0,
+            "rating": DEFAULT_INITIAL_RATING,
             "games": 0,
             "hidden": None,
             "arch": None,
@@ -143,7 +143,7 @@ def _builtins() -> list[dict[str, Any]]:
             "run": None,
             "tag": None,
             "ckpt": None,
-            "rating": HEURISTIC_ANCHOR_RATING,
+            "rating": DEFAULT_INITIAL_RATING,
             "games": 0,
             "hidden": None,
             "arch": None,
@@ -158,7 +158,7 @@ def _builtins() -> list[dict[str, Any]]:
             "run": None,
             "tag": None,
             "ckpt": None,
-            "rating": HEURISTIC_ANCHOR_RATING,
+            "rating": DEFAULT_INITIAL_RATING,
             "games": 0,
             "hidden": None,
             "arch": None,

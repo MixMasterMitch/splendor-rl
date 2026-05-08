@@ -9,7 +9,7 @@ Produces a dict of metrics suitable for logging to `metrics.jsonl`:
 - winrate_vs_random
 - winrate_vs_heuristic
 - avg_game_length
-- rating estimates (anchored Bradley-Terry; random=1000, heuristic=2500).
+- rating estimates (anchored Bradley-Terry; random=1000).
 """
 
 from __future__ import annotations

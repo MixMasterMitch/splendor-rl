@@ -4,7 +4,7 @@ The training league (``agent/train/league.py``) tracks ratings for trained
 checkpoints; this harness is a deliberately separate tournament space for
 candidate heuristic bots. It uses the *same* anchored Bradley-Terry rating
 fit (``agent/train/ranking.py``) so candidate ratings are directly
-comparable to ``random=1000`` and ``heuristic=2500`` anchors, but it does
+comparable to ``random=1000`` anchor, but it does
 not write to or read from any league JSON.
 
 Public surface:

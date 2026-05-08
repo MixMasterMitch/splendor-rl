@@ -88,7 +88,7 @@ python3 -m agent.scripts.tune \
 - **Time-budget mode** (`--minutes-per-trial`): Each trial trains for a fixed wall-clock duration. This naturally rewards configs with better throughput.
 - **SQLite persistence**: Results stored in `agent/runs/optuna_<study>.db`. Studies can be resumed across restarts with `load_if_exists=True`.
 - **Trial cleanup**: Trial directories are deleted after rating is computed to save disk space.
-- **Rating objective**: 512 games per opponent (random, heuristic, heuristic_opus, optionally best ML checkpoint). Anchors: random=1000, heuristic=2500.
+- **Rating objective**: 512 games per opponent (random, heuristic, heuristic_opus, optionally best ML checkpoint). Anchor: random=1000.
 
 ## Architecture Comparison
 

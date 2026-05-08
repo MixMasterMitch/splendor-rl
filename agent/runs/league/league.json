@@ -1,3283 +1,3865 @@
 {
   "entries": [
     {
-      "idx": 1801,
-      "tag": "i3010",
-      "path": "ckpt_01801_i3010.pt",
-      "rating": 2543.096254338085,
-      "games": 440,
-      "hidden": 192,
-      "arch": "attn"
-    },
-    {
-      "idx": 1803,
-      "tag": "i3020",
-      "path": "ckpt_01803_i3020.pt",
-      "rating": 2594.3105334158195,
-      "games": 320,
-      "hidden": 192,
-      "arch": "attn"
-    },
-    {
-      "idx": 1805,
-      "tag": "i3030",
-      "path": "ckpt_01805_i3030.pt",
-      "rating": 2516.8204335301625,
-      "games": 376,
-      "hidden": 192,
-      "arch": "attn"
-    },
-    {
-      "idx": 1842,
-      "tag": "i3215",
-      "path": "ckpt_01842_i3215.pt",
-      "rating": 2583.328924642153,
-      "games": 294,
-      "hidden": 192,
-      "arch": "attn"
-    },
-    {
-      "idx": 1869,
-      "tag": "i3350",
-      "path": "ckpt_01869_i3350.pt",
-      "rating": 2532.978343276321,
-      "games": 339,
-      "hidden": 192,
-      "arch": "attn"
-    },
-    {
       "idx": 1876,
       "tag": "i3385",
       "path": "ckpt_01876_i3385.pt",
-      "rating": 2594.8306058644157,
-      "games": 448,
+      "rating": 1663.9675185941696,
+      "games": 6529,
       "hidden": 192,
-      "arch": "attn"
-    },
-    {
-      "idx": 1877,
-      "tag": "i3390",
-      "path": "ckpt_01877_i3390.pt",
-      "rating": 2542.3725401299525,
-      "games": 295,
-      "hidden": 192,
-      "arch": "attn"
-    },
-    {
-      "idx": 1894,
-      "tag": "i3475",
-      "path": "ckpt_01894_i3475.pt",
-      "rating": 2535.3287002421716,
-      "games": 269,
-      "hidden": 192,
-      "arch": "attn"
+      "arch": "attn",
+      "rating_2p": 2646.5368920337664,
+      "rating_3p": 1400.7502528781881,
+      "rating_4p": 1317.7417357003264
     },
     {
       "idx": 1895,
       "tag": "i3480",
       "path": "ckpt_01895_i3480.pt",
-      "rating": 2678.297325771581,
-      "games": 471,
+      "rating": 1628.9727025732966,
+      "games": 6592,
       "hidden": 192,
-      "arch": "attn"
-    },
-    {
-      "idx": 1912,
-      "tag": "i3565",
-      "path": "ckpt_01912_i3565.pt",
-      "rating": 2557.273381301916,
-      "games": 275,
-      "hidden": 192,
-      "arch": "attn"
-    },
-    {
-      "idx": 1922,
-      "tag": "i3615",
-      "path": "ckpt_01922_i3615.pt",
-      "rating": 2521.2485541906067,
-      "games": 331,
-      "hidden": 192,
-      "arch": "attn"
-    },
-    {
-      "idx": 1923,
-      "tag": "i3620",
-      "path": "ckpt_01923_i3620.pt",
-      "rating": 2480.737781222885,
-      "games": 246,
-      "hidden": 192,
-      "arch": "attn"
-    },
-    {
-      "idx": 1926,
-      "tag": "i3635",
-      "path": "ckpt_01926_i3635.pt",
-      "rating": 2593.4920874411728,
-      "games": 265,
-      "hidden": 192,
-      "arch": "attn"
+      "arch": "attn",
+      "rating_2p": 2682.3279954157497,
+      "rating_3p": 1438.6544744861708,
+      "rating_4p": 1229.3734122326373
     },
     {
       "idx": 2494,
       "tag": "i2820",
       "path": "ckpt_02494_i2820.pt",
-      "rating": 2804.1016415087747,
-      "games": 316,
+      "rating": 1906.6207517810258,
+      "games": 6644,
       "hidden": 192,
-      "arch": "attn"
+      "arch": "attn",
+      "rating_2p": 2545.2343648570272,
+      "rating_3p": 1400.0243443933982,
+      "rating_4p": 1970.3735705146937
     },
     {
       "idx": 2495,
       "tag": "i2825",
       "path": "ckpt_02495_i2825.pt",
-      "rating": 2736.6955603912747,
-      "games": 496,
+      "rating": 1920.920193944298,
+      "games": 6746,
       "hidden": 192,
-      "arch": "attn"
+      "arch": "attn",
+      "rating_2p": 2585.852901715493,
+      "rating_3p": 1403.3859437826457,
+      "rating_4p": 1985.7977788089659
     },
     {
       "idx": 2496,
       "tag": "i2830",
       "path": "ckpt_02496_i2830.pt",
-      "rating": 2833.9986358455612,
-      "games": 565,
+      "rating": 1937.4305906973846,
+      "games": 6605,
       "hidden": 192,
-      "arch": "attn"
+      "arch": "attn",
+      "rating_2p": 2596.7603604544806,
+      "rating_3p": 1346.3259557687256,
+      "rating_4p": 2067.964829328075
     },
     {
       "idx": 2497,
       "tag": "i2835",
       "path": "ckpt_02497_i2835.pt",
-      "rating": 2806.9715532348955,
-      "games": 542,
+      "rating": 1920.8639523666593,
+      "games": 6496,
       "hidden": 192,
-      "arch": "attn"
+      "arch": "attn",
+      "rating_2p": 2552.6114918352214,
+      "rating_3p": 1384.1238269462115,
+      "rating_4p": 2006.0903889032602
     },
     {
       "idx": 2498,
       "tag": "i2840",
       "path": "ckpt_02498_i2840.pt",
-      "rating": 2830.143226380526,
-      "games": 544,
+      "rating": 1915.5550009687506,
+      "games": 6974,
       "hidden": 192,
-      "arch": "attn"
+      "arch": "attn",
+      "rating_2p": 2484.4038011038897,
+      "rating_3p": 1374.1300207363925,
+      "rating_4p": 2041.7968936736963
     },
     {
       "idx": 2499,
       "tag": "i2845",
       "path": "ckpt_02499_i2845.pt",
-      "rating": 2867.759198719055,
-      "games": 479,
+      "rating": 1896.5989684466085,
+      "games": 6475,
       "hidden": 192,
-      "arch": "attn"
+      "arch": "attn",
+      "rating_2p": 2568.0555239476653,
+      "rating_3p": 1322.4312260646786,
+      "rating_4p": 1973.8570209631496
     },
     {
       "idx": 2500,
       "tag": "i2850",
       "path": "ckpt_02500_i2850.pt",
-      "rating": 2843.586896750746,
-      "games": 530,
+      "rating": 1922.9598912257516,
+      "games": 6660,
       "hidden": 192,
-      "arch": "attn"
+      "arch": "attn",
+      "rating_2p": 2517.9930323285753,
+      "rating_3p": 1369.7264612520723,
+      "rating_4p": 2032.3738742019907
     },
     {
       "idx": 2501,
       "tag": "i2875",
       "path": "ckpt_02501_i2875.pt",
-      "rating": 3013.9539570241386,
-      "games": 403,
+      "rating": 2113.9738431295154,
+      "games": 6642,
       "hidden": 192,
-      "arch": "attn"
+      "arch": "attn",
+      "rating_2p": 2684.0486951009616,
+      "rating_3p": 1403.4220251879653,
+      "rating_4p": 2355.261166726723
     },
     {
       "idx": 2502,
       "tag": "i2900",
       "path": "ckpt_02502_i2900.pt",
-      "rating": 2921.2739938027084,
-      "games": 433,
+      "rating": 2191.630158592358,
+      "games": 6932,
       "hidden": 192,
-      "arch": "attn"
+      "arch": "attn",
+      "rating_2p": 2722.1655760161193,
+      "rating_3p": 1381.6007372853742,
+      "rating_4p": 2515.861075039639
     },
     {
       "idx": 2503,
       "tag": "i2925",
       "path": "ckpt_02503_i2925.pt",
-      "rating": 2952.719316686511,
-      "games": 505,
+      "rating": 2226.5322557986437,
+      "games": 6533,
       "hidden": 192,
-      "arch": "attn"
+      "arch": "attn",
+      "rating_2p": 2884.4315733857648,
+      "rating_3p": 1400.7435732595977,
+      "rating_4p": 2524.4819919265387
     },
     {
       "idx": 2504,
       "tag": "i2950",
       "path": "ckpt_02504_i2950.pt",
-      "rating": 3091.2740143923183,
-      "games": 658,
+      "rating": 2212.280609784084,
+      "games": 6810,
       "hidden": 192,
-      "arch": "attn"
+      "arch": "attn",
+      "rating_2p": 2979.9006933168457,
+      "rating_3p": 1389.4133484937731,
+      "rating_4p": 2442.6485224046996
     },
     {
       "idx": 2505,
       "tag": "i2975",
       "path": "ckpt_02505_i2975.pt",
-      "rating": 3068.792220494481,
-      "games": 313,
+      "rating": 2273.0853698215,
+      "games": 6802,
       "hidden": 192,
-      "arch": "attn"
-    },
-    {
-      "idx": 2506,
-      "tag": "i3000",
-      "path": "ckpt_02506_i3000.pt",
-      "rating": 2500.0,
-      "elo": 2500.0,
-      "games": 0,
-      "hidden": 192,
-      "arch": "attn"
+      "arch": "attn",
+      "rating_2p": 2950.8973536930453,
+      "rating_3p": 1387.3588652701403,
+      "rating_4p": 2583.5417668259583
     },
     {
       "idx": 2507,
       "tag": "i3025",
       "path": "ckpt_02507_i3025.pt",
-      "rating": 3078.6519809246442,
-      "games": 155,
+      "rating": 2319.831990285209,
+      "games": 6786,
       "hidden": 192,
-      "arch": "attn"
-    },
-    {
-      "idx": 2508,
-      "tag": "i3050",
-      "path": "ckpt_02508_i3050.pt",
-      "rating": 2500.0,
-      "games": 0,
-      "hidden": 192,
-      "arch": "attn"
+      "arch": "attn",
+      "rating_2p": 3131.3854689340283,
+      "rating_3p": 1379.0970553918028,
+      "rating_4p": 2621.6782932521764
     },
     {
       "idx": 2509,
       "tag": "i3075",
       "path": "ckpt_02509_i3075.pt",
-      "rating": 3105.2467074119313,
-      "games": 175,
+      "rating": 2393.5839313468946,
+      "games": 6692,
       "hidden": 192,
-      "arch": "attn"
+      "arch": "attn",
+      "rating_2p": 3287.895570969875,
+      "rating_3p": 1392.1009639332997,
+      "rating_4p": 2704.622141345342
     },
     {
-      "idx": 2510,
-      "tag": "i3100",
-      "path": "ckpt_02510_i3100.pt",
-      "rating": 3188.8470644256063,
-      "games": 626,
+      "idx": 2644,
+      "tag": "i2525",
+      "path": "ckpt_02644_i2525.pt",
+      "rating": 2413.3095452258126,
+      "games": 6854,
       "hidden": 192,
-      "arch": "attn"
+      "arch": "attn",
+      "rating_2p": 2120.8681903352685,
+      "rating_3p": 1293.2669237200998,
+      "rating_4p": 3447.576278351719
     },
     {
-      "idx": 2511,
-      "tag": "i3125",
-      "path": "ckpt_02511_i3125.pt",
-      "rating": 3201.905310570133,
-      "games": 393,
+      "idx": 2645,
+      "tag": "i2550",
+      "path": "ckpt_02645_i2550.pt",
+      "rating": 2499.6357136260795,
+      "games": 6748,
       "hidden": 192,
-      "arch": "attn"
+      "arch": "attn",
+      "rating_2p": 2111.8898342743114,
+      "rating_3p": 1320.461735301271,
+      "rating_4p": 3525.0960537022706
     },
     {
-      "idx": 2512,
-      "tag": "i3150",
-      "path": "ckpt_02512_i3150.pt",
-      "rating": 3196.8082443970357,
-      "games": 492,
+      "idx": 2646,
+      "tag": "i2575",
+      "path": "ckpt_02646_i2575.pt",
+      "rating": 2480.5837639854326,
+      "games": 6678,
       "hidden": 192,
-      "arch": "attn"
+      "arch": "attn",
+      "rating_2p": 2109.1160223219795,
+      "rating_3p": 1313.3949045820618,
+      "rating_4p": 3465.7873299250004
     },
     {
-      "idx": 2513,
-      "tag": "i3175",
-      "path": "ckpt_02513_i3175.pt",
-      "rating": 3244.6335812929606,
-      "games": 410,
+      "idx": 2647,
+      "tag": "i2600",
+      "path": "ckpt_02647_i2600.pt",
+      "rating": 2348.89522649632,
+      "games": 6758,
       "hidden": 192,
-      "arch": "attn"
+      "arch": "attn",
+      "rating_2p": 2109.0631121049005,
+      "rating_3p": 1303.200959985984,
+      "rating_4p": 3346.8480998407003
     },
     {
-      "idx": 2514,
-      "tag": "i3200",
-      "path": "ckpt_02514_i3200.pt",
-      "rating": 3220.5726751821426,
-      "games": 491,
+      "idx": 2648,
+      "tag": "i2625",
+      "path": "ckpt_02648_i2625.pt",
+      "rating": 2454.0355199843816,
+      "games": 6492,
       "hidden": 192,
-      "arch": "attn"
+      "arch": "attn",
+      "rating_2p": 2065.5184144952545,
+      "rating_3p": 1371.63544538528,
+      "rating_4p": 3405.4827557572426
     },
     {
-      "idx": 2515,
-      "tag": "i3225",
-      "path": "ckpt_02515_i3225.pt",
-      "rating": 3238.45000209036,
-      "games": 400,
+      "idx": 2649,
+      "tag": "i2650",
+      "path": "ckpt_02649_i2650.pt",
+      "rating": 2560.2068712142504,
+      "games": 6656,
       "hidden": 192,
-      "arch": "attn"
+      "arch": "attn",
+      "rating_2p": 2131.919517695788,
+      "rating_3p": 1338.140145381212,
+      "rating_4p": 3676.220680727475
     },
     {
-      "idx": 2516,
-      "tag": "i3250",
-      "path": "ckpt_02516_i3250.pt",
-      "rating": 3256.8510744790133,
-      "games": 391,
+      "idx": 2650,
+      "tag": "i2675",
+      "path": "ckpt_02650_i2675.pt",
+      "rating": 2438.9299593689393,
+      "games": 6868,
       "hidden": 192,
-      "arch": "attn"
+      "arch": "attn",
+      "rating_2p": 2070.2964872836615,
+      "rating_3p": 1316.8152182634378,
+      "rating_4p": 3455.2173696317423
     },
     {
-      "idx": 2517,
-      "tag": "i3275",
-      "path": "ckpt_02517_i3275.pt",
-      "rating": 2500.0,
-      "games": 0,
+      "idx": 2651,
+      "tag": "i2700",
+      "path": "ckpt_02651_i2700.pt",
+      "rating": 2413.5141798311374,
+      "games": 6453,
       "hidden": 192,
-      "arch": "attn"
+      "arch": "attn",
+      "rating_2p": 2062.6158268087956,
+      "rating_3p": 1296.977025023717,
+      "rating_4p": 3424.7606356672304
     }
   ],
   "results": [
     {
-      "a": "ckpt:1801",
-      "b": "ckpt:2495",
-      "wins_a": 5.0,
-      "wins_b": 11.333333333333334,
-      "ties": 0.0,
-      "games": 16.333333333333332
+      "a": "ckpt:2504",
+      "b": "ckpt:2507",
+      "wins_a_2p": 26.0,
+      "wins_b_2p": 24.0,
+      "wins_a_3p": 105.0,
+      "wins_b_3p": 93.0,
+      "wins_a_4p": 180.0,
+      "wins_b_4p": 164.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2504",
+      "wins_a_2p": 20.0,
+      "wins_b_2p": 36.0,
+      "wins_a_3p": 98.0,
+      "wins_b_3p": 86.0,
+      "wins_a_4p": 118.0,
+      "wins_b_4p": 212.0
+    },
+    {
+      "a": "ckpt:2504",
+      "b": "ckpt:2645",
+      "wins_a_2p": 60.0,
+      "wins_b_2p": 6.0,
+      "wins_a_3p": 86.0,
+      "wins_b_3p": 86.0,
+      "wins_a_4p": 124.0,
+      "wins_b_4p": 256.0
+    },
+    {
+      "a": "ckpt:2503",
+      "b": "ckpt:2504",
+      "wins_a_2p": 28.0,
+      "wins_b_2p": 36.0,
+      "wins_a_3p": 98.0,
+      "wins_b_3p": 76.0,
+      "wins_a_4p": 190.0,
+      "wins_b_4p": 180.0
+    },
+    {
+      "a": "ckpt:2504",
+      "b": "ckpt:2644",
+      "wins_a_2p": 54.0,
+      "wins_b_2p": 4.0,
+      "wins_a_3p": 96.0,
+      "wins_b_3p": 82.0,
+      "wins_a_4p": 141.0,
+      "wins_b_4p": 229.0
+    },
+    {
+      "a": "ckpt:2504",
+      "b": "ckpt:2505",
+      "wins_a_2p": 36.0,
+      "wins_b_2p": 32.0,
+      "wins_a_3p": 85.0,
+      "wins_b_3p": 89.0,
+      "wins_a_4p": 175.0,
+      "wins_b_4p": 175.0
+    },
+    {
+      "a": "ckpt:2504",
+      "b": "ckpt:2647",
+      "wins_a_2p": 34.0,
+      "wins_b_2p": 6.0,
+      "wins_a_3p": 91.0,
+      "wins_b_3p": 85.0,
+      "wins_a_4p": 144.0,
+      "wins_b_4p": 206.0
+    },
+    {
+      "a": "ckpt:2504",
+      "b": "ckpt:2651",
+      "wins_a_2p": 42.0,
+      "wins_b_2p": 8.0,
+      "wins_a_3p": 84.0,
+      "wins_b_3p": 74.0,
+      "wins_a_4p": 117.0,
+      "wins_b_4p": 177.0
+    },
+    {
+      "a": "ckpt:2504",
+      "b": "ckpt:2509",
+      "wins_a_2p": 36.0,
+      "wins_b_2p": 32.0,
+      "wins_a_3p": 97.0,
+      "wins_b_3p": 87.0,
+      "wins_a_4p": 181.0,
+      "wins_b_4p": 175.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2504",
+      "wins_a_2p": 16.0,
+      "wins_b_2p": 34.0,
+      "wins_a_3p": 87.0,
+      "wins_b_3p": 111.0,
+      "wins_a_4p": 130.0,
+      "wins_b_4p": 210.0
+    },
+    {
+      "a": "ckpt:2501",
+      "b": "ckpt:2504",
+      "wins_a_2p": 18.0,
+      "wins_b_2p": 34.0,
+      "wins_a_3p": 80.0,
+      "wins_b_3p": 80.0,
+      "wins_a_4p": 143.0,
+      "wins_b_4p": 149.0
+    },
+    {
+      "a": "ckpt:2504",
+      "b": "ckpt:2646",
+      "wins_a_2p": 66.0,
+      "wins_b_2p": 6.0,
+      "wins_a_3p": 82.0,
+      "wins_b_3p": 76.0,
+      "wins_a_4p": 172.0,
+      "wins_b_4p": 250.0
+    },
+    {
+      "a": "ckpt:2504",
+      "b": "ckpt:2649",
+      "wins_a_2p": 40.0,
+      "wins_b_2p": 6.0,
+      "wins_a_3p": 72.0,
+      "wins_b_3p": 86.0,
+      "wins_a_4p": 131.0,
+      "wins_b_4p": 231.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2504",
+      "wins_a_2p": 18.0,
+      "wins_b_2p": 40.0,
+      "wins_a_3p": 87.0,
+      "wins_b_3p": 87.0,
+      "wins_a_4p": 129.0,
+      "wins_b_4p": 187.0
+    },
+    {
+      "a": "ckpt:2502",
+      "b": "ckpt:2504",
+      "wins_a_2p": 20.0,
+      "wins_b_2p": 34.0,
+      "wins_a_3p": 83.0,
+      "wins_b_3p": 99.0,
+      "wins_a_4p": 172.0,
+      "wins_b_4p": 168.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "ckpt:2504",
+      "wins_a_2p": 22.0,
+      "wins_b_2p": 38.0,
+      "wins_a_3p": 81.0,
+      "wins_b_3p": 87.0,
+      "wins_a_4p": 164.0,
+      "wins_b_4p": 208.0
+    },
+    {
+      "a": "ckpt:2500",
+      "b": "ckpt:2504",
+      "wins_a_2p": 20.0,
+      "wins_b_2p": 56.0,
+      "wins_a_3p": 95.0,
+      "wins_b_3p": 107.0,
+      "wins_a_4p": 138.0,
+      "wins_b_4p": 150.0
+    },
+    {
+      "a": "ckpt:2499",
+      "b": "ckpt:2504",
+      "wins_a_2p": 24.0,
+      "wins_b_2p": 36.0,
+      "wins_a_3p": 67.0,
+      "wins_b_3p": 83.0,
+      "wins_a_4p": 178.0,
+      "wins_b_4p": 184.0
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "ckpt:2504",
+      "wins_a_2p": 26.0,
+      "wins_b_2p": 48.0,
+      "wins_a_3p": 108.0,
+      "wins_b_3p": 92.0,
+      "wins_a_4p": 153.0,
+      "wins_b_4p": 179.0
+    },
+    {
+      "a": "ckpt:2504",
+      "b": "ckpt:2648",
+      "wins_a_2p": 54.0,
+      "wins_b_2p": 2.0,
+      "wins_a_3p": 92.0,
+      "wins_b_3p": 78.0,
+      "wins_a_4p": 129.0,
+      "wins_b_4p": 231.0
+    },
+    {
+      "a": "ckpt:2497",
+      "b": "ckpt:2504",
+      "wins_a_2p": 26.0,
+      "wins_b_2p": 42.0,
+      "wins_a_3p": 99.0,
+      "wins_b_3p": 85.0,
+      "wins_a_4p": 135.0,
+      "wins_b_4p": 165.0
     },
     {
       "a": "ckpt:2498",
+      "b": "ckpt:2504",
+      "wins_a_2p": 14.0,
+      "wins_b_2p": 50.0,
+      "wins_a_3p": 83.0,
+      "wins_b_3p": 75.0,
+      "wins_a_4p": 153.0,
+      "wins_b_4p": 203.0
+    },
+    {
+      "a": "ckpt:2504",
+      "b": "ckpt:2650",
+      "wins_a_2p": 46.0,
+      "wins_b_2p": 8.0,
+      "wins_a_3p": 97.0,
+      "wins_b_3p": 87.0,
+      "wins_a_4p": 125.0,
+      "wins_b_4p": 247.0
+    },
+    {
+      "a": "ckpt:2504",
       "b": "random",
-      "wins_a": 29.0,
-      "wins_b": 0.5,
-      "ties": 0.0,
-      "games": 29.5
+      "wins_a_2p": 48.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 110.0,
+      "wins_b_3p": 62.0,
+      "wins_a_4p": 229.0,
+      "wins_b_4p": 121.0
     },
     {
-      "a": "ckpt:1842",
-      "b": "ckpt:1869",
-      "wins_a": 7.0,
-      "wins_b": 6.0,
-      "ties": 0.0,
-      "games": 13.0
+      "a": "ckpt:2504",
+      "b": "heuristic",
+      "wins_a_2p": 52.0,
+      "wins_b_2p": 2.0,
+      "wins_a_3p": 84.0,
+      "wins_b_3p": 92.0,
+      "wins_a_4p": 241.0,
+      "wins_b_4p": 137.0
     },
     {
-      "a": "ckpt:1803",
-      "b": "ckpt:1842",
-      "wins_a": 5.0,
-      "wins_b": 6.0,
-      "ties": 0.0,
-      "games": 11.0
+      "a": "ckpt:2504",
+      "b": "heuristic_opus",
+      "wins_a_2p": 64.0,
+      "wins_b_2p": 4.0,
+      "wins_a_3p": 39.0,
+      "wins_b_3p": 113.0,
+      "wins_a_4p": 176.0,
+      "wins_b_4p": 150.0
     },
     {
-      "a": "ckpt:1801",
+      "a": "ckpt:1895",
+      "b": "ckpt:2507",
+      "wins_a_2p": 18.0,
+      "wins_b_2p": 48.0,
+      "wins_a_3p": 84.0,
+      "wins_b_3p": 92.0,
+      "wins_a_4p": 104.0,
+      "wins_b_4p": 198.0
+    },
+    {
+      "a": "ckpt:2507",
+      "b": "ckpt:2645",
+      "wins_a_2p": 56.0,
+      "wins_b_2p": 2.0,
+      "wins_a_3p": 105.0,
+      "wins_b_3p": 85.0,
+      "wins_a_4p": 115.0,
+      "wins_b_4p": 201.0
+    },
+    {
+      "a": "ckpt:2503",
+      "b": "ckpt:2507",
+      "wins_a_2p": 20.0,
+      "wins_b_2p": 32.0,
+      "wins_a_3p": 87.0,
+      "wins_b_3p": 101.0,
+      "wins_a_4p": 137.0,
+      "wins_b_4p": 165.0
+    },
+    {
+      "a": "ckpt:2507",
+      "b": "ckpt:2644",
+      "wins_a_2p": 84.0,
+      "wins_b_2p": 4.0,
+      "wins_a_3p": 96.0,
+      "wins_b_3p": 76.0,
+      "wins_a_4p": 156.0,
+      "wins_b_4p": 200.0
+    },
+    {
+      "a": "ckpt:2505",
+      "b": "ckpt:2507",
+      "wins_a_2p": 22.0,
+      "wins_b_2p": 34.0,
+      "wins_a_3p": 72.0,
+      "wins_b_3p": 86.0,
+      "wins_a_4p": 148.0,
+      "wins_b_4p": 152.0
+    },
+    {
+      "a": "ckpt:2507",
+      "b": "ckpt:2647",
+      "wins_a_2p": 38.0,
+      "wins_b_2p": 8.0,
+      "wins_a_3p": 109.0,
+      "wins_b_3p": 115.0,
+      "wins_a_4p": 142.0,
+      "wins_b_4p": 188.0
+    },
+    {
+      "a": "ckpt:2507",
+      "b": "ckpt:2651",
+      "wins_a_2p": 68.0,
+      "wins_b_2p": 2.0,
+      "wins_a_3p": 95.0,
+      "wins_b_3p": 81.0,
+      "wins_a_4p": 134.0,
+      "wins_b_4p": 198.0
+    },
+    {
+      "a": "ckpt:2507",
+      "b": "ckpt:2509",
+      "wins_a_2p": 20.0,
+      "wins_b_2p": 38.0,
+      "wins_a_3p": 95.0,
+      "wins_b_3p": 85.0,
+      "wins_a_4p": 189.0,
+      "wins_b_4p": 165.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2507",
+      "wins_a_2p": 4.0,
+      "wins_b_2p": 52.0,
+      "wins_a_3p": 87.0,
+      "wins_b_3p": 81.0,
+      "wins_a_4p": 101.0,
+      "wins_b_4p": 181.0
+    },
+    {
+      "a": "ckpt:2501",
+      "b": "ckpt:2507",
+      "wins_a_2p": 28.0,
+      "wins_b_2p": 42.0,
+      "wins_a_3p": 91.0,
+      "wins_b_3p": 105.0,
+      "wins_a_4p": 127.0,
+      "wins_b_4p": 167.0
+    },
+    {
+      "a": "ckpt:2507",
+      "b": "ckpt:2646",
+      "wins_a_2p": 42.0,
+      "wins_b_2p": 2.0,
+      "wins_a_3p": 69.0,
+      "wins_b_3p": 93.0,
+      "wins_a_4p": 133.0,
+      "wins_b_4p": 205.0
+    },
+    {
+      "a": "ckpt:2507",
+      "b": "ckpt:2649",
+      "wins_a_2p": 48.0,
+      "wins_b_2p": 2.0,
+      "wins_a_3p": 92.0,
+      "wins_b_3p": 92.0,
+      "wins_a_4p": 137.0,
+      "wins_b_4p": 193.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2507",
+      "wins_a_2p": 18.0,
+      "wins_b_2p": 54.0,
+      "wins_a_3p": 83.0,
+      "wins_b_3p": 79.0,
+      "wins_a_4p": 144.0,
+      "wins_b_4p": 178.0
+    },
+    {
+      "a": "ckpt:2502",
+      "b": "ckpt:2507",
+      "wins_a_2p": 16.0,
+      "wins_b_2p": 48.0,
+      "wins_a_3p": 105.0,
+      "wins_b_3p": 85.0,
+      "wins_a_4p": 180.0,
+      "wins_b_4p": 206.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "ckpt:2507",
+      "wins_a_2p": 16.0,
+      "wins_b_2p": 36.0,
+      "wins_a_3p": 94.0,
+      "wins_b_3p": 84.0,
+      "wins_a_4p": 155.0,
+      "wins_b_4p": 189.0
+    },
+    {
+      "a": "ckpt:2500",
+      "b": "ckpt:2507",
+      "wins_a_2p": 22.0,
+      "wins_b_2p": 64.0,
+      "wins_a_3p": 104.0,
+      "wins_b_3p": 90.0,
+      "wins_a_4p": 144.0,
+      "wins_b_4p": 196.0
+    },
+    {
+      "a": "ckpt:2499",
+      "b": "ckpt:2507",
+      "wins_a_2p": 6.0,
+      "wins_b_2p": 60.0,
+      "wins_a_3p": 84.0,
+      "wins_b_3p": 76.0,
+      "wins_a_4p": 155.0,
+      "wins_b_4p": 173.0
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "ckpt:2507",
+      "wins_a_2p": 8.0,
+      "wins_b_2p": 38.0,
+      "wins_a_3p": 85.0,
+      "wins_b_3p": 79.0,
+      "wins_a_4p": 144.0,
+      "wins_b_4p": 210.0
+    },
+    {
+      "a": "ckpt:2507",
+      "b": "ckpt:2648",
+      "wins_a_2p": 72.0,
+      "wins_b_2p": 6.0,
+      "wins_a_3p": 78.0,
+      "wins_b_3p": 78.0,
+      "wins_a_4p": 128.0,
+      "wins_b_4p": 192.0
+    },
+    {
+      "a": "ckpt:2497",
+      "b": "ckpt:2507",
+      "wins_a_2p": 10.0,
+      "wins_b_2p": 38.0,
+      "wins_a_3p": 84.0,
+      "wins_b_3p": 86.0,
+      "wins_a_4p": 144.0,
+      "wins_b_4p": 200.0
+    },
+    {
+      "a": "ckpt:2498",
+      "b": "ckpt:2507",
+      "wins_a_2p": 12.0,
+      "wins_b_2p": 46.0,
+      "wins_a_3p": 85.0,
+      "wins_b_3p": 89.0,
+      "wins_a_4p": 169.0,
+      "wins_b_4p": 219.0
+    },
+    {
+      "a": "ckpt:2507",
+      "b": "ckpt:2650",
+      "wins_a_2p": 56.0,
+      "wins_b_2p": 6.0,
+      "wins_a_3p": 86.0,
+      "wins_b_3p": 82.0,
+      "wins_a_4p": 119.0,
+      "wins_b_4p": 221.0
+    },
+    {
+      "a": "ckpt:2507",
+      "b": "random",
+      "wins_a_2p": 58.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 105.0,
+      "wins_b_3p": 49.0,
+      "wins_a_4p": 265.0,
+      "wins_b_4p": 127.0
+    },
+    {
+      "a": "ckpt:2507",
+      "b": "heuristic",
+      "wins_a_2p": 60.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 85.0,
+      "wins_b_3p": 101.0,
+      "wins_a_4p": 260.0,
+      "wins_b_4p": 130.0
+    },
+    {
+      "a": "ckpt:2507",
+      "b": "heuristic_opus",
+      "wins_a_2p": 48.0,
+      "wins_b_2p": 2.0,
+      "wins_a_3p": 41.0,
+      "wins_b_3p": 111.0,
+      "wins_a_4p": 192.0,
+      "wins_b_4p": 176.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2645",
+      "wins_a_2p": 48.0,
+      "wins_b_2p": 8.0,
+      "wins_a_3p": 103.0,
+      "wins_b_3p": 107.0,
+      "wins_a_4p": 92.0,
+      "wins_b_4p": 256.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2503",
+      "wins_a_2p": 24.0,
+      "wins_b_2p": 34.0,
+      "wins_a_3p": 89.0,
+      "wins_b_3p": 69.0,
+      "wins_a_4p": 112.0,
+      "wins_b_4p": 198.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2644",
+      "wins_a_2p": 40.0,
+      "wins_b_2p": 24.0,
+      "wins_a_3p": 97.0,
+      "wins_b_3p": 71.0,
+      "wins_a_4p": 104.0,
+      "wins_b_4p": 242.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2505",
+      "wins_a_2p": 24.0,
+      "wins_b_2p": 44.0,
+      "wins_a_3p": 87.0,
+      "wins_b_3p": 83.0,
+      "wins_a_4p": 102.0,
+      "wins_b_4p": 206.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2647",
+      "wins_a_2p": 58.0,
+      "wins_b_2p": 14.0,
+      "wins_a_3p": 91.0,
+      "wins_b_3p": 105.0,
+      "wins_a_4p": 73.0,
+      "wins_b_4p": 253.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2651",
+      "wins_a_2p": 46.0,
+      "wins_b_2p": 14.0,
+      "wins_a_3p": 98.0,
+      "wins_b_3p": 66.0,
+      "wins_a_4p": 88.0,
+      "wins_b_4p": 216.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2509",
+      "wins_a_2p": 4.0,
+      "wins_b_2p": 46.0,
+      "wins_a_3p": 88.0,
+      "wins_b_3p": 82.0,
+      "wins_a_4p": 106.0,
+      "wins_b_4p": 192.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:1895",
+      "wins_a_2p": 36.0,
+      "wins_b_2p": 30.0,
+      "wins_a_3p": 65.0,
+      "wins_b_3p": 87.0,
+      "wins_a_4p": 173.0,
+      "wins_b_4p": 163.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2501",
+      "wins_a_2p": 34.0,
+      "wins_b_2p": 28.0,
+      "wins_a_3p": 124.0,
+      "wins_b_3p": 120.0,
+      "wins_a_4p": 127.0,
+      "wins_b_4p": 229.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2646",
+      "wins_a_2p": 44.0,
+      "wins_b_2p": 18.0,
+      "wins_a_3p": 90.0,
+      "wins_b_3p": 72.0,
+      "wins_a_4p": 98.0,
+      "wins_b_4p": 228.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2649",
+      "wins_a_2p": 28.0,
+      "wins_b_2p": 18.0,
+      "wins_a_3p": 91.0,
+      "wins_b_3p": 69.0,
+      "wins_a_4p": 83.0,
+      "wins_b_4p": 245.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2494",
+      "wins_a_2p": 48.0,
+      "wins_b_2p": 26.0,
+      "wins_a_3p": 88.0,
+      "wins_b_3p": 86.0,
+      "wins_a_4p": 128.0,
+      "wins_b_4p": 178.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2502",
+      "wins_a_2p": 16.0,
+      "wins_b_2p": 26.0,
+      "wins_a_3p": 90.0,
+      "wins_b_3p": 80.0,
+      "wins_a_4p": 120.0,
+      "wins_b_4p": 240.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2495",
+      "wins_a_2p": 38.0,
+      "wins_b_2p": 20.0,
+      "wins_a_3p": 88.0,
+      "wins_b_3p": 72.0,
+      "wins_a_4p": 137.0,
+      "wins_b_4p": 211.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2500",
+      "wins_a_2p": 42.0,
+      "wins_b_2p": 16.0,
+      "wins_a_3p": 77.0,
+      "wins_b_3p": 63.0,
+      "wins_a_4p": 153.0,
+      "wins_b_4p": 207.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2499",
+      "wins_a_2p": 30.0,
+      "wins_b_2p": 26.0,
+      "wins_a_3p": 93.0,
+      "wins_b_3p": 67.0,
+      "wins_a_4p": 132.0,
+      "wins_b_4p": 200.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2496",
+      "wins_a_2p": 22.0,
+      "wins_b_2p": 12.0,
+      "wins_a_3p": 93.0,
+      "wins_b_3p": 85.0,
+      "wins_a_4p": 121.0,
+      "wins_b_4p": 175.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2648",
+      "wins_a_2p": 32.0,
+      "wins_b_2p": 12.0,
+      "wins_a_3p": 95.0,
+      "wins_b_3p": 85.0,
+      "wins_a_4p": 105.0,
+      "wins_b_4p": 257.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2497",
+      "wins_a_2p": 40.0,
+      "wins_b_2p": 10.0,
+      "wins_a_3p": 97.0,
+      "wins_b_3p": 75.0,
+      "wins_a_4p": 117.0,
+      "wins_b_4p": 177.0
+    },
+    {
+      "a": "ckpt:1895",
       "b": "ckpt:2498",
-      "wins_a": 7.0,
-      "wins_b": 13.0,
-      "ties": 0.0,
-      "games": 20.0
+      "wins_a_2p": 38.0,
+      "wins_b_2p": 20.0,
+      "wins_a_3p": 85.0,
+      "wins_b_3p": 95.0,
+      "wins_a_4p": 131.0,
+      "wins_b_4p": 193.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "ckpt:2650",
+      "wins_a_2p": 40.0,
+      "wins_b_2p": 22.0,
+      "wins_a_3p": 114.0,
+      "wins_b_3p": 68.0,
+      "wins_a_4p": 93.0,
+      "wins_b_4p": 275.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "random",
+      "wins_a_2p": 52.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 127.0,
+      "wins_b_3p": 49.0,
+      "wins_a_4p": 152.0,
+      "wins_b_4p": 130.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "heuristic",
+      "wins_a_2p": 56.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 63.0,
+      "wins_b_3p": 111.0,
+      "wins_a_4p": 155.0,
+      "wins_b_4p": 167.0
+    },
+    {
+      "a": "ckpt:1895",
+      "b": "heuristic_opus",
+      "wins_a_2p": 48.0,
+      "wins_b_2p": 8.0,
+      "wins_a_3p": 49.0,
+      "wins_b_3p": 131.0,
+      "wins_a_4p": 134.0,
+      "wins_b_4p": 202.0
+    },
+    {
+      "a": "ckpt:2503",
+      "b": "ckpt:2645",
+      "wins_a_2p": 62.0,
+      "wins_b_2p": 12.0,
+      "wins_a_3p": 84.0,
+      "wins_b_3p": 92.0,
+      "wins_a_4p": 148.0,
+      "wins_b_4p": 224.0
+    },
+    {
+      "a": "ckpt:2644",
+      "b": "ckpt:2645",
+      "wins_a_2p": 22.0,
+      "wins_b_2p": 46.0,
+      "wins_a_3p": 86.0,
+      "wins_b_3p": 86.0,
+      "wins_a_4p": 162.0,
+      "wins_b_4p": 178.0
+    },
+    {
+      "a": "ckpt:2505",
+      "b": "ckpt:2645",
+      "wins_a_2p": 50.0,
+      "wins_b_2p": 8.0,
+      "wins_a_3p": 76.0,
+      "wins_b_3p": 70.0,
+      "wins_a_4p": 140.0,
+      "wins_b_4p": 204.0
+    },
+    {
+      "a": "ckpt:2645",
+      "b": "ckpt:2647",
+      "wins_a_2p": 30.0,
+      "wins_b_2p": 36.0,
+      "wins_a_3p": 94.0,
+      "wins_b_3p": 90.0,
+      "wins_a_4p": 170.0,
+      "wins_b_4p": 160.0
+    },
+    {
+      "a": "ckpt:2645",
+      "b": "ckpt:2651",
+      "wins_a_2p": 40.0,
+      "wins_b_2p": 34.0,
+      "wins_a_3p": 77.0,
+      "wins_b_3p": 51.0,
+      "wins_a_4p": 152.0,
+      "wins_b_4p": 176.0
+    },
+    {
+      "a": "ckpt:2509",
+      "b": "ckpt:2645",
+      "wins_a_2p": 56.0,
+      "wins_b_2p": 2.0,
+      "wins_a_3p": 87.0,
+      "wins_b_3p": 85.0,
+      "wins_a_4p": 157.0,
+      "wins_b_4p": 241.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2645",
+      "wins_a_2p": 46.0,
+      "wins_b_2p": 16.0,
+      "wins_a_3p": 70.0,
+      "wins_b_3p": 62.0,
+      "wins_a_4p": 103.0,
+      "wins_b_4p": 245.0
+    },
+    {
+      "a": "ckpt:2501",
+      "b": "ckpt:2645",
+      "wins_a_2p": 38.0,
+      "wins_b_2p": 8.0,
+      "wins_a_3p": 73.0,
+      "wins_b_3p": 69.0,
+      "wins_a_4p": 125.0,
+      "wins_b_4p": 235.0
+    },
+    {
+      "a": "ckpt:2645",
+      "b": "ckpt:2646",
+      "wins_a_2p": 32.0,
+      "wins_b_2p": 34.0,
+      "wins_a_3p": 80.0,
+      "wins_b_3p": 108.0,
+      "wins_a_4p": 173.0,
+      "wins_b_4p": 169.0
+    },
+    {
+      "a": "ckpt:2645",
+      "b": "ckpt:2649",
+      "wins_a_2p": 28.0,
+      "wins_b_2p": 18.0,
+      "wins_a_3p": 93.0,
+      "wins_b_3p": 87.0,
+      "wins_a_4p": 152.0,
+      "wins_b_4p": 168.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2645",
+      "wins_a_2p": 22.0,
+      "wins_b_2p": 10.0,
+      "wins_a_3p": 97.0,
+      "wins_b_3p": 81.0,
+      "wins_a_4p": 126.0,
+      "wins_b_4p": 256.0
+    },
+    {
+      "a": "ckpt:2502",
+      "b": "ckpt:2645",
+      "wins_a_2p": 48.0,
+      "wins_b_2p": 14.0,
+      "wins_a_3p": 75.0,
+      "wins_b_3p": 53.0,
+      "wins_a_4p": 124.0,
+      "wins_b_4p": 224.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "ckpt:2645",
+      "wins_a_2p": 20.0,
+      "wins_b_2p": 12.0,
+      "wins_a_3p": 86.0,
+      "wins_b_3p": 68.0,
+      "wins_a_4p": 117.0,
+      "wins_b_4p": 215.0
+    },
+    {
+      "a": "ckpt:2500",
+      "b": "ckpt:2645",
+      "wins_a_2p": 56.0,
+      "wins_b_2p": 20.0,
+      "wins_a_3p": 95.0,
+      "wins_b_3p": 73.0,
+      "wins_a_4p": 129.0,
+      "wins_b_4p": 217.0
+    },
+    {
+      "a": "ckpt:2499",
+      "b": "ckpt:2645",
+      "wins_a_2p": 42.0,
+      "wins_b_2p": 16.0,
+      "wins_a_3p": 77.0,
+      "wins_b_3p": 93.0,
+      "wins_a_4p": 147.0,
+      "wins_b_4p": 257.0
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "ckpt:2645",
+      "wins_a_2p": 38.0,
+      "wins_b_2p": 12.0,
+      "wins_a_3p": 70.0,
+      "wins_b_3p": 82.0,
+      "wins_a_4p": 123.0,
+      "wins_b_4p": 221.0
+    },
+    {
+      "a": "ckpt:2645",
+      "b": "ckpt:2648",
+      "wins_a_2p": 28.0,
+      "wins_b_2p": 26.0,
+      "wins_a_3p": 79.0,
+      "wins_b_3p": 91.0,
+      "wins_a_4p": 195.0,
+      "wins_b_4p": 157.0
+    },
+    {
+      "a": "ckpt:2497",
+      "b": "ckpt:2645",
+      "wins_a_2p": 40.0,
+      "wins_b_2p": 10.0,
+      "wins_a_3p": 97.0,
+      "wins_b_3p": 85.0,
+      "wins_a_4p": 108.0,
+      "wins_b_4p": 242.0
+    },
+    {
+      "a": "ckpt:2498",
+      "b": "ckpt:2645",
+      "wins_a_2p": 36.0,
+      "wins_b_2p": 16.0,
+      "wins_a_3p": 73.0,
+      "wins_b_3p": 87.0,
+      "wins_a_4p": 118.0,
+      "wins_b_4p": 214.0
+    },
+    {
+      "a": "ckpt:2645",
+      "b": "ckpt:2650",
+      "wins_a_2p": 44.0,
+      "wins_b_2p": 28.0,
+      "wins_a_3p": 69.0,
+      "wins_b_3p": 79.0,
+      "wins_a_4p": 209.0,
+      "wins_b_4p": 165.0
+    },
+    {
+      "a": "ckpt:2645",
+      "b": "random",
+      "wins_a_2p": 68.0,
+      "wins_b_2p": 6.0,
+      "wins_a_3p": 103.0,
+      "wins_b_3p": 83.0,
+      "wins_a_4p": 276.0,
+      "wins_b_4p": 90.0
+    },
+    {
+      "a": "ckpt:2645",
+      "b": "heuristic",
+      "wins_a_2p": 42.0,
+      "wins_b_2p": 28.0,
+      "wins_a_3p": 51.0,
+      "wins_b_3p": 111.0,
+      "wins_a_4p": 276.0,
+      "wins_b_4p": 106.0
+    },
+    {
+      "a": "ckpt:2645",
+      "b": "heuristic_opus",
+      "wins_a_2p": 22.0,
+      "wins_b_2p": 28.0,
+      "wins_a_3p": 23.0,
+      "wins_b_3p": 143.0,
+      "wins_a_4p": 223.0,
+      "wins_b_4p": 119.0
+    },
+    {
+      "a": "ckpt:2503",
+      "b": "ckpt:2644",
+      "wins_a_2p": 54.0,
+      "wins_b_2p": 8.0,
+      "wins_a_3p": 93.0,
+      "wins_b_3p": 69.0,
+      "wins_a_4p": 145.0,
+      "wins_b_4p": 207.0
+    },
+    {
+      "a": "ckpt:2503",
+      "b": "ckpt:2505",
+      "wins_a_2p": 28.0,
+      "wins_b_2p": 30.0,
+      "wins_a_3p": 89.0,
+      "wins_b_3p": 95.0,
+      "wins_a_4p": 161.0,
+      "wins_b_4p": 171.0
+    },
+    {
+      "a": "ckpt:2503",
+      "b": "ckpt:2647",
+      "wins_a_2p": 58.0,
+      "wins_b_2p": 10.0,
+      "wins_a_3p": 86.0,
+      "wins_b_3p": 80.0,
+      "wins_a_4p": 145.0,
+      "wins_b_4p": 187.0
+    },
+    {
+      "a": "ckpt:2503",
+      "b": "ckpt:2651",
+      "wins_a_2p": 52.0,
+      "wins_b_2p": 4.0,
+      "wins_a_3p": 90.0,
+      "wins_b_3p": 68.0,
+      "wins_a_4p": 127.0,
+      "wins_b_4p": 211.0
+    },
+    {
+      "a": "ckpt:2503",
+      "b": "ckpt:2509",
+      "wins_a_2p": 22.0,
+      "wins_b_2p": 40.0,
+      "wins_a_3p": 78.0,
+      "wins_b_3p": 96.0,
+      "wins_a_4p": 164.0,
+      "wins_b_4p": 186.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2503",
+      "wins_a_2p": 20.0,
+      "wins_b_2p": 32.0,
+      "wins_a_3p": 63.0,
+      "wins_b_3p": 69.0,
+      "wins_a_4p": 116.0,
+      "wins_b_4p": 174.0
+    },
+    {
+      "a": "ckpt:2501",
+      "b": "ckpt:2503",
+      "wins_a_2p": 28.0,
+      "wins_b_2p": 34.0,
+      "wins_a_3p": 79.0,
+      "wins_b_3p": 63.0,
+      "wins_a_4p": 166.0,
+      "wins_b_4p": 166.0
+    },
+    {
+      "a": "ckpt:2503",
+      "b": "ckpt:2646",
+      "wins_a_2p": 52.0,
+      "wins_b_2p": 6.0,
+      "wins_a_3p": 98.0,
+      "wins_b_3p": 62.0,
+      "wins_a_4p": 133.0,
+      "wins_b_4p": 193.0
+    },
+    {
+      "a": "ckpt:2503",
+      "b": "ckpt:2649",
+      "wins_a_2p": 28.0,
+      "wins_b_2p": 2.0,
+      "wins_a_3p": 92.0,
+      "wins_b_3p": 74.0,
+      "wins_a_4p": 134.0,
+      "wins_b_4p": 202.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2503",
+      "wins_a_2p": 16.0,
+      "wins_b_2p": 42.0,
+      "wins_a_3p": 99.0,
+      "wins_b_3p": 87.0,
+      "wins_a_4p": 155.0,
+      "wins_b_4p": 187.0
+    },
+    {
+      "a": "ckpt:2502",
+      "b": "ckpt:2503",
+      "wins_a_2p": 22.0,
+      "wins_b_2p": 30.0,
+      "wins_a_3p": 91.0,
+      "wins_b_3p": 97.0,
+      "wins_a_4p": 190.0,
+      "wins_b_4p": 192.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "ckpt:2503",
+      "wins_a_2p": 18.0,
+      "wins_b_2p": 28.0,
+      "wins_a_3p": 76.0,
+      "wins_b_3p": 102.0,
+      "wins_a_4p": 123.0,
+      "wins_b_4p": 171.0
+    },
+    {
+      "a": "ckpt:2500",
+      "b": "ckpt:2503",
+      "wins_a_2p": 24.0,
+      "wins_b_2p": 30.0,
+      "wins_a_3p": 75.0,
+      "wins_b_3p": 69.0,
+      "wins_a_4p": 154.0,
+      "wins_b_4p": 182.0
+    },
+    {
+      "a": "ckpt:2499",
+      "b": "ckpt:2503",
+      "wins_a_2p": 18.0,
+      "wins_b_2p": 32.0,
+      "wins_a_3p": 72.0,
+      "wins_b_3p": 72.0,
+      "wins_a_4p": 155.0,
+      "wins_b_4p": 201.0
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "ckpt:2503",
+      "wins_a_2p": 18.0,
+      "wins_b_2p": 42.0,
+      "wins_a_3p": 93.0,
+      "wins_b_3p": 91.0,
+      "wins_a_4p": 122.0,
+      "wins_b_4p": 180.0
+    },
+    {
+      "a": "ckpt:2503",
+      "b": "ckpt:2648",
+      "wins_a_2p": 40.0,
+      "wins_b_2p": 6.0,
+      "wins_a_3p": 79.0,
+      "wins_b_3p": 77.0,
+      "wins_a_4p": 126.0,
+      "wins_b_4p": 196.0
+    },
+    {
+      "a": "ckpt:2497",
+      "b": "ckpt:2503",
+      "wins_a_2p": 22.0,
+      "wins_b_2p": 42.0,
+      "wins_a_3p": 80.0,
+      "wins_b_3p": 92.0,
+      "wins_a_4p": 147.0,
+      "wins_b_4p": 175.0
+    },
+    {
+      "a": "ckpt:2498",
+      "b": "ckpt:2503",
+      "wins_a_2p": 16.0,
+      "wins_b_2p": 40.0,
+      "wins_a_3p": 87.0,
+      "wins_b_3p": 93.0,
+      "wins_a_4p": 150.0,
+      "wins_b_4p": 184.0
+    },
+    {
+      "a": "ckpt:2503",
+      "b": "ckpt:2650",
+      "wins_a_2p": 36.0,
+      "wins_b_2p": 4.0,
+      "wins_a_3p": 94.0,
+      "wins_b_3p": 88.0,
+      "wins_a_4p": 148.0,
+      "wins_b_4p": 204.0
+    },
+    {
+      "a": "ckpt:2503",
+      "b": "random",
+      "wins_a_2p": 48.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 111.0,
+      "wins_b_3p": 41.0,
+      "wins_a_4p": 235.0,
+      "wins_b_4p": 127.0
+    },
+    {
+      "a": "ckpt:2503",
+      "b": "heuristic",
+      "wins_a_2p": 40.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 78.0,
+      "wins_b_3p": 104.0,
+      "wins_a_4p": 250.0,
+      "wins_b_4p": 140.0
+    },
+    {
+      "a": "ckpt:2503",
+      "b": "heuristic_opus",
+      "wins_a_2p": 40.0,
+      "wins_b_2p": 6.0,
+      "wins_a_3p": 51.0,
+      "wins_b_3p": 133.0,
+      "wins_a_4p": 199.0,
+      "wins_b_4p": 161.0
+    },
+    {
+      "a": "ckpt:2505",
+      "b": "ckpt:2644",
+      "wins_a_2p": 52.0,
+      "wins_b_2p": 8.0,
+      "wins_a_3p": 106.0,
+      "wins_b_3p": 100.0,
+      "wins_a_4p": 125.0,
+      "wins_b_4p": 197.0
+    },
+    {
+      "a": "ckpt:2644",
+      "b": "ckpt:2647",
+      "wins_a_2p": 32.0,
+      "wins_b_2p": 30.0,
+      "wins_a_3p": 95.0,
+      "wins_b_3p": 97.0,
+      "wins_a_4p": 175.0,
+      "wins_b_4p": 149.0
+    },
+    {
+      "a": "ckpt:2644",
+      "b": "ckpt:2651",
+      "wins_a_2p": 20.0,
+      "wins_b_2p": 24.0,
+      "wins_a_3p": 76.0,
+      "wins_b_3p": 94.0,
+      "wins_a_4p": 184.0,
+      "wins_b_4p": 172.0
+    },
+    {
+      "a": "ckpt:2509",
+      "b": "ckpt:2644",
+      "wins_a_2p": 52.0,
+      "wins_b_2p": 4.0,
+      "wins_a_3p": 99.0,
+      "wins_b_3p": 81.0,
+      "wins_a_4p": 134.0,
+      "wins_b_4p": 206.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2644",
+      "wins_a_2p": 42.0,
+      "wins_b_2p": 14.0,
+      "wins_a_3p": 86.0,
+      "wins_b_3p": 74.0,
+      "wins_a_4p": 78.0,
+      "wins_b_4p": 242.0
+    },
+    {
+      "a": "ckpt:2501",
+      "b": "ckpt:2644",
+      "wins_a_2p": 56.0,
+      "wins_b_2p": 14.0,
+      "wins_a_3p": 91.0,
+      "wins_b_3p": 75.0,
+      "wins_a_4p": 127.0,
+      "wins_b_4p": 199.0
+    },
+    {
+      "a": "ckpt:2644",
+      "b": "ckpt:2646",
+      "wins_a_2p": 22.0,
+      "wins_b_2p": 28.0,
+      "wins_a_3p": 75.0,
+      "wins_b_3p": 85.0,
+      "wins_a_4p": 175.0,
+      "wins_b_4p": 181.0
+    },
+    {
+      "a": "ckpt:2644",
+      "b": "ckpt:2649",
+      "wins_a_2p": 28.0,
+      "wins_b_2p": 46.0,
+      "wins_a_3p": 90.0,
+      "wins_b_3p": 104.0,
+      "wins_a_4p": 159.0,
+      "wins_b_4p": 179.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2644",
+      "wins_a_2p": 42.0,
+      "wins_b_2p": 20.0,
+      "wins_a_3p": 78.0,
+      "wins_b_3p": 72.0,
+      "wins_a_4p": 127.0,
+      "wins_b_4p": 239.0
+    },
+    {
+      "a": "ckpt:2502",
+      "b": "ckpt:2644",
+      "wins_a_2p": 50.0,
+      "wins_b_2p": 8.0,
+      "wins_a_3p": 112.0,
+      "wins_b_3p": 118.0,
+      "wins_a_4p": 123.0,
+      "wins_b_4p": 189.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "ckpt:2644",
+      "wins_a_2p": 56.0,
+      "wins_b_2p": 20.0,
+      "wins_a_3p": 97.0,
+      "wins_b_3p": 49.0,
+      "wins_a_4p": 121.0,
+      "wins_b_4p": 247.0
+    },
+    {
+      "a": "ckpt:2500",
+      "b": "ckpt:2644",
+      "wins_a_2p": 28.0,
+      "wins_b_2p": 18.0,
+      "wins_a_3p": 97.0,
+      "wins_b_3p": 103.0,
+      "wins_a_4p": 102.0,
+      "wins_b_4p": 208.0
+    },
+    {
+      "a": "ckpt:2499",
+      "b": "ckpt:2644",
+      "wins_a_2p": 36.0,
+      "wins_b_2p": 10.0,
+      "wins_a_3p": 82.0,
+      "wins_b_3p": 78.0,
+      "wins_a_4p": 109.0,
+      "wins_b_4p": 223.0
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "ckpt:2644",
+      "wins_a_2p": 38.0,
+      "wins_b_2p": 12.0,
+      "wins_a_3p": 95.0,
+      "wins_b_3p": 85.0,
+      "wins_a_4p": 117.0,
+      "wins_b_4p": 235.0
+    },
+    {
+      "a": "ckpt:2644",
+      "b": "ckpt:2648",
+      "wins_a_2p": 30.0,
+      "wins_b_2p": 22.0,
+      "wins_a_3p": 70.0,
+      "wins_b_3p": 100.0,
+      "wins_a_4p": 164.0,
+      "wins_b_4p": 162.0
+    },
+    {
+      "a": "ckpt:2497",
+      "b": "ckpt:2644",
+      "wins_a_2p": 30.0,
+      "wins_b_2p": 26.0,
+      "wins_a_3p": 89.0,
+      "wins_b_3p": 89.0,
+      "wins_a_4p": 111.0,
+      "wins_b_4p": 205.0
+    },
+    {
+      "a": "ckpt:2498",
+      "b": "ckpt:2644",
+      "wins_a_2p": 38.0,
+      "wins_b_2p": 38.0,
+      "wins_a_3p": 100.0,
+      "wins_b_3p": 92.0,
+      "wins_a_4p": 134.0,
+      "wins_b_4p": 234.0
+    },
+    {
+      "a": "ckpt:2644",
+      "b": "ckpt:2650",
+      "wins_a_2p": 28.0,
+      "wins_b_2p": 12.0,
+      "wins_a_3p": 99.0,
+      "wins_b_3p": 87.0,
+      "wins_a_4p": 188.0,
+      "wins_b_4p": 180.0
+    },
+    {
+      "a": "ckpt:2644",
+      "b": "random",
+      "wins_a_2p": 58.0,
+      "wins_b_2p": 2.0,
+      "wins_a_3p": 136.0,
+      "wins_b_3p": 74.0,
+      "wins_a_4p": 261.0,
+      "wins_b_4p": 93.0
+    },
+    {
+      "a": "ckpt:2644",
+      "b": "heuristic",
+      "wins_a_2p": 32.0,
+      "wins_b_2p": 18.0,
+      "wins_a_3p": 60.0,
+      "wins_b_3p": 126.0,
+      "wins_a_4p": 279.0,
+      "wins_b_4p": 101.0
+    },
+    {
+      "a": "ckpt:2644",
+      "b": "heuristic_opus",
+      "wins_a_2p": 26.0,
+      "wins_b_2p": 40.0,
+      "wins_a_3p": 36.0,
+      "wins_b_3p": 168.0,
+      "wins_a_4p": 203.0,
+      "wins_b_4p": 103.0
+    },
+    {
+      "a": "ckpt:2505",
+      "b": "ckpt:2647",
+      "wins_a_2p": 56.0,
+      "wins_b_2p": 8.0,
+      "wins_a_3p": 120.0,
+      "wins_b_3p": 76.0,
+      "wins_a_4p": 143.0,
+      "wins_b_4p": 193.0
+    },
+    {
+      "a": "ckpt:2505",
+      "b": "ckpt:2651",
+      "wins_a_2p": 56.0,
+      "wins_b_2p": 12.0,
+      "wins_a_3p": 85.0,
+      "wins_b_3p": 67.0,
+      "wins_a_4p": 125.0,
+      "wins_b_4p": 211.0
+    },
+    {
+      "a": "ckpt:2505",
+      "b": "ckpt:2509",
+      "wins_a_2p": 16.0,
+      "wins_b_2p": 30.0,
+      "wins_a_3p": 77.0,
+      "wins_b_3p": 89.0,
+      "wins_a_4p": 153.0,
+      "wins_b_4p": 173.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2505",
+      "wins_a_2p": 22.0,
+      "wins_b_2p": 32.0,
+      "wins_a_3p": 91.0,
+      "wins_b_3p": 91.0,
+      "wins_a_4p": 123.0,
+      "wins_b_4p": 205.0
+    },
+    {
+      "a": "ckpt:2501",
+      "b": "ckpt:2505",
+      "wins_a_2p": 6.0,
+      "wins_b_2p": 48.0,
+      "wins_a_3p": 95.0,
+      "wins_b_3p": 93.0,
+      "wins_a_4p": 156.0,
+      "wins_b_4p": 194.0
+    },
+    {
+      "a": "ckpt:2505",
+      "b": "ckpt:2646",
+      "wins_a_2p": 54.0,
+      "wins_b_2p": 2.0,
+      "wins_a_3p": 98.0,
+      "wins_b_3p": 110.0,
+      "wins_a_4p": 138.0,
+      "wins_b_4p": 226.0
+    },
+    {
+      "a": "ckpt:2505",
+      "b": "ckpt:2649",
+      "wins_a_2p": 68.0,
+      "wins_b_2p": 4.0,
+      "wins_a_3p": 95.0,
+      "wins_b_3p": 83.0,
+      "wins_a_4p": 141.0,
+      "wins_b_4p": 225.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2505",
+      "wins_a_2p": 28.0,
+      "wins_b_2p": 36.0,
+      "wins_a_3p": 64.0,
+      "wins_b_3p": 70.0,
+      "wins_a_4p": 135.0,
+      "wins_b_4p": 191.0
+    },
+    {
+      "a": "ckpt:2502",
+      "b": "ckpt:2505",
+      "wins_a_2p": 22.0,
+      "wins_b_2p": 46.0,
+      "wins_a_3p": 99.0,
+      "wins_b_3p": 81.0,
+      "wins_a_4p": 159.0,
+      "wins_b_4p": 155.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "ckpt:2505",
+      "wins_a_2p": 16.0,
+      "wins_b_2p": 46.0,
+      "wins_a_3p": 88.0,
+      "wins_b_3p": 84.0,
+      "wins_a_4p": 133.0,
+      "wins_b_4p": 203.0
+    },
+    {
+      "a": "ckpt:2500",
+      "b": "ckpt:2505",
+      "wins_a_2p": 20.0,
+      "wins_b_2p": 38.0,
+      "wins_a_3p": 77.0,
+      "wins_b_3p": 83.0,
+      "wins_a_4p": 151.0,
+      "wins_b_4p": 189.0
+    },
+    {
+      "a": "ckpt:2499",
+      "b": "ckpt:2505",
+      "wins_a_2p": 20.0,
+      "wins_b_2p": 46.0,
+      "wins_a_3p": 83.0,
+      "wins_b_3p": 79.0,
+      "wins_a_4p": 150.0,
+      "wins_b_4p": 222.0
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "ckpt:2505",
+      "wins_a_2p": 24.0,
+      "wins_b_2p": 24.0,
+      "wins_a_3p": 73.0,
+      "wins_b_3p": 85.0,
+      "wins_a_4p": 175.0,
+      "wins_b_4p": 205.0
+    },
+    {
+      "a": "ckpt:2505",
+      "b": "ckpt:2648",
+      "wins_a_2p": 62.0,
+      "wins_b_2p": 8.0,
+      "wins_a_3p": 74.0,
+      "wins_b_3p": 62.0,
+      "wins_a_4p": 133.0,
+      "wins_b_4p": 227.0
+    },
+    {
+      "a": "ckpt:2497",
+      "b": "ckpt:2505",
+      "wins_a_2p": 14.0,
+      "wins_b_2p": 48.0,
+      "wins_a_3p": 88.0,
+      "wins_b_3p": 90.0,
+      "wins_a_4p": 153.0,
+      "wins_b_4p": 193.0
+    },
+    {
+      "a": "ckpt:2498",
+      "b": "ckpt:2505",
+      "wins_a_2p": 16.0,
+      "wins_b_2p": 50.0,
+      "wins_a_3p": 94.0,
+      "wins_b_3p": 100.0,
+      "wins_a_4p": 143.0,
+      "wins_b_4p": 199.0
+    },
+    {
+      "a": "ckpt:2505",
+      "b": "ckpt:2650",
+      "wins_a_2p": 48.0,
+      "wins_b_2p": 2.0,
+      "wins_a_3p": 101.0,
+      "wins_b_3p": 95.0,
+      "wins_a_4p": 144.0,
+      "wins_b_4p": 218.0
+    },
+    {
+      "a": "ckpt:2505",
+      "b": "random",
+      "wins_a_2p": 60.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 117.0,
+      "wins_b_3p": 63.0,
+      "wins_a_4p": 239.0,
+      "wins_b_4p": 125.0
+    },
+    {
+      "a": "ckpt:2505",
+      "b": "heuristic",
+      "wins_a_2p": 60.0,
+      "wins_b_2p": 2.0,
+      "wins_a_3p": 60.0,
+      "wins_b_3p": 90.0,
+      "wins_a_4p": 261.0,
+      "wins_b_4p": 125.0
+    },
+    {
+      "a": "ckpt:2505",
+      "b": "heuristic_opus",
+      "wins_a_2p": 50.0,
+      "wins_b_2p": 10.0,
+      "wins_a_3p": 55.0,
+      "wins_b_3p": 137.0,
+      "wins_a_4p": 184.0,
+      "wins_b_4p": 148.0
+    },
+    {
+      "a": "ckpt:2647",
+      "b": "ckpt:2651",
+      "wins_a_2p": 34.0,
+      "wins_b_2p": 58.0,
+      "wins_a_3p": 103.0,
+      "wins_b_3p": 87.0,
+      "wins_a_4p": 136.0,
+      "wins_b_4p": 134.0
+    },
+    {
+      "a": "ckpt:2509",
+      "b": "ckpt:2647",
+      "wins_a_2p": 54.0,
+      "wins_b_2p": 4.0,
+      "wins_a_3p": 83.0,
+      "wins_b_3p": 85.0,
+      "wins_a_4p": 130.0,
+      "wins_b_4p": 204.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2647",
+      "wins_a_2p": 44.0,
+      "wins_b_2p": 16.0,
+      "wins_a_3p": 102.0,
+      "wins_b_3p": 64.0,
+      "wins_a_4p": 93.0,
+      "wins_b_4p": 241.0
+    },
+    {
+      "a": "ckpt:2501",
+      "b": "ckpt:2647",
+      "wins_a_2p": 44.0,
+      "wins_b_2p": 20.0,
+      "wins_a_3p": 93.0,
+      "wins_b_3p": 67.0,
+      "wins_a_4p": 139.0,
+      "wins_b_4p": 189.0
+    },
+    {
+      "a": "ckpt:2646",
+      "b": "ckpt:2647",
+      "wins_a_2p": 22.0,
+      "wins_b_2p": 34.0,
+      "wins_a_3p": 91.0,
+      "wins_b_3p": 107.0,
+      "wins_a_4p": 149.0,
+      "wins_b_4p": 173.0
+    },
+    {
+      "a": "ckpt:2647",
+      "b": "ckpt:2649",
+      "wins_a_2p": 34.0,
+      "wins_b_2p": 16.0,
+      "wins_a_3p": 77.0,
+      "wins_b_3p": 83.0,
+      "wins_a_4p": 167.0,
+      "wins_b_4p": 161.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2647",
+      "wins_a_2p": 48.0,
+      "wins_b_2p": 12.0,
+      "wins_a_3p": 113.0,
+      "wins_b_3p": 79.0,
+      "wins_a_4p": 105.0,
+      "wins_b_4p": 231.0
+    },
+    {
+      "a": "ckpt:2502",
+      "b": "ckpt:2647",
+      "wins_a_2p": 50.0,
+      "wins_b_2p": 16.0,
+      "wins_a_3p": 100.0,
+      "wins_b_3p": 96.0,
+      "wins_a_4p": 145.0,
+      "wins_b_4p": 213.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "ckpt:2647",
+      "wins_a_2p": 36.0,
+      "wins_b_2p": 24.0,
+      "wins_a_3p": 100.0,
+      "wins_b_3p": 76.0,
+      "wins_a_4p": 102.0,
+      "wins_b_4p": 188.0
+    },
+    {
+      "a": "ckpt:2500",
+      "b": "ckpt:2647",
+      "wins_a_2p": 36.0,
+      "wins_b_2p": 22.0,
+      "wins_a_3p": 104.0,
+      "wins_b_3p": 90.0,
+      "wins_a_4p": 109.0,
+      "wins_b_4p": 203.0
+    },
+    {
+      "a": "ckpt:2499",
+      "b": "ckpt:2647",
+      "wins_a_2p": 32.0,
+      "wins_b_2p": 22.0,
+      "wins_a_3p": 85.0,
+      "wins_b_3p": 105.0,
+      "wins_a_4p": 103.0,
+      "wins_b_4p": 203.0
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "ckpt:2647",
+      "wins_a_2p": 44.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 91.0,
+      "wins_b_3p": 71.0,
+      "wins_a_4p": 109.0,
+      "wins_b_4p": 193.0
+    },
+    {
+      "a": "ckpt:2647",
+      "b": "ckpt:2648",
+      "wins_a_2p": 46.0,
+      "wins_b_2p": 36.0,
+      "wins_a_3p": 76.0,
+      "wins_b_3p": 110.0,
+      "wins_a_4p": 182.0,
+      "wins_b_4p": 196.0
+    },
+    {
+      "a": "ckpt:2497",
+      "b": "ckpt:2647",
+      "wins_a_2p": 40.0,
+      "wins_b_2p": 10.0,
+      "wins_a_3p": 93.0,
+      "wins_b_3p": 89.0,
+      "wins_a_4p": 112.0,
+      "wins_b_4p": 240.0
+    },
+    {
+      "a": "ckpt:2498",
+      "b": "ckpt:2647",
+      "wins_a_2p": 50.0,
+      "wins_b_2p": 16.0,
+      "wins_a_3p": 96.0,
+      "wins_b_3p": 76.0,
+      "wins_a_4p": 112.0,
+      "wins_b_4p": 200.0
+    },
+    {
+      "a": "ckpt:2647",
+      "b": "ckpt:2650",
+      "wins_a_2p": 28.0,
+      "wins_b_2p": 34.0,
+      "wins_a_3p": 82.0,
+      "wins_b_3p": 106.0,
+      "wins_a_4p": 161.0,
+      "wins_b_4p": 173.0
+    },
+    {
+      "a": "ckpt:2647",
+      "b": "random",
+      "wins_a_2p": 54.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 103.0,
+      "wins_b_3p": 61.0,
+      "wins_a_4p": 238.0,
+      "wins_b_4p": 94.0
+    },
+    {
+      "a": "ckpt:2647",
+      "b": "heuristic",
+      "wins_a_2p": 20.0,
+      "wins_b_2p": 28.0,
+      "wins_a_3p": 46.0,
+      "wins_b_3p": 104.0,
+      "wins_a_4p": 230.0,
+      "wins_b_4p": 104.0
+    },
+    {
+      "a": "ckpt:2647",
+      "b": "heuristic_opus",
+      "wins_a_2p": 24.0,
+      "wins_b_2p": 36.0,
+      "wins_a_3p": 39.0,
+      "wins_b_3p": 141.0,
+      "wins_a_4p": 194.0,
+      "wins_b_4p": 142.0
+    },
+    {
+      "a": "ckpt:2509",
+      "b": "ckpt:2651",
+      "wins_a_2p": 50.0,
+      "wins_b_2p": 2.0,
+      "wins_a_3p": 98.0,
+      "wins_b_3p": 92.0,
+      "wins_a_4p": 142.0,
+      "wins_b_4p": 194.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2651",
+      "wins_a_2p": 54.0,
+      "wins_b_2p": 14.0,
+      "wins_a_3p": 58.0,
+      "wins_b_3p": 66.0,
+      "wins_a_4p": 89.0,
+      "wins_b_4p": 231.0
+    },
+    {
+      "a": "ckpt:2501",
+      "b": "ckpt:2651",
+      "wins_a_2p": 42.0,
+      "wins_b_2p": 4.0,
+      "wins_a_3p": 66.0,
+      "wins_b_3p": 66.0,
+      "wins_a_4p": 114.0,
+      "wins_b_4p": 190.0
+    },
+    {
+      "a": "ckpt:2646",
+      "b": "ckpt:2651",
+      "wins_a_2p": 26.0,
+      "wins_b_2p": 26.0,
+      "wins_a_3p": 77.0,
+      "wins_b_3p": 83.0,
+      "wins_a_4p": 191.0,
+      "wins_b_4p": 169.0
+    },
+    {
+      "a": "ckpt:2649",
+      "b": "ckpt:2651",
+      "wins_a_2p": 20.0,
+      "wins_b_2p": 22.0,
+      "wins_a_3p": 96.0,
+      "wins_b_3p": 72.0,
+      "wins_a_4p": 159.0,
+      "wins_b_4p": 163.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2651",
+      "wins_a_2p": 48.0,
+      "wins_b_2p": 22.0,
+      "wins_a_3p": 93.0,
+      "wins_b_3p": 71.0,
+      "wins_a_4p": 114.0,
+      "wins_b_4p": 210.0
+    },
+    {
+      "a": "ckpt:2502",
+      "b": "ckpt:2651",
+      "wins_a_2p": 50.0,
+      "wins_b_2p": 6.0,
+      "wins_a_3p": 85.0,
+      "wins_b_3p": 69.0,
+      "wins_a_4p": 129.0,
+      "wins_b_4p": 215.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "ckpt:2651",
+      "wins_a_2p": 48.0,
+      "wins_b_2p": 8.0,
+      "wins_a_3p": 96.0,
+      "wins_b_3p": 90.0,
+      "wins_a_4p": 116.0,
+      "wins_b_4p": 214.0
+    },
+    {
+      "a": "ckpt:2500",
+      "b": "ckpt:2651",
+      "wins_a_2p": 36.0,
+      "wins_b_2p": 14.0,
+      "wins_a_3p": 88.0,
+      "wins_b_3p": 78.0,
+      "wins_a_4p": 129.0,
+      "wins_b_4p": 225.0
+    },
+    {
+      "a": "ckpt:2499",
+      "b": "ckpt:2651",
+      "wins_a_2p": 54.0,
+      "wins_b_2p": 12.0,
+      "wins_a_3p": 61.0,
+      "wins_b_3p": 59.0,
+      "wins_a_4p": 117.0,
+      "wins_b_4p": 221.0
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "ckpt:2651",
+      "wins_a_2p": 46.0,
+      "wins_b_2p": 16.0,
+      "wins_a_3p": 79.0,
+      "wins_b_3p": 85.0,
+      "wins_a_4p": 137.0,
+      "wins_b_4p": 229.0
+    },
+    {
+      "a": "ckpt:2648",
+      "b": "ckpt:2651",
+      "wins_a_2p": 28.0,
+      "wins_b_2p": 22.0,
+      "wins_a_3p": 83.0,
+      "wins_b_3p": 65.0,
+      "wins_a_4p": 149.0,
+      "wins_b_4p": 133.0
+    },
+    {
+      "a": "ckpt:2497",
+      "b": "ckpt:2651",
+      "wins_a_2p": 36.0,
+      "wins_b_2p": 8.0,
+      "wins_a_3p": 100.0,
+      "wins_b_3p": 86.0,
+      "wins_a_4p": 120.0,
+      "wins_b_4p": 218.0
+    },
+    {
+      "a": "ckpt:2498",
+      "b": "ckpt:2651",
+      "wins_a_2p": 36.0,
+      "wins_b_2p": 16.0,
+      "wins_a_3p": 99.0,
+      "wins_b_3p": 83.0,
+      "wins_a_4p": 119.0,
+      "wins_b_4p": 251.0
+    },
+    {
+      "a": "ckpt:2650",
+      "b": "ckpt:2651",
+      "wins_a_2p": 38.0,
+      "wins_b_2p": 36.0,
+      "wins_a_3p": 93.0,
+      "wins_b_3p": 89.0,
+      "wins_a_4p": 163.0,
+      "wins_b_4p": 177.0
+    },
+    {
+      "a": "ckpt:2651",
+      "b": "random",
+      "wins_a_2p": 44.0,
+      "wins_b_2p": 6.0,
+      "wins_a_3p": 94.0,
+      "wins_b_3p": 48.0,
+      "wins_a_4p": 280.0,
+      "wins_b_4p": 82.0
+    },
+    {
+      "a": "ckpt:2651",
+      "b": "heuristic",
+      "wins_a_2p": 36.0,
+      "wins_b_2p": 22.0,
+      "wins_a_3p": 50.0,
+      "wins_b_3p": 108.0,
+      "wins_a_4p": 211.0,
+      "wins_b_4p": 99.0
+    },
+    {
+      "a": "ckpt:2651",
+      "b": "heuristic_opus",
+      "wins_a_2p": 26.0,
+      "wins_b_2p": 24.0,
+      "wins_a_3p": 36.0,
+      "wins_b_3p": 138.0,
+      "wins_a_4p": 176.0,
+      "wins_b_4p": 92.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2509",
+      "wins_a_2p": 4.0,
+      "wins_b_2p": 58.0,
+      "wins_a_3p": 86.0,
+      "wins_b_3p": 80.0,
+      "wins_a_4p": 103.0,
+      "wins_b_4p": 215.0
+    },
+    {
+      "a": "ckpt:2501",
+      "b": "ckpt:2509",
+      "wins_a_2p": 4.0,
+      "wins_b_2p": 42.0,
+      "wins_a_3p": 98.0,
+      "wins_b_3p": 100.0,
+      "wins_a_4p": 139.0,
+      "wins_b_4p": 179.0
+    },
+    {
+      "a": "ckpt:2509",
+      "b": "ckpt:2646",
+      "wins_a_2p": 56.0,
+      "wins_b_2p": 4.0,
+      "wins_a_3p": 78.0,
+      "wins_b_3p": 72.0,
+      "wins_a_4p": 180.0,
+      "wins_b_4p": 244.0
+    },
+    {
+      "a": "ckpt:2509",
+      "b": "ckpt:2649",
+      "wins_a_2p": 46.0,
+      "wins_b_2p": 4.0,
+      "wins_a_3p": 93.0,
+      "wins_b_3p": 61.0,
+      "wins_a_4p": 105.0,
+      "wins_b_4p": 189.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2509",
+      "wins_a_2p": 2.0,
+      "wins_b_2p": 42.0,
+      "wins_a_3p": 96.0,
+      "wins_b_3p": 74.0,
+      "wins_a_4p": 138.0,
+      "wins_b_4p": 234.0
+    },
+    {
+      "a": "ckpt:2502",
+      "b": "ckpt:2509",
+      "wins_a_2p": 26.0,
+      "wins_b_2p": 44.0,
+      "wins_a_3p": 94.0,
+      "wins_b_3p": 102.0,
+      "wins_a_4p": 180.0,
+      "wins_b_4p": 182.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "ckpt:2509",
+      "wins_a_2p": 8.0,
+      "wins_b_2p": 40.0,
+      "wins_a_3p": 99.0,
+      "wins_b_3p": 83.0,
+      "wins_a_4p": 129.0,
+      "wins_b_4p": 183.0
+    },
+    {
+      "a": "ckpt:2500",
+      "b": "ckpt:2509",
+      "wins_a_2p": 10.0,
+      "wins_b_2p": 58.0,
+      "wins_a_3p": 81.0,
+      "wins_b_3p": 91.0,
+      "wins_a_4p": 148.0,
+      "wins_b_4p": 254.0
+    },
+    {
+      "a": "ckpt:2499",
+      "b": "ckpt:2509",
+      "wins_a_2p": 4.0,
+      "wins_b_2p": 36.0,
+      "wins_a_3p": 84.0,
+      "wins_b_3p": 74.0,
+      "wins_a_4p": 134.0,
+      "wins_b_4p": 204.0
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "ckpt:2509",
+      "wins_a_2p": 16.0,
+      "wins_b_2p": 48.0,
+      "wins_a_3p": 61.0,
+      "wins_b_3p": 99.0,
+      "wins_a_4p": 154.0,
+      "wins_b_4p": 190.0
+    },
+    {
+      "a": "ckpt:2509",
+      "b": "ckpt:2648",
+      "wins_a_2p": 54.0,
+      "wins_b_2p": 2.0,
+      "wins_a_3p": 104.0,
+      "wins_b_3p": 80.0,
+      "wins_a_4p": 158.0,
+      "wins_b_4p": 212.0
+    },
+    {
+      "a": "ckpt:2497",
+      "b": "ckpt:2509",
+      "wins_a_2p": 12.0,
+      "wins_b_2p": 40.0,
+      "wins_a_3p": 77.0,
+      "wins_b_3p": 85.0,
+      "wins_a_4p": 146.0,
+      "wins_b_4p": 206.0
+    },
+    {
+      "a": "ckpt:2498",
+      "b": "ckpt:2509",
+      "wins_a_2p": 6.0,
+      "wins_b_2p": 58.0,
+      "wins_a_3p": 90.0,
+      "wins_b_3p": 100.0,
+      "wins_a_4p": 146.0,
+      "wins_b_4p": 198.0
+    },
+    {
+      "a": "ckpt:2509",
+      "b": "ckpt:2650",
+      "wins_a_2p": 68.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 94.0,
+      "wins_b_3p": 78.0,
+      "wins_a_4p": 150.0,
+      "wins_b_4p": 218.0
+    },
+    {
+      "a": "ckpt:2509",
+      "b": "random",
+      "wins_a_2p": 54.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 108.0,
+      "wins_b_3p": 54.0,
+      "wins_a_4p": 264.0,
+      "wins_b_4p": 124.0
+    },
+    {
+      "a": "ckpt:2509",
+      "b": "heuristic",
+      "wins_a_2p": 58.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 53.0,
+      "wins_b_3p": 107.0,
+      "wins_a_4p": 231.0,
+      "wins_b_4p": 95.0
+    },
+    {
+      "a": "ckpt:2509",
+      "b": "heuristic_opus",
+      "wins_a_2p": 42.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 32.0,
+      "wins_b_3p": 112.0,
+      "wins_a_4p": 155.0,
+      "wins_b_4p": 139.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2501",
+      "wins_a_2p": 34.0,
+      "wins_b_2p": 30.0,
+      "wins_a_3p": 92.0,
+      "wins_b_3p": 86.0,
+      "wins_a_4p": 122.0,
+      "wins_b_4p": 198.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2646",
+      "wins_a_2p": 50.0,
+      "wins_b_2p": 28.0,
+      "wins_a_3p": 99.0,
+      "wins_b_3p": 95.0,
+      "wins_a_4p": 85.0,
+      "wins_b_4p": 233.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2649",
+      "wins_a_2p": 36.0,
+      "wins_b_2p": 24.0,
+      "wins_a_3p": 88.0,
+      "wins_b_3p": 74.0,
+      "wins_a_4p": 79.0,
+      "wins_b_4p": 265.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2494",
+      "wins_a_2p": 50.0,
+      "wins_b_2p": 22.0,
+      "wins_a_3p": 101.0,
+      "wins_b_3p": 107.0,
+      "wins_a_4p": 111.0,
+      "wins_b_4p": 167.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2502",
+      "wins_a_2p": 32.0,
+      "wins_b_2p": 32.0,
+      "wins_a_3p": 103.0,
+      "wins_b_3p": 107.0,
+      "wins_a_4p": 114.0,
+      "wins_b_4p": 196.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2495",
+      "wins_a_2p": 38.0,
+      "wins_b_2p": 32.0,
+      "wins_a_3p": 93.0,
+      "wins_b_3p": 109.0,
+      "wins_a_4p": 145.0,
+      "wins_b_4p": 199.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2500",
+      "wins_a_2p": 38.0,
+      "wins_b_2p": 22.0,
+      "wins_a_3p": 93.0,
+      "wins_b_3p": 55.0,
+      "wins_a_4p": 146.0,
+      "wins_b_4p": 194.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2499",
+      "wins_a_2p": 34.0,
+      "wins_b_2p": 16.0,
+      "wins_a_3p": 77.0,
+      "wins_b_3p": 63.0,
+      "wins_a_4p": 142.0,
+      "wins_b_4p": 188.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2496",
+      "wins_a_2p": 32.0,
+      "wins_b_2p": 28.0,
+      "wins_a_3p": 67.0,
+      "wins_b_3p": 73.0,
+      "wins_a_4p": 128.0,
+      "wins_b_4p": 202.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2648",
+      "wins_a_2p": 24.0,
+      "wins_b_2p": 16.0,
+      "wins_a_3p": 99.0,
+      "wins_b_3p": 73.0,
+      "wins_a_4p": 90.0,
+      "wins_b_4p": 222.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2497",
+      "wins_a_2p": 42.0,
+      "wins_b_2p": 26.0,
+      "wins_a_3p": 95.0,
+      "wins_b_3p": 83.0,
+      "wins_a_4p": 111.0,
+      "wins_b_4p": 151.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2498",
+      "wins_a_2p": 48.0,
+      "wins_b_2p": 26.0,
+      "wins_a_3p": 91.0,
+      "wins_b_3p": 71.0,
+      "wins_a_4p": 135.0,
+      "wins_b_4p": 185.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "ckpt:2650",
+      "wins_a_2p": 46.0,
+      "wins_b_2p": 10.0,
+      "wins_a_3p": 117.0,
+      "wins_b_3p": 93.0,
+      "wins_a_4p": 92.0,
+      "wins_b_4p": 260.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "random",
+      "wins_a_2p": 38.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 131.0,
+      "wins_b_3p": 51.0,
+      "wins_a_4p": 158.0,
+      "wins_b_4p": 130.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "heuristic",
+      "wins_a_2p": 58.0,
+      "wins_b_2p": 2.0,
+      "wins_a_3p": 60.0,
+      "wins_b_3p": 96.0,
+      "wins_a_4p": 161.0,
+      "wins_b_4p": 167.0
+    },
+    {
+      "a": "ckpt:1876",
+      "b": "heuristic_opus",
+      "wins_a_2p": 52.0,
+      "wins_b_2p": 12.0,
+      "wins_a_3p": 33.0,
+      "wins_b_3p": 145.0,
+      "wins_a_4p": 126.0,
+      "wins_b_4p": 180.0
+    },
+    {
+      "a": "ckpt:2501",
+      "b": "ckpt:2646",
+      "wins_a_2p": 28.0,
+      "wins_b_2p": 10.0,
+      "wins_a_3p": 71.0,
+      "wins_b_3p": 65.0,
+      "wins_a_4p": 126.0,
+      "wins_b_4p": 198.0
+    },
+    {
+      "a": "ckpt:2501",
+      "b": "ckpt:2649",
+      "wins_a_2p": 48.0,
+      "wins_b_2p": 8.0,
+      "wins_a_3p": 97.0,
+      "wins_b_3p": 77.0,
+      "wins_a_4p": 122.0,
+      "wins_b_4p": 214.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2501",
+      "wins_a_2p": 22.0,
+      "wins_b_2p": 28.0,
+      "wins_a_3p": 74.0,
+      "wins_b_3p": 86.0,
+      "wins_a_4p": 186.0,
+      "wins_b_4p": 216.0
+    },
+    {
+      "a": "ckpt:2501",
+      "b": "ckpt:2502",
+      "wins_a_2p": 32.0,
+      "wins_b_2p": 36.0,
+      "wins_a_3p": 103.0,
+      "wins_b_3p": 81.0,
+      "wins_a_4p": 161.0,
+      "wins_b_4p": 175.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "ckpt:2501",
+      "wins_a_2p": 36.0,
+      "wins_b_2p": 46.0,
+      "wins_a_3p": 80.0,
+      "wins_b_3p": 86.0,
+      "wins_a_4p": 161.0,
+      "wins_b_4p": 207.0
+    },
+    {
+      "a": "ckpt:2500",
+      "b": "ckpt:2501",
+      "wins_a_2p": 16.0,
+      "wins_b_2p": 24.0,
+      "wins_a_3p": 83.0,
+      "wins_b_3p": 89.0,
+      "wins_a_4p": 149.0,
+      "wins_b_4p": 171.0
+    },
+    {
+      "a": "ckpt:2499",
+      "b": "ckpt:2501",
+      "wins_a_2p": 30.0,
+      "wins_b_2p": 26.0,
+      "wins_a_3p": 76.0,
+      "wins_b_3p": 72.0,
+      "wins_a_4p": 143.0,
+      "wins_b_4p": 191.0
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "ckpt:2501",
+      "wins_a_2p": 24.0,
+      "wins_b_2p": 42.0,
+      "wins_a_3p": 88.0,
+      "wins_b_3p": 98.0,
+      "wins_a_4p": 194.0,
+      "wins_b_4p": 184.0
+    },
+    {
+      "a": "ckpt:2501",
+      "b": "ckpt:2648",
+      "wins_a_2p": 36.0,
+      "wins_b_2p": 6.0,
+      "wins_a_3p": 72.0,
+      "wins_b_3p": 90.0,
+      "wins_a_4p": 139.0,
+      "wins_b_4p": 187.0
+    },
+    {
+      "a": "ckpt:2497",
+      "b": "ckpt:2501",
+      "wins_a_2p": 28.0,
+      "wins_b_2p": 42.0,
+      "wins_a_3p": 76.0,
+      "wins_b_3p": 72.0,
+      "wins_a_4p": 168.0,
+      "wins_b_4p": 206.0
+    },
+    {
+      "a": "ckpt:2498",
+      "b": "ckpt:2501",
+      "wins_a_2p": 24.0,
+      "wins_b_2p": 28.0,
+      "wins_a_3p": 102.0,
+      "wins_b_3p": 114.0,
+      "wins_a_4p": 175.0,
+      "wins_b_4p": 185.0
+    },
+    {
+      "a": "ckpt:2501",
+      "b": "ckpt:2650",
+      "wins_a_2p": 60.0,
+      "wins_b_2p": 12.0,
+      "wins_a_3p": 107.0,
+      "wins_b_3p": 81.0,
+      "wins_a_4p": 111.0,
+      "wins_b_4p": 215.0
+    },
+    {
+      "a": "ckpt:2501",
+      "b": "random",
+      "wins_a_2p": 66.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 112.0,
+      "wins_b_3p": 64.0,
+      "wins_a_4p": 219.0,
+      "wins_b_4p": 119.0
+    },
+    {
+      "a": "ckpt:2501",
+      "b": "heuristic",
+      "wins_a_2p": 60.0,
+      "wins_b_2p": 2.0,
+      "wins_a_3p": 56.0,
+      "wins_b_3p": 84.0,
+      "wins_a_4p": 214.0,
+      "wins_b_4p": 132.0
+    },
+    {
+      "a": "ckpt:2501",
+      "b": "heuristic_opus",
+      "wins_a_2p": 48.0,
+      "wins_b_2p": 8.0,
+      "wins_a_3p": 45.0,
+      "wins_b_3p": 105.0,
+      "wins_a_4p": 177.0,
+      "wins_b_4p": 147.0
+    },
+    {
+      "a": "ckpt:2646",
+      "b": "ckpt:2649",
+      "wins_a_2p": 28.0,
+      "wins_b_2p": 30.0,
+      "wins_a_3p": 67.0,
+      "wins_b_3p": 83.0,
+      "wins_a_4p": 174.0,
+      "wins_b_4p": 156.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2646",
+      "wins_a_2p": 24.0,
+      "wins_b_2p": 20.0,
+      "wins_a_3p": 99.0,
+      "wins_b_3p": 75.0,
+      "wins_a_4p": 116.0,
+      "wins_b_4p": 236.0
+    },
+    {
+      "a": "ckpt:2502",
+      "b": "ckpt:2646",
+      "wins_a_2p": 52.0,
+      "wins_b_2p": 14.0,
+      "wins_a_3p": 96.0,
+      "wins_b_3p": 92.0,
+      "wins_a_4p": 155.0,
+      "wins_b_4p": 239.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "ckpt:2646",
+      "wins_a_2p": 46.0,
+      "wins_b_2p": 16.0,
+      "wins_a_3p": 61.0,
+      "wins_b_3p": 73.0,
+      "wins_a_4p": 118.0,
+      "wins_b_4p": 234.0
+    },
+    {
+      "a": "ckpt:2500",
+      "b": "ckpt:2646",
+      "wins_a_2p": 32.0,
+      "wins_b_2p": 24.0,
+      "wins_a_3p": 88.0,
+      "wins_b_3p": 76.0,
+      "wins_a_4p": 133.0,
+      "wins_b_4p": 233.0
+    },
+    {
+      "a": "ckpt:2499",
+      "b": "ckpt:2646",
+      "wins_a_2p": 28.0,
+      "wins_b_2p": 6.0,
+      "wins_a_3p": 80.0,
+      "wins_b_3p": 72.0,
+      "wins_a_4p": 106.0,
+      "wins_b_4p": 250.0
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "ckpt:2646",
+      "wins_a_2p": 50.0,
+      "wins_b_2p": 8.0,
+      "wins_a_3p": 92.0,
+      "wins_b_3p": 92.0,
+      "wins_a_4p": 125.0,
+      "wins_b_4p": 219.0
+    },
+    {
+      "a": "ckpt:2646",
+      "b": "ckpt:2648",
+      "wins_a_2p": 30.0,
+      "wins_b_2p": 24.0,
+      "wins_a_3p": 87.0,
+      "wins_b_3p": 87.0,
+      "wins_a_4p": 168.0,
+      "wins_b_4p": 156.0
+    },
+    {
+      "a": "ckpt:2497",
+      "b": "ckpt:2646",
+      "wins_a_2p": 26.0,
+      "wins_b_2p": 10.0,
+      "wins_a_3p": 80.0,
+      "wins_b_3p": 66.0,
+      "wins_a_4p": 124.0,
+      "wins_b_4p": 220.0
+    },
+    {
+      "a": "ckpt:2498",
+      "b": "ckpt:2646",
+      "wins_a_2p": 40.0,
+      "wins_b_2p": 16.0,
+      "wins_a_3p": 89.0,
+      "wins_b_3p": 75.0,
+      "wins_a_4p": 131.0,
+      "wins_b_4p": 247.0
+    },
+    {
+      "a": "ckpt:2646",
+      "b": "ckpt:2650",
+      "wins_a_2p": 18.0,
+      "wins_b_2p": 36.0,
+      "wins_a_3p": 91.0,
+      "wins_b_3p": 83.0,
+      "wins_a_4p": 197.0,
+      "wins_b_4p": 183.0
+    },
+    {
+      "a": "ckpt:2646",
+      "b": "random",
+      "wins_a_2p": 58.0,
+      "wins_b_2p": 4.0,
+      "wins_a_3p": 93.0,
+      "wins_b_3p": 53.0,
+      "wins_a_4p": 309.0,
+      "wins_b_4p": 99.0
+    },
+    {
+      "a": "ckpt:2646",
+      "b": "heuristic",
+      "wins_a_2p": 36.0,
+      "wins_b_2p": 18.0,
+      "wins_a_3p": 28.0,
+      "wins_b_3p": 136.0,
+      "wins_a_4p": 286.0,
+      "wins_b_4p": 100.0
+    },
+    {
+      "a": "ckpt:2646",
+      "b": "heuristic_opus",
+      "wins_a_2p": 34.0,
+      "wins_b_2p": 28.0,
+      "wins_a_3p": 15.0,
+      "wins_b_3p": 123.0,
+      "wins_a_4p": 215.0,
+      "wins_b_4p": 107.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2649",
+      "wins_a_2p": 42.0,
+      "wins_b_2p": 12.0,
+      "wins_a_3p": 78.0,
+      "wins_b_3p": 80.0,
+      "wins_a_4p": 128.0,
+      "wins_b_4p": 252.0
+    },
+    {
+      "a": "ckpt:2502",
+      "b": "ckpt:2649",
+      "wins_a_2p": 54.0,
+      "wins_b_2p": 20.0,
+      "wins_a_3p": 80.0,
+      "wins_b_3p": 76.0,
+      "wins_a_4p": 125.0,
+      "wins_b_4p": 235.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "ckpt:2649",
+      "wins_a_2p": 40.0,
+      "wins_b_2p": 16.0,
+      "wins_a_3p": 115.0,
+      "wins_b_3p": 77.0,
+      "wins_a_4p": 99.0,
+      "wins_b_4p": 265.0
+    },
+    {
+      "a": "ckpt:2500",
+      "b": "ckpt:2649",
+      "wins_a_2p": 62.0,
+      "wins_b_2p": 24.0,
+      "wins_a_3p": 77.0,
+      "wins_b_3p": 97.0,
+      "wins_a_4p": 112.0,
+      "wins_b_4p": 254.0
+    },
+    {
+      "a": "ckpt:2499",
+      "b": "ckpt:2649",
+      "wins_a_2p": 34.0,
+      "wins_b_2p": 18.0,
+      "wins_a_3p": 85.0,
+      "wins_b_3p": 99.0,
+      "wins_a_4p": 99.0,
+      "wins_b_4p": 239.0
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "ckpt:2649",
+      "wins_a_2p": 38.0,
+      "wins_b_2p": 8.0,
+      "wins_a_3p": 84.0,
+      "wins_b_3p": 90.0,
+      "wins_a_4p": 124.0,
+      "wins_b_4p": 268.0
+    },
+    {
+      "a": "ckpt:2648",
+      "b": "ckpt:2649",
+      "wins_a_2p": 16.0,
+      "wins_b_2p": 28.0,
+      "wins_a_3p": 84.0,
+      "wins_b_3p": 76.0,
+      "wins_a_4p": 155.0,
+      "wins_b_4p": 189.0
+    },
+    {
+      "a": "ckpt:2497",
+      "b": "ckpt:2649",
+      "wins_a_2p": 48.0,
+      "wins_b_2p": 18.0,
+      "wins_a_3p": 71.0,
+      "wins_b_3p": 75.0,
+      "wins_a_4p": 111.0,
+      "wins_b_4p": 243.0
+    },
+    {
+      "a": "ckpt:2498",
+      "b": "ckpt:2649",
+      "wins_a_2p": 42.0,
+      "wins_b_2p": 14.0,
+      "wins_a_3p": 103.0,
+      "wins_b_3p": 83.0,
+      "wins_a_4p": 97.0,
+      "wins_b_4p": 251.0
+    },
+    {
+      "a": "ckpt:2649",
+      "b": "ckpt:2650",
+      "wins_a_2p": 44.0,
+      "wins_b_2p": 24.0,
+      "wins_a_3p": 84.0,
+      "wins_b_3p": 82.0,
+      "wins_a_4p": 169.0,
+      "wins_b_4p": 159.0
+    },
+    {
+      "a": "ckpt:2649",
+      "b": "random",
+      "wins_a_2p": 54.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 91.0,
+      "wins_b_3p": 61.0,
+      "wins_a_4p": 257.0,
+      "wins_b_4p": 83.0
+    },
+    {
+      "a": "ckpt:2649",
+      "b": "heuristic",
+      "wins_a_2p": 36.0,
+      "wins_b_2p": 22.0,
+      "wins_a_3p": 74.0,
+      "wins_b_3p": 138.0,
+      "wins_a_4p": 244.0,
+      "wins_b_4p": 74.0
+    },
+    {
+      "a": "ckpt:2649",
+      "b": "heuristic_opus",
+      "wins_a_2p": 30.0,
+      "wins_b_2p": 28.0,
+      "wins_a_3p": 40.0,
+      "wins_b_3p": 148.0,
+      "wins_a_4p": 269.0,
+      "wins_b_4p": 123.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2502",
+      "wins_a_2p": 26.0,
+      "wins_b_2p": 44.0,
+      "wins_a_3p": 80.0,
+      "wins_b_3p": 86.0,
+      "wins_a_4p": 150.0,
+      "wins_b_4p": 180.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2495",
+      "wins_a_2p": 24.0,
+      "wins_b_2p": 28.0,
+      "wins_a_3p": 71.0,
+      "wins_b_3p": 77.0,
+      "wins_a_4p": 167.0,
+      "wins_b_4p": 187.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2500",
+      "wins_a_2p": 28.0,
+      "wins_b_2p": 18.0,
+      "wins_a_3p": 75.0,
+      "wins_b_3p": 85.0,
+      "wins_a_4p": 171.0,
+      "wins_b_4p": 187.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2499",
+      "wins_a_2p": 38.0,
+      "wins_b_2p": 22.0,
+      "wins_a_3p": 74.0,
+      "wins_b_3p": 72.0,
+      "wins_a_4p": 162.0,
+      "wins_b_4p": 158.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2496",
+      "wins_a_2p": 20.0,
+      "wins_b_2p": 16.0,
+      "wins_a_3p": 86.0,
+      "wins_b_3p": 90.0,
+      "wins_a_4p": 185.0,
+      "wins_b_4p": 193.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2648",
+      "wins_a_2p": 42.0,
+      "wins_b_2p": 20.0,
+      "wins_a_3p": 90.0,
+      "wins_b_3p": 76.0,
+      "wins_a_4p": 142.0,
+      "wins_b_4p": 224.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2497",
+      "wins_a_2p": 18.0,
+      "wins_b_2p": 22.0,
+      "wins_a_3p": 63.0,
+      "wins_b_3p": 107.0,
+      "wins_a_4p": 169.0,
+      "wins_b_4p": 189.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2498",
+      "wins_a_2p": 44.0,
+      "wins_b_2p": 28.0,
+      "wins_a_3p": 102.0,
+      "wins_b_3p": 72.0,
+      "wins_a_4p": 176.0,
+      "wins_b_4p": 198.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "ckpt:2650",
+      "wins_a_2p": 34.0,
+      "wins_b_2p": 14.0,
+      "wins_a_3p": 92.0,
+      "wins_b_3p": 70.0,
+      "wins_a_4p": 121.0,
+      "wins_b_4p": 205.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "random",
+      "wins_a_2p": 42.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 99.0,
+      "wins_b_3p": 65.0,
+      "wins_a_4p": 221.0,
+      "wins_b_4p": 139.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "heuristic",
+      "wins_a_2p": 38.0,
+      "wins_b_2p": 2.0,
+      "wins_a_3p": 81.0,
+      "wins_b_3p": 103.0,
+      "wins_a_4p": 213.0,
+      "wins_b_4p": 161.0
+    },
+    {
+      "a": "ckpt:2494",
+      "b": "heuristic_opus",
+      "wins_a_2p": 42.0,
+      "wins_b_2p": 10.0,
+      "wins_a_3p": 49.0,
+      "wins_b_3p": 127.0,
+      "wins_a_4p": 177.0,
+      "wins_b_4p": 187.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "ckpt:2502",
+      "wins_a_2p": 22.0,
+      "wins_b_2p": 24.0,
+      "wins_a_3p": 101.0,
+      "wins_b_3p": 89.0,
+      "wins_a_4p": 146.0,
+      "wins_b_4p": 210.0
+    },
+    {
+      "a": "ckpt:2500",
+      "b": "ckpt:2502",
+      "wins_a_2p": 26.0,
+      "wins_b_2p": 36.0,
+      "wins_a_3p": 82.0,
+      "wins_b_3p": 80.0,
+      "wins_a_4p": 118.0,
+      "wins_b_4p": 162.0
+    },
+    {
+      "a": "ckpt:2499",
+      "b": "ckpt:2502",
+      "wins_a_2p": 30.0,
+      "wins_b_2p": 44.0,
+      "wins_a_3p": 73.0,
+      "wins_b_3p": 71.0,
+      "wins_a_4p": 144.0,
+      "wins_b_4p": 208.0
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "ckpt:2502",
+      "wins_a_2p": 40.0,
+      "wins_b_2p": 42.0,
+      "wins_a_3p": 79.0,
+      "wins_b_3p": 97.0,
+      "wins_a_4p": 166.0,
+      "wins_b_4p": 208.0
+    },
+    {
+      "a": "ckpt:2502",
+      "b": "ckpt:2648",
+      "wins_a_2p": 54.0,
+      "wins_b_2p": 12.0,
+      "wins_a_3p": 77.0,
+      "wins_b_3p": 67.0,
+      "wins_a_4p": 111.0,
+      "wins_b_4p": 219.0
+    },
+    {
+      "a": "ckpt:2497",
+      "b": "ckpt:2502",
+      "wins_a_2p": 24.0,
+      "wins_b_2p": 34.0,
+      "wins_a_3p": 92.0,
+      "wins_b_3p": 66.0,
+      "wins_a_4p": 167.0,
+      "wins_b_4p": 213.0
+    },
+    {
+      "a": "ckpt:2498",
+      "b": "ckpt:2502",
+      "wins_a_2p": 40.0,
+      "wins_b_2p": 30.0,
+      "wins_a_3p": 84.0,
+      "wins_b_3p": 84.0,
+      "wins_a_4p": 148.0,
+      "wins_b_4p": 182.0
+    },
+    {
+      "a": "ckpt:2502",
+      "b": "ckpt:2650",
+      "wins_a_2p": 66.0,
+      "wins_b_2p": 10.0,
+      "wins_a_3p": 85.0,
+      "wins_b_3p": 81.0,
+      "wins_a_4p": 131.0,
+      "wins_b_4p": 227.0
+    },
+    {
+      "a": "ckpt:2502",
+      "b": "random",
+      "wins_a_2p": 46.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 118.0,
+      "wins_b_3p": 56.0,
+      "wins_a_4p": 257.0,
+      "wins_b_4p": 109.0
+    },
+    {
+      "a": "ckpt:2502",
+      "b": "heuristic",
+      "wins_a_2p": 56.0,
+      "wins_b_2p": 2.0,
+      "wins_a_3p": 69.0,
+      "wins_b_3p": 99.0,
+      "wins_a_4p": 229.0,
+      "wins_b_4p": 125.0
+    },
+    {
+      "a": "ckpt:2502",
+      "b": "heuristic_opus",
+      "wins_a_2p": 58.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 60.0,
+      "wins_b_3p": 128.0,
+      "wins_a_4p": 200.0,
+      "wins_b_4p": 156.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "ckpt:2500",
+      "wins_a_2p": 22.0,
+      "wins_b_2p": 26.0,
+      "wins_a_3p": 94.0,
+      "wins_b_3p": 98.0,
+      "wins_a_4p": 182.0,
+      "wins_b_4p": 184.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "ckpt:2499",
+      "wins_a_2p": 24.0,
+      "wins_b_2p": 40.0,
+      "wins_a_3p": 84.0,
+      "wins_b_3p": 74.0,
+      "wins_a_4p": 173.0,
+      "wins_b_4p": 187.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "ckpt:2496",
+      "wins_a_2p": 24.0,
+      "wins_b_2p": 26.0,
+      "wins_a_3p": 106.0,
+      "wins_b_3p": 78.0,
+      "wins_a_4p": 159.0,
+      "wins_b_4p": 153.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "ckpt:2648",
+      "wins_a_2p": 34.0,
+      "wins_b_2p": 4.0,
+      "wins_a_3p": 64.0,
+      "wins_b_3p": 90.0,
+      "wins_a_4p": 116.0,
+      "wins_b_4p": 234.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "ckpt:2497",
+      "wins_a_2p": 36.0,
+      "wins_b_2p": 36.0,
+      "wins_a_3p": 102.0,
+      "wins_b_3p": 74.0,
+      "wins_a_4p": 195.0,
+      "wins_b_4p": 167.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "ckpt:2498",
+      "wins_a_2p": 36.0,
+      "wins_b_2p": 22.0,
+      "wins_a_3p": 87.0,
+      "wins_b_3p": 103.0,
+      "wins_a_4p": 210.0,
+      "wins_b_4p": 212.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "ckpt:2650",
+      "wins_a_2p": 40.0,
+      "wins_b_2p": 12.0,
+      "wins_a_3p": 103.0,
+      "wins_b_3p": 91.0,
+      "wins_a_4p": 118.0,
+      "wins_b_4p": 208.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "random",
+      "wins_a_2p": 50.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 99.0,
+      "wins_b_3p": 59.0,
+      "wins_a_4p": 226.0,
+      "wins_b_4p": 132.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "heuristic",
+      "wins_a_2p": 66.0,
+      "wins_b_2p": 4.0,
+      "wins_a_3p": 61.0,
+      "wins_b_3p": 105.0,
+      "wins_a_4p": 194.0,
+      "wins_b_4p": 164.0
+    },
+    {
+      "a": "ckpt:2495",
+      "b": "heuristic_opus",
+      "wins_a_2p": 46.0,
+      "wins_b_2p": 4.0,
+      "wins_a_3p": 59.0,
+      "wins_b_3p": 169.0,
+      "wins_a_4p": 176.0,
+      "wins_b_4p": 176.0
+    },
+    {
+      "a": "ckpt:2499",
+      "b": "ckpt:2500",
+      "wins_a_2p": 36.0,
+      "wins_b_2p": 24.0,
+      "wins_a_3p": 80.0,
+      "wins_b_3p": 100.0,
+      "wins_a_4p": 179.0,
+      "wins_b_4p": 181.0
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "ckpt:2500",
+      "wins_a_2p": 26.0,
+      "wins_b_2p": 32.0,
+      "wins_a_3p": 87.0,
+      "wins_b_3p": 89.0,
+      "wins_a_4p": 148.0,
+      "wins_b_4p": 180.0
+    },
+    {
+      "a": "ckpt:2500",
+      "b": "ckpt:2648",
+      "wins_a_2p": 42.0,
+      "wins_b_2p": 12.0,
+      "wins_a_3p": 93.0,
+      "wins_b_3p": 79.0,
+      "wins_a_4p": 119.0,
+      "wins_b_4p": 225.0
+    },
+    {
+      "a": "ckpt:2497",
+      "b": "ckpt:2500",
+      "wins_a_2p": 26.0,
+      "wins_b_2p": 16.0,
+      "wins_a_3p": 79.0,
+      "wins_b_3p": 91.0,
+      "wins_a_4p": 133.0,
+      "wins_b_4p": 159.0
+    },
+    {
+      "a": "ckpt:2498",
+      "b": "ckpt:2500",
+      "wins_a_2p": 26.0,
+      "wins_b_2p": 28.0,
+      "wins_a_3p": 105.0,
+      "wins_b_3p": 95.0,
+      "wins_a_4p": 154.0,
+      "wins_b_4p": 140.0
+    },
+    {
+      "a": "ckpt:2500",
+      "b": "ckpt:2650",
+      "wins_a_2p": 26.0,
+      "wins_b_2p": 14.0,
+      "wins_a_3p": 74.0,
+      "wins_b_3p": 78.0,
+      "wins_a_4p": 121.0,
+      "wins_b_4p": 245.0
+    },
+    {
+      "a": "ckpt:2500",
+      "b": "random",
+      "wins_a_2p": 52.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 99.0,
+      "wins_b_3p": 43.0,
+      "wins_a_4p": 200.0,
+      "wins_b_4p": 120.0
+    },
+    {
+      "a": "ckpt:2500",
+      "b": "heuristic",
+      "wins_a_2p": 74.0,
+      "wins_b_2p": 2.0,
+      "wins_a_3p": 71.0,
+      "wins_b_3p": 99.0,
+      "wins_a_4p": 176.0,
+      "wins_b_4p": 152.0
+    },
+    {
+      "a": "ckpt:2500",
+      "b": "heuristic_opus",
+      "wins_a_2p": 52.0,
+      "wins_b_2p": 10.0,
+      "wins_a_3p": 30.0,
+      "wins_b_3p": 132.0,
+      "wins_a_4p": 160.0,
+      "wins_b_4p": 172.0
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "ckpt:2499",
+      "wins_a_2p": 28.0,
+      "wins_b_2p": 24.0,
+      "wins_a_3p": 60.0,
+      "wins_b_3p": 52.0,
+      "wins_a_4p": 186.0,
+      "wins_b_4p": 160.0
+    },
+    {
+      "a": "ckpt:2499",
+      "b": "ckpt:2648",
+      "wins_a_2p": 32.0,
+      "wins_b_2p": 22.0,
+      "wins_a_3p": 79.0,
+      "wins_b_3p": 79.0,
+      "wins_a_4p": 115.0,
+      "wins_b_4p": 253.0
+    },
+    {
+      "a": "ckpt:2497",
+      "b": "ckpt:2499",
+      "wins_a_2p": 14.0,
+      "wins_b_2p": 26.0,
+      "wins_a_3p": 83.0,
+      "wins_b_3p": 73.0,
+      "wins_a_4p": 147.0,
+      "wins_b_4p": 157.0
+    },
+    {
+      "a": "ckpt:2498",
+      "b": "ckpt:2499",
+      "wins_a_2p": 20.0,
+      "wins_b_2p": 26.0,
+      "wins_a_3p": 103.0,
+      "wins_b_3p": 95.0,
+      "wins_a_4p": 199.0,
+      "wins_b_4p": 201.0
+    },
+    {
+      "a": "ckpt:2499",
+      "b": "ckpt:2650",
+      "wins_a_2p": 32.0,
+      "wins_b_2p": 14.0,
+      "wins_a_3p": 62.0,
+      "wins_b_3p": 84.0,
+      "wins_a_4p": 128.0,
+      "wins_b_4p": 230.0
+    },
+    {
+      "a": "ckpt:2499",
+      "b": "random",
+      "wins_a_2p": 58.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 120.0,
+      "wins_b_3p": 74.0,
+      "wins_a_4p": 219.0,
+      "wins_b_4p": 139.0
+    },
+    {
+      "a": "ckpt:2499",
+      "b": "heuristic",
+      "wins_a_2p": 54.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 54.0,
+      "wins_b_3p": 108.0,
+      "wins_a_4p": 192.0,
+      "wins_b_4p": 148.0
+    },
+    {
+      "a": "ckpt:2499",
+      "b": "heuristic_opus",
+      "wins_a_2p": 40.0,
+      "wins_b_2p": 10.0,
+      "wins_a_3p": 43.0,
+      "wins_b_3p": 117.0,
+      "wins_a_4p": 168.0,
+      "wins_b_4p": 164.0
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "ckpt:2648",
+      "wins_a_2p": 26.0,
+      "wins_b_2p": 14.0,
+      "wins_a_3p": 83.0,
+      "wins_b_3p": 87.0,
+      "wins_a_4p": 113.0,
+      "wins_b_4p": 215.0
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "ckpt:2497",
+      "wins_a_2p": 20.0,
+      "wins_b_2p": 26.0,
+      "wins_a_3p": 86.0,
+      "wins_b_3p": 102.0,
+      "wins_a_4p": 166.0,
+      "wins_b_4p": 148.0
     },
     {
       "a": "ckpt:2496",
       "b": "ckpt:2498",
-      "wins_a": 9.0,
-      "wins_b": 11.0,
-      "ties": 0.0,
-      "games": 20.0
+      "wins_a_2p": 36.0,
+      "wins_b_2p": 36.0,
+      "wins_a_3p": 88.0,
+      "wins_b_3p": 88.0,
+      "wins_a_4p": 170.0,
+      "wins_b_4p": 160.0
     },
     {
-      "a": "ckpt:1912",
-      "b": "ckpt:1926",
-      "wins_a": 6.0,
-      "wins_b": 7.0,
-      "ties": 0.0,
-      "games": 13.0
+      "a": "ckpt:2496",
+      "b": "ckpt:2650",
+      "wins_a_2p": 46.0,
+      "wins_b_2p": 22.0,
+      "wins_a_3p": 111.0,
+      "wins_b_3p": 109.0,
+      "wins_a_4p": 111.0,
+      "wins_b_4p": 253.0
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "random",
+      "wins_a_2p": 60.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 116.0,
+      "wins_b_3p": 66.0,
+      "wins_a_4p": 186.0,
+      "wins_b_4p": 110.0
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "heuristic",
+      "wins_a_2p": 58.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 61.0,
+      "wins_b_3p": 103.0,
+      "wins_a_4p": 203.0,
+      "wins_b_4p": 151.0
+    },
+    {
+      "a": "ckpt:2496",
+      "b": "heuristic_opus",
+      "wins_a_2p": 18.0,
+      "wins_b_2p": 16.0,
+      "wins_a_3p": 45.0,
+      "wins_b_3p": 113.0,
+      "wins_a_4p": 149.0,
+      "wins_b_4p": 173.0
+    },
+    {
+      "a": "ckpt:2497",
+      "b": "ckpt:2648",
+      "wins_a_2p": 36.0,
+      "wins_b_2p": 16.0,
+      "wins_a_3p": 64.0,
+      "wins_b_3p": 88.0,
+      "wins_a_4p": 117.0,
+      "wins_b_4p": 231.0
+    },
+    {
+      "a": "ckpt:2498",
+      "b": "ckpt:2648",
+      "wins_a_2p": 50.0,
+      "wins_b_2p": 8.0,
+      "wins_a_3p": 84.0,
+      "wins_b_3p": 102.0,
+      "wins_a_4p": 134.0,
+      "wins_b_4p": 220.0
+    },
+    {
+      "a": "ckpt:2648",
+      "b": "ckpt:2650",
+      "wins_a_2p": 28.0,
+      "wins_b_2p": 28.0,
+      "wins_a_3p": 77.0,
+      "wins_b_3p": 73.0,
+      "wins_a_4p": 197.0,
+      "wins_b_4p": 199.0
+    },
+    {
+      "a": "ckpt:2648",
+      "b": "random",
+      "wins_a_2p": 46.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 101.0,
+      "wins_b_3p": 53.0,
+      "wins_a_4p": 251.0,
+      "wins_b_4p": 95.0
+    },
+    {
+      "a": "ckpt:2648",
+      "b": "heuristic",
+      "wins_a_2p": 46.0,
+      "wins_b_2p": 20.0,
+      "wins_a_3p": 45.0,
+      "wins_b_3p": 109.0,
+      "wins_a_4p": 244.0,
+      "wins_b_4p": 100.0
+    },
+    {
+      "a": "ckpt:2648",
+      "b": "heuristic_opus",
+      "wins_a_2p": 18.0,
+      "wins_b_2p": 26.0,
+      "wins_a_3p": 25.0,
+      "wins_b_3p": 115.0,
+      "wins_a_4p": 212.0,
+      "wins_b_4p": 104.0
+    },
+    {
+      "a": "ckpt:2497",
+      "b": "ckpt:2498",
+      "wins_a_2p": 38.0,
+      "wins_b_2p": 32.0,
+      "wins_a_3p": 89.0,
+      "wins_b_3p": 73.0,
+      "wins_a_4p": 155.0,
+      "wins_b_4p": 137.0
+    },
+    {
+      "a": "ckpt:2497",
+      "b": "ckpt:2650",
+      "wins_a_2p": 48.0,
+      "wins_b_2p": 22.0,
+      "wins_a_3p": 84.0,
+      "wins_b_3p": 72.0,
+      "wins_a_4p": 130.0,
+      "wins_b_4p": 202.0
+    },
+    {
+      "a": "ckpt:2497",
+      "b": "random",
+      "wins_a_2p": 58.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 99.0,
+      "wins_b_3p": 49.0,
+      "wins_a_4p": 210.0,
+      "wins_b_4p": 124.0
+    },
+    {
+      "a": "ckpt:2497",
+      "b": "heuristic",
+      "wins_a_2p": 62.0,
+      "wins_b_2p": 2.0,
+      "wins_a_3p": 61.0,
+      "wins_b_3p": 99.0,
+      "wins_a_4p": 178.0,
+      "wins_b_4p": 136.0
+    },
+    {
+      "a": "ckpt:2497",
+      "b": "heuristic_opus",
+      "wins_a_2p": 48.0,
+      "wins_b_2p": 8.0,
+      "wins_a_3p": 43.0,
+      "wins_b_3p": 109.0,
+      "wins_a_4p": 182.0,
+      "wins_b_4p": 174.0
+    },
+    {
+      "a": "ckpt:2498",
+      "b": "ckpt:2650",
+      "wins_a_2p": 46.0,
+      "wins_b_2p": 14.0,
+      "wins_a_3p": 102.0,
+      "wins_b_3p": 84.0,
+      "wins_a_4p": 117.0,
+      "wins_b_4p": 231.0
+    },
+    {
+      "a": "ckpt:2498",
+      "b": "random",
+      "wins_a_2p": 60.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 129.0,
+      "wins_b_3p": 51.0,
+      "wins_a_4p": 222.0,
+      "wins_b_4p": 132.0
+    },
+    {
+      "a": "ckpt:2498",
+      "b": "heuristic",
+      "wins_a_2p": 56.0,
+      "wins_b_2p": 8.0,
+      "wins_a_3p": 77.0,
+      "wins_b_3p": 137.0,
+      "wins_a_4p": 193.0,
+      "wins_b_4p": 151.0
+    },
+    {
+      "a": "ckpt:2498",
+      "b": "heuristic_opus",
+      "wins_a_2p": 38.0,
+      "wins_b_2p": 20.0,
+      "wins_a_3p": 55.0,
+      "wins_b_3p": 149.0,
+      "wins_a_4p": 161.0,
+      "wins_b_4p": 145.0
+    },
+    {
+      "a": "ckpt:2650",
+      "b": "random",
+      "wins_a_2p": 58.0,
+      "wins_b_2p": 2.0,
+      "wins_a_3p": 91.0,
+      "wins_b_3p": 51.0,
+      "wins_a_4p": 263.0,
+      "wins_b_4p": 93.0
+    },
+    {
+      "a": "ckpt:2650",
+      "b": "heuristic",
+      "wins_a_2p": 32.0,
+      "wins_b_2p": 22.0,
+      "wins_a_3p": 52.0,
+      "wins_b_3p": 120.0,
+      "wins_a_4p": 240.0,
+      "wins_b_4p": 96.0
+    },
+    {
+      "a": "ckpt:2650",
+      "b": "heuristic_opus",
+      "wins_a_2p": 18.0,
+      "wins_b_2p": 22.0,
+      "wins_a_3p": 45.0,
+      "wins_b_3p": 163.0,
+      "wins_a_4p": 262.0,
+      "wins_b_4p": 130.0
     },
     {
       "a": "heuristic",
       "b": "random",
-      "wins_a": 34.166666666666664,
-      "wins_b": 0.0,
-      "ties": 0.0,
-      "games": 34.166666666666664
-    },
-    {
-      "a": "ckpt:1842",
-      "b": "ckpt:1923",
-      "wins_a": 2.0,
-      "wins_b": 6.0,
-      "ties": 0.0,
-      "games": 8.0
-    },
-    {
-      "a": "ckpt:2494",
-      "b": "random",
-      "wins_a": 14.0,
-      "wins_b": 1.0,
-      "ties": 0.0,
-      "games": 15.0
-    },
-    {
-      "a": "ckpt:2495",
-      "b": "ckpt:2497",
-      "wins_a": 15.0,
-      "wins_b": 8.0,
-      "ties": 0.0,
-      "games": 23.0
-    },
-    {
-      "a": "ckpt:1842",
-      "b": "ckpt:1912",
-      "wins_a": 8.0,
-      "wins_b": 5.0,
-      "ties": 0.0,
-      "games": 13.0
-    },
-    {
-      "a": "ckpt:1869",
-      "b": "ckpt:2500",
-      "wins_a": 4.0,
-      "wins_b": 15.0,
-      "ties": 0.0,
-      "games": 19.0
-    },
-    {
-      "a": "ckpt:2499",
-      "b": "random",
-      "wins_a": 22.333333333333332,
-      "wins_b": 0.0,
-      "ties": 0.0,
-      "games": 22.333333333333332
-    },
-    {
-      "a": "ckpt:1912",
-      "b": "ckpt:2497",
-      "wins_a": 7.0,
-      "wins_b": 8.0,
-      "ties": 0.0,
-      "games": 15.0
-    },
-    {
-      "a": "ckpt:1869",
-      "b": "ckpt:1877",
-      "wins_a": 5.0,
-      "wins_b": 6.0,
-      "ties": 0.0,
-      "games": 11.0
-    },
-    {
-      "a": "ckpt:1803",
-      "b": "ckpt:1805",
-      "wins_a": 7.0,
-      "wins_b": 4.0,
-      "ties": 0.0,
-      "games": 11.0
-    },
-    {
-      "a": "ckpt:1877",
-      "b": "ckpt:2499",
-      "wins_a": 6.0,
-      "wins_b": 15.0,
-      "ties": 0.0,
-      "games": 21.0
-    },
-    {
-      "a": "ckpt:1801",
-      "b": "ckpt:1895",
-      "wins_a": 7.0,
-      "wins_b": 7.0,
-      "ties": 0.0,
-      "games": 14.0
-    },
-    {
-      "a": "ckpt:1894",
-      "b": "ckpt:2494",
-      "wins_a": 3.0,
-      "wins_b": 9.0,
-      "ties": 0.0,
-      "games": 12.0
-    },
-    {
-      "a": "ckpt:2498",
-      "b": "heuristic",
-      "wins_a": 11.833333333333334,
-      "wins_b": 6.833333333333333,
-      "ties": 0.0,
-      "games": 18.666666666666668
-    },
-    {
-      "a": "ckpt:1876",
-      "b": "ckpt:2501",
-      "wins_a": 2.0,
-      "wins_b": 16.0,
-      "ties": 0.0,
-      "games": 18.0
-    },
-    {
-      "a": "ckpt:2494",
-      "b": "ckpt:2495",
-      "wins_a": 6.0,
-      "wins_b": 8.0,
-      "ties": 0.0,
-      "games": 14.0
-    },
-    {
-      "a": "ckpt:1894",
-      "b": "ckpt:1926",
-      "wins_a": 6.0,
-      "wins_b": 5.0,
-      "ties": 0.0,
-      "games": 11.0
-    },
-    {
-      "a": "ckpt:1805",
-      "b": "ckpt:2497",
-      "wins_a": 3.3333333333333335,
-      "wins_b": 18.5,
-      "ties": 0.0,
-      "games": 21.833333333333332
-    },
-    {
-      "a": "ckpt:1842",
-      "b": "ckpt:2496",
-      "wins_a": 5.0,
-      "wins_b": 9.0,
-      "ties": 0.0,
-      "games": 14.0
-    },
-    {
-      "a": "ckpt:1876",
-      "b": "ckpt:2499",
-      "wins_a": 5.0,
-      "wins_b": 7.0,
-      "ties": 0.0,
-      "games": 12.0
-    },
-    {
-      "a": "ckpt:2495",
-      "b": "ckpt:2501",
-      "wins_a": 9.0,
-      "wins_b": 14.0,
-      "ties": 0.0,
-      "games": 23.0
-    },
-    {
-      "a": "ckpt:1805",
-      "b": "ckpt:1894",
-      "wins_a": 4.0,
-      "wins_b": 7.0,
-      "ties": 0.0,
-      "games": 11.0
-    },
-    {
-      "a": "ckpt:1869",
-      "b": "ckpt:2496",
-      "wins_a": 4.0,
-      "wins_b": 6.0,
-      "ties": 0.0,
-      "games": 10.0
-    },
-    {
-      "a": "ckpt:2496",
-      "b": "ckpt:2497",
-      "wins_a": 12.833333333333332,
-      "wins_b": 6.5,
-      "ties": 0.0,
-      "games": 19.333333333333332
-    },
-    {
-      "a": "ckpt:1842",
-      "b": "ckpt:2498",
-      "wins_a": 5.0,
-      "wins_b": 10.0,
-      "ties": 0.0,
-      "games": 15.0
-    },
-    {
-      "a": "ckpt:1869",
-      "b": "ckpt:1895",
-      "wins_a": 3.0,
-      "wins_b": 6.0,
-      "ties": 0.0,
-      "games": 9.0
-    },
-    {
-      "a": "ckpt:1877",
-      "b": "ckpt:2496",
-      "wins_a": 6.0,
-      "wins_b": 15.0,
-      "ties": 0.0,
-      "games": 21.0
-    },
-    {
-      "a": "ckpt:2499",
-      "b": "ckpt:2501",
-      "wins_a": 11.0,
-      "wins_b": 14.0,
-      "ties": 0.0,
-      "games": 25.0
-    },
-    {
-      "a": "ckpt:2499",
-      "b": "heuristic",
-      "wins_a": 19.333333333333332,
-      "wins_b": 8.0,
-      "ties": 0.0,
-      "games": 27.333333333333332
-    },
-    {
-      "a": "ckpt:1842",
-      "b": "ckpt:2501",
-      "wins_a": 6.0,
-      "wins_b": 14.0,
-      "ties": 0.0,
-      "games": 20.0
-    },
-    {
-      "a": "ckpt:2500",
-      "b": "heuristic",
-      "wins_a": 19.833333333333336,
-      "wins_b": 8.5,
-      "ties": 0.0,
-      "games": 28.333333333333336
-    },
-    {
-      "a": "ckpt:1877",
-      "b": "ckpt:1895",
-      "wins_a": 6.0,
-      "wins_b": 9.0,
-      "ties": 0.0,
-      "games": 15.0
-    },
-    {
-      "a": "ckpt:1805",
-      "b": "ckpt:1926",
-      "wins_a": 12.0,
-      "wins_b": 4.0,
-      "ties": 0.0,
-      "games": 16.0
-    },
-    {
-      "a": "ckpt:1877",
-      "b": "ckpt:2497",
-      "wins_a": 9.0,
-      "wins_b": 16.0,
-      "ties": 0.0,
-      "games": 25.0
-    },
-    {
-      "a": "ckpt:1805",
-      "b": "ckpt:2495",
-      "wins_a": 8.0,
-      "wins_b": 5.0,
-      "ties": 0.0,
-      "games": 13.0
-    },
-    {
-      "a": "ckpt:1895",
-      "b": "ckpt:1922",
-      "wins_a": 9.0,
-      "wins_b": 4.0,
-      "ties": 0.0,
-      "games": 13.0
-    },
-    {
-      "a": "ckpt:1803",
-      "b": "ckpt:1869",
-      "wins_a": 9.0,
-      "wins_b": 6.0,
-      "ties": 0.0,
-      "games": 15.0
-    },
-    {
-      "a": "ckpt:1926",
-      "b": "ckpt:2498",
-      "wins_a": 6.0,
-      "wins_b": 8.0,
-      "ties": 0.0,
-      "games": 14.0
-    },
-    {
-      "a": "ckpt:1894",
-      "b": "ckpt:1895",
-      "wins_a": 7.0,
-      "wins_b": 5.0,
-      "ties": 0.0,
-      "games": 12.0
-    },
-    {
-      "a": "ckpt:1922",
-      "b": "ckpt:1923",
-      "wins_a": 7.0,
-      "wins_b": 1.0,
-      "ties": 0.0,
-      "games": 8.0
-    },
-    {
-      "a": "ckpt:1801",
-      "b": "heuristic",
-      "wins_a": 9.5,
-      "wins_b": 10.666666666666664,
-      "ties": 0.0,
-      "games": 20.166666666666664
-    },
-    {
-      "a": "ckpt:1803",
-      "b": "ckpt:2495",
-      "wins_a": 3.6666666666666665,
-      "wins_b": 15.666666666666666,
-      "ties": 0.0,
-      "games": 19.333333333333336
-    },
-    {
-      "a": "ckpt:1912",
-      "b": "ckpt:2496",
-      "wins_a": 4.0,
-      "wins_b": 12.0,
-      "ties": 0.0,
-      "games": 16.0
-    },
-    {
-      "a": "ckpt:1895",
-      "b": "ckpt:2494",
-      "wins_a": 6.0,
-      "wins_b": 11.0,
-      "ties": 0.0,
-      "games": 17.0
-    },
-    {
-      "a": "ckpt:2496",
-      "b": "random",
-      "wins_a": 19.666666666666664,
-      "wins_b": 1.5,
-      "ties": 0.0,
-      "games": 21.166666666666664
-    },
-    {
-      "a": "ckpt:1869",
-      "b": "ckpt:2499",
-      "wins_a": 7.0,
-      "wins_b": 12.0,
-      "ties": 0.0,
-      "games": 19.0
-    },
-    {
-      "a": "ckpt:2495",
-      "b": "ckpt:2499",
-      "wins_a": 11.0,
-      "wins_b": 12.666666666666666,
-      "ties": 0.0,
-      "games": 23.666666666666668
-    },
-    {
-      "a": "ckpt:1801",
-      "b": "ckpt:1877",
-      "wins_a": 6.0,
-      "wins_b": 7.0,
-      "ties": 0.0,
-      "games": 13.0
-    },
-    {
-      "a": "ckpt:1876",
-      "b": "ckpt:1912",
-      "wins_a": 8.0,
-      "wins_b": 3.0,
-      "ties": 0.0,
-      "games": 11.0
-    },
-    {
-      "a": "ckpt:1869",
-      "b": "ckpt:2498",
-      "wins_a": 3.833333333333333,
-      "wins_b": 14.666666666666666,
-      "ties": 0.0,
-      "games": 18.5
-    },
-    {
-      "a": "ckpt:1923",
-      "b": "ckpt:2499",
-      "wins_a": 5.0,
-      "wins_b": 11.0,
-      "ties": 0.0,
-      "games": 16.0
-    },
-    {
-      "a": "ckpt:1923",
-      "b": "ckpt:2495",
-      "wins_a": 5.0,
-      "wins_b": 11.0,
-      "ties": 0.0,
-      "games": 16.0
-    },
-    {
-      "a": "ckpt:1805",
-      "b": "ckpt:2494",
-      "wins_a": 6.0,
-      "wins_b": 9.0,
-      "ties": 0.0,
-      "games": 15.0
-    },
-    {
-      "a": "ckpt:1803",
-      "b": "ckpt:1894",
-      "wins_a": 8.0,
-      "wins_b": 10.0,
-      "ties": 0.0,
-      "games": 18.0
-    },
-    {
-      "a": "ckpt:1923",
-      "b": "random",
-      "wins_a": 9.0,
-      "wins_b": 0.0,
-      "ties": 0.0,
-      "games": 9.0
-    },
-    {
-      "a": "ckpt:1877",
-      "b": "ckpt:2494",
-      "wins_a": 5.0,
-      "wins_b": 12.0,
-      "ties": 0.0,
-      "games": 17.0
-    },
-    {
-      "a": "ckpt:1922",
-      "b": "random",
-      "wins_a": 15.5,
-      "wins_b": 0.0,
-      "ties": 0.0,
-      "games": 15.5
-    },
-    {
-      "a": "ckpt:1801",
-      "b": "ckpt:1894",
-      "wins_a": 3.0,
-      "wins_b": 6.0,
-      "ties": 0.0,
-      "games": 9.0
-    },
-    {
-      "a": "ckpt:2500",
-      "b": "ckpt:2501",
-      "wins_a": 7.0,
-      "wins_b": 7.0,
-      "ties": 0.0,
-      "games": 14.0
-    },
-    {
-      "a": "ckpt:1842",
-      "b": "ckpt:1876",
-      "wins_a": 9.0,
-      "wins_b": 6.0,
-      "ties": 0.0,
-      "games": 15.0
-    },
-    {
-      "a": "ckpt:1842",
-      "b": "heuristic",
-      "wins_a": 8.0,
-      "wins_b": 9.0,
-      "ties": 0.0,
-      "games": 17.0
-    },
-    {
-      "a": "ckpt:1922",
-      "b": "ckpt:2501",
-      "wins_a": 1.0,
-      "wins_b": 13.0,
-      "ties": 0.0,
-      "games": 14.0
-    },
-    {
-      "a": "ckpt:1803",
-      "b": "ckpt:2496",
-      "wins_a": 8.0,
-      "wins_b": 10.0,
-      "ties": 0.0,
-      "games": 18.0
-    },
-    {
-      "a": "ckpt:1923",
-      "b": "ckpt:2494",
-      "wins_a": 5.0,
-      "wins_b": 4.0,
-      "ties": 0.0,
-      "games": 9.0
-    },
-    {
-      "a": "ckpt:1805",
-      "b": "ckpt:1912",
-      "wins_a": 1.0,
-      "wins_b": 9.0,
-      "ties": 0.0,
-      "games": 10.0
-    },
-    {
-      "a": "ckpt:2497",
-      "b": "ckpt:2498",
-      "wins_a": 12.333333333333334,
-      "wins_b": 7.0,
-      "ties": 0.0,
-      "games": 19.333333333333332
-    },
-    {
-      "a": "ckpt:1876",
-      "b": "ckpt:1895",
-      "wins_a": 6.333333333333333,
-      "wins_b": 11.833333333333334,
-      "ties": 0.0,
-      "games": 18.166666666666664
-    },
-    {
-      "a": "ckpt:2495",
-      "b": "ckpt:2496",
-      "wins_a": 7.0,
-      "wins_b": 11.0,
-      "ties": 0.0,
-      "games": 18.0
-    },
-    {
-      "a": "ckpt:1801",
-      "b": "ckpt:1842",
-      "wins_a": 4.0,
-      "wins_b": 9.0,
-      "ties": 0.0,
-      "games": 13.0
-    },
-    {
-      "a": "ckpt:1877",
-      "b": "random",
-      "wins_a": 9.0,
-      "wins_b": 0.0,
-      "ties": 0.0,
-      "games": 9.0
-    },
-    {
-      "a": "ckpt:1842",
-      "b": "ckpt:1926",
-      "wins_a": 6.0,
-      "wins_b": 9.0,
-      "ties": 0.0,
-      "games": 15.0
-    },
-    {
-      "a": "ckpt:1842",
-      "b": "random",
-      "wins_a": 7.0,
-      "wins_b": 0.0,
-      "ties": 0.0,
-      "games": 7.0
-    },
-    {
-      "a": "ckpt:2495",
-      "b": "heuristic",
-      "wins_a": 15.666666666666666,
-      "wins_b": 6.0,
-      "ties": 0.0,
-      "games": 21.666666666666668
-    },
-    {
-      "a": "ckpt:1877",
-      "b": "heuristic",
-      "wins_a": 6.0,
-      "wins_b": 9.0,
-      "ties": 0.0,
-      "games": 15.0
-    },
-    {
-      "a": "ckpt:1922",
-      "b": "ckpt:2496",
-      "wins_a": 4.833333333333333,
-      "wins_b": 14.333333333333332,
-      "ties": 0.0,
-      "games": 19.166666666666664
-    },
-    {
-      "a": "ckpt:1803",
-      "b": "ckpt:2498",
-      "wins_a": 6.0,
-      "wins_b": 8.0,
-      "ties": 0.0,
-      "games": 14.0
-    },
-    {
-      "a": "ckpt:1922",
-      "b": "ckpt:1926",
-      "wins_a": 3.0,
-      "wins_b": 3.0,
-      "ties": 0.0,
-      "games": 6.0
-    },
-    {
-      "a": "ckpt:1842",
-      "b": "ckpt:2500",
-      "wins_a": 4.0,
-      "wins_b": 9.0,
-      "ties": 0.0,
-      "games": 13.0
-    },
-    {
-      "a": "ckpt:1922",
-      "b": "ckpt:2500",
-      "wins_a": 1.6666666666666665,
-      "wins_b": 15.833333333333334,
-      "ties": 0.0,
-      "games": 17.5
-    },
-    {
-      "a": "ckpt:1801",
-      "b": "ckpt:2496",
-      "wins_a": 4.5,
-      "wins_b": 18.0,
-      "ties": 0.0,
-      "games": 22.5
-    },
-    {
-      "a": "ckpt:1894",
-      "b": "ckpt:1912",
-      "wins_a": 5.0,
-      "wins_b": 8.0,
-      "ties": 0.0,
-      "games": 13.0
-    },
-    {
-      "a": "ckpt:1895",
-      "b": "heuristic",
-      "wins_a": 11.166666666666668,
-      "wins_b": 5.666666666666666,
-      "ties": 0.0,
-      "games": 16.833333333333336
-    },
-    {
-      "a": "ckpt:1877",
-      "b": "ckpt:2498",
-      "wins_a": 6.0,
-      "wins_b": 9.0,
-      "ties": 0.0,
-      "games": 15.0
-    },
-    {
-      "a": "ckpt:1801",
-      "b": "ckpt:2500",
-      "wins_a": 3.5,
-      "wins_b": 14.5,
-      "ties": 0.0,
-      "games": 18.0
-    },
-    {
-      "a": "ckpt:1805",
-      "b": "ckpt:1842",
-      "wins_a": 3.0,
-      "wins_b": 7.0,
-      "ties": 0.0,
-      "games": 10.0
-    },
-    {
-      "a": "ckpt:1842",
-      "b": "ckpt:2499",
-      "wins_a": 7.0,
-      "wins_b": 13.0,
-      "ties": 0.0,
-      "games": 20.0
-    },
-    {
-      "a": "ckpt:1805",
-      "b": "ckpt:1922",
-      "wins_a": 7.0,
-      "wins_b": 7.0,
-      "ties": 0.0,
-      "games": 14.0
-    },
-    {
-      "a": "ckpt:1895",
-      "b": "random",
-      "wins_a": 9.5,
-      "wins_b": 0.0,
-      "ties": 0.0,
-      "games": 9.5
-    },
-    {
-      "a": "ckpt:1803",
-      "b": "ckpt:1922",
-      "wins_a": 5.0,
-      "wins_b": 4.0,
-      "ties": 0.0,
-      "games": 9.0
-    },
-    {
-      "a": "ckpt:1805",
-      "b": "ckpt:1876",
-      "wins_a": 7.0,
-      "wins_b": 3.0,
-      "ties": 0.0,
-      "games": 10.0
-    },
-    {
-      "a": "ckpt:1805",
-      "b": "heuristic",
-      "wins_a": 9.666666666666666,
-      "wins_b": 11.666666666666666,
-      "ties": 0.0,
-      "games": 21.333333333333336
-    },
-    {
-      "a": "ckpt:1926",
-      "b": "heuristic",
-      "wins_a": 7.0,
-      "wins_b": 2.0,
-      "ties": 0.0,
-      "games": 9.0
-    },
-    {
-      "a": "ckpt:1923",
-      "b": "heuristic",
-      "wins_a": 6.0,
-      "wins_b": 4.0,
-      "ties": 0.0,
-      "games": 10.0
-    },
-    {
-      "a": "ckpt:1842",
-      "b": "ckpt:1895",
-      "wins_a": 6.0,
-      "wins_b": 5.0,
-      "ties": 0.0,
-      "games": 11.0
-    },
-    {
-      "a": "ckpt:1801",
-      "b": "ckpt:1926",
-      "wins_a": 8.0,
-      "wins_b": 8.0,
-      "ties": 0.0,
-      "games": 16.0
-    },
-    {
-      "a": "ckpt:2494",
-      "b": "heuristic",
-      "wins_a": 14.0,
-      "wins_b": 3.0,
-      "ties": 0.0,
-      "games": 17.0
-    },
-    {
-      "a": "ckpt:1923",
-      "b": "ckpt:1926",
-      "wins_a": 0.0,
-      "wins_b": 5.0,
-      "ties": 0.0,
-      "games": 5.0
-    },
-    {
-      "a": "ckpt:1805",
-      "b": "ckpt:2496",
-      "wins_a": 6.0,
-      "wins_b": 11.0,
-      "ties": 0.0,
-      "games": 17.0
-    },
-    {
-      "a": "ckpt:1803",
-      "b": "ckpt:1895",
-      "wins_a": 5.0,
-      "wins_b": 7.0,
-      "ties": 0.0,
-      "games": 12.0
-    },
-    {
-      "a": "ckpt:1876",
-      "b": "ckpt:2496",
-      "wins_a": 6.0,
-      "wins_b": 12.0,
-      "ties": 0.0,
-      "games": 18.0
-    },
-    {
-      "a": "ckpt:1876",
-      "b": "ckpt:2495",
-      "wins_a": 8.0,
-      "wins_b": 3.0,
-      "ties": 0.0,
-      "games": 11.0
-    },
-    {
-      "a": "ckpt:1926",
-      "b": "ckpt:2494",
-      "wins_a": 5.0,
-      "wins_b": 8.0,
-      "ties": 0.0,
-      "games": 13.0
-    },
-    {
-      "a": "ckpt:1803",
-      "b": "ckpt:1923",
-      "wins_a": 3.0,
-      "wins_b": 1.0,
-      "ties": 0.0,
-      "games": 4.0
-    },
-    {
-      "a": "ckpt:1842",
-      "b": "ckpt:1894",
-      "wins_a": 7.0,
-      "wins_b": 5.0,
-      "ties": 0.0,
-      "games": 12.0
-    },
-    {
-      "a": "ckpt:1876",
-      "b": "ckpt:1894",
-      "wins_a": 9.0,
-      "wins_b": 3.0,
-      "ties": 0.0,
-      "games": 12.0
-    },
-    {
-      "a": "ckpt:2494",
-      "b": "ckpt:2497",
-      "wins_a": 9.0,
-      "wins_b": 8.0,
-      "ties": 0.0,
-      "games": 17.0
-    },
-    {
-      "a": "ckpt:1876",
-      "b": "ckpt:2494",
-      "wins_a": 4.0,
-      "wins_b": 9.0,
-      "ties": 0.0,
-      "games": 13.0
-    },
-    {
-      "a": "ckpt:2495",
-      "b": "ckpt:2500",
-      "wins_a": 6.0,
-      "wins_b": 9.0,
-      "ties": 0.0,
-      "games": 15.0
-    },
-    {
-      "a": "ckpt:2501",
-      "b": "random",
-      "wins_a": 18.0,
-      "wins_b": 0.0,
-      "ties": 0.0,
-      "games": 18.0
-    },
-    {
-      "a": "ckpt:2496",
-      "b": "ckpt:2501",
-      "wins_a": 13.0,
-      "wins_b": 14.0,
-      "ties": 0.0,
-      "games": 27.0
-    },
-    {
-      "a": "ckpt:1801",
-      "b": "ckpt:1869",
-      "wins_a": 9.0,
-      "wins_b": 5.0,
-      "ties": 0.0,
-      "games": 14.0
-    },
-    {
-      "a": "ckpt:1803",
-      "b": "ckpt:1876",
-      "wins_a": 6.0,
-      "wins_b": 7.0,
-      "ties": 0.0,
-      "games": 13.0
-    },
-    {
-      "a": "ckpt:1869",
-      "b": "ckpt:2495",
-      "wins_a": 6.0,
-      "wins_b": 7.0,
-      "ties": 0.0,
-      "games": 13.0
-    },
-    {
-      "a": "ckpt:1869",
-      "b": "ckpt:1923",
-      "wins_a": 3.0,
-      "wins_b": 6.0,
-      "ties": 0.0,
-      "games": 9.0
-    },
-    {
-      "a": "ckpt:1922",
-      "b": "heuristic",
-      "wins_a": 4.666666666666667,
-      "wins_b": 8.0,
-      "ties": 0.0,
-      "games": 12.666666666666666
-    },
-    {
-      "a": "ckpt:1869",
-      "b": "heuristic",
-      "wins_a": 6.833333333333333,
-      "wins_b": 12.0,
-      "ties": 0.0,
-      "games": 18.833333333333332
-    },
-    {
-      "a": "ckpt:1869",
-      "b": "ckpt:2501",
-      "wins_a": 4.0,
-      "wins_b": 14.0,
-      "ties": 0.0,
-      "games": 18.0
-    },
-    {
-      "a": "ckpt:1803",
-      "b": "ckpt:2497",
-      "wins_a": 4.0,
-      "wins_b": 7.0,
-      "ties": 0.0,
-      "games": 11.0
-    },
-    {
-      "a": "ckpt:2501",
-      "b": "heuristic",
-      "wins_a": 12.0,
-      "wins_b": 4.0,
-      "ties": 0.0,
-      "games": 16.0
-    },
-    {
-      "a": "ckpt:1803",
-      "b": "heuristic",
-      "wins_a": 9.333333333333334,
-      "wins_b": 7.5,
-      "ties": 0.0,
-      "games": 16.833333333333332
-    },
-    {
-      "a": "ckpt:1912",
-      "b": "heuristic",
-      "wins_a": 4.0,
-      "wins_b": 5.0,
-      "ties": 0.0,
-      "games": 9.0
-    },
-    {
-      "a": "ckpt:1876",
-      "b": "ckpt:2500",
-      "wins_a": 9.0,
-      "wins_b": 11.0,
-      "ties": 0.0,
-      "games": 20.0
-    },
-    {
-      "a": "ckpt:1894",
-      "b": "ckpt:2500",
-      "wins_a": 4.0,
-      "wins_b": 11.0,
-      "ties": 0.0,
-      "games": 15.0
-    },
-    {
-      "a": "ckpt:1894",
-      "b": "heuristic",
-      "wins_a": 6.0,
-      "wins_b": 7.0,
-      "ties": 0.0,
-      "games": 13.0
-    },
-    {
-      "a": "ckpt:1912",
-      "b": "ckpt:2498",
-      "wins_a": 6.0,
-      "wins_b": 11.0,
-      "ties": 0.0,
-      "games": 17.0
-    },
-    {
-      "a": "ckpt:2494",
-      "b": "ckpt:2498",
-      "wins_a": 7.0,
-      "wins_b": 14.0,
-      "ties": 0.0,
-      "games": 21.0
-    },
-    {
-      "a": "ckpt:1877",
-      "b": "ckpt:1912",
-      "wins_a": 8.0,
-      "wins_b": 6.0,
-      "ties": 0.0,
-      "games": 14.0
-    },
-    {
-      "a": "ckpt:1912",
-      "b": "ckpt:2500",
-      "wins_a": 4.0,
-      "wins_b": 15.0,
-      "ties": 0.0,
-      "games": 19.0
-    },
-    {
-      "a": "ckpt:2498",
-      "b": "ckpt:2500",
-      "wins_a": 7.0,
-      "wins_b": 10.0,
-      "ties": 0.0,
-      "games": 17.0
-    },
-    {
-      "a": "ckpt:2497",
-      "b": "ckpt:2500",
-      "wins_a": 9.0,
-      "wins_b": 12.0,
-      "ties": 0.0,
-      "games": 21.0
-    },
-    {
-      "a": "ckpt:1894",
-      "b": "ckpt:2501",
-      "wins_a": 5.0,
-      "wins_b": 10.0,
-      "ties": 0.0,
-      "games": 15.0
-    },
-    {
-      "a": "ckpt:1805",
-      "b": "ckpt:1877",
-      "wins_a": 4.0,
-      "wins_b": 11.0,
-      "ties": 0.0,
-      "games": 15.0
-    },
-    {
-      "a": "ckpt:1894",
-      "b": "ckpt:2495",
-      "wins_a": 4.0,
-      "wins_b": 7.0,
-      "ties": 0.0,
-      "games": 11.0
-    },
-    {
-      "a": "ckpt:1923",
-      "b": "ckpt:2496",
-      "wins_a": 5.0,
-      "wins_b": 12.0,
-      "ties": 0.0,
-      "games": 17.0
-    },
-    {
-      "a": "ckpt:1895",
-      "b": "ckpt:2496",
-      "wins_a": 13.0,
-      "wins_b": 17.0,
-      "ties": 0.0,
-      "games": 30.0
-    },
-    {
-      "a": "ckpt:1801",
-      "b": "random",
-      "wins_a": 11.666666666666668,
-      "wins_b": 0.0,
-      "ties": 0.0,
-      "games": 11.666666666666668
-    },
-    {
-      "a": "ckpt:1869",
-      "b": "ckpt:1926",
-      "wins_a": 7.0,
-      "wins_b": 4.0,
-      "ties": 0.0,
-      "games": 11.0
-    },
-    {
-      "a": "ckpt:1801",
-      "b": "ckpt:2494",
-      "wins_a": 5.0,
-      "wins_b": 7.0,
-      "ties": 0.0,
-      "games": 12.0
-    },
-    {
-      "a": "ckpt:1894",
-      "b": "ckpt:2498",
-      "wins_a": 6.0,
-      "wins_b": 14.0,
-      "ties": 0.0,
-      "games": 20.0
-    },
-    {
-      "a": "ckpt:1877",
-      "b": "ckpt:2500",
-      "wins_a": 4.0,
-      "wins_b": 7.0,
-      "ties": 0.0,
-      "games": 11.0
-    },
-    {
-      "a": "ckpt:1801",
-      "b": "ckpt:1923",
-      "wins_a": 4.0,
-      "wins_b": 4.0,
-      "ties": 0.0,
-      "games": 8.0
-    },
-    {
-      "a": "ckpt:1895",
-      "b": "ckpt:1926",
-      "wins_a": 5.0,
-      "wins_b": 4.0,
-      "ties": 0.0,
-      "games": 9.0
-    },
-    {
-      "a": "ckpt:1805",
-      "b": "ckpt:1895",
-      "wins_a": 6.0,
-      "wins_b": 10.0,
-      "ties": 0.0,
-      "games": 16.0
-    },
-    {
-      "a": "ckpt:1869",
-      "b": "ckpt:2497",
-      "wins_a": 5.5,
-      "wins_b": 12.166666666666668,
-      "ties": 0.0,
-      "games": 17.666666666666668
-    },
-    {
-      "a": "ckpt:2497",
-      "b": "heuristic",
-      "wins_a": 12.0,
-      "wins_b": 10.333333333333334,
-      "ties": 0.0,
-      "games": 22.333333333333332
-    },
-    {
-      "a": "ckpt:1912",
-      "b": "random",
-      "wins_a": 15.0,
-      "wins_b": 0.0,
-      "ties": 0.0,
-      "games": 15.0
-    },
-    {
-      "a": "ckpt:1912",
-      "b": "ckpt:1923",
-      "wins_a": 9.0,
-      "wins_b": 3.0,
-      "ties": 0.0,
-      "games": 12.0
-    },
-    {
-      "a": "ckpt:2494",
-      "b": "ckpt:2496",
-      "wins_a": 10.0,
-      "wins_b": 7.0,
-      "ties": 0.0,
-      "games": 17.0
-    },
-    {
-      "a": "ckpt:1876",
-      "b": "ckpt:2498",
-      "wins_a": 11.833333333333334,
-      "wins_b": 12.666666666666666,
-      "ties": 0.0,
-      "games": 24.5
-    },
-    {
-      "a": "ckpt:1876",
-      "b": "ckpt:1923",
-      "wins_a": 3.0,
-      "wins_b": 7.0,
-      "ties": 0.0,
-      "games": 10.0
-    },
-    {
-      "a": "ckpt:1895",
-      "b": "ckpt:2498",
-      "wins_a": 6.333333333333333,
-      "wins_b": 9.833333333333334,
-      "ties": 0.0,
-      "games": 16.166666666666668
-    },
-    {
-      "a": "ckpt:1876",
-      "b": "random",
-      "wins_a": 14.0,
-      "wins_b": 0.0,
-      "ties": 0.0,
-      "games": 14.0
-    },
-    {
-      "a": "ckpt:1926",
-      "b": "ckpt:2500",
-      "wins_a": 10.0,
-      "wins_b": 7.0,
-      "ties": 0.0,
-      "games": 17.0
-    },
-    {
-      "a": "ckpt:1877",
-      "b": "ckpt:2495",
-      "wins_a": 8.0,
-      "wins_b": 4.0,
-      "ties": 0.0,
-      "games": 12.0
-    },
-    {
-      "a": "ckpt:1923",
-      "b": "ckpt:2500",
-      "wins_a": 8.0,
-      "wins_b": 6.0,
-      "ties": 0.0,
-      "games": 14.0
-    },
-    {
-      "a": "ckpt:1803",
-      "b": "ckpt:2500",
-      "wins_a": 6.0,
-      "wins_b": 8.0,
-      "ties": 0.0,
-      "games": 14.0
-    },
-    {
-      "a": "ckpt:1922",
-      "b": "ckpt:2499",
-      "wins_a": 8.0,
-      "wins_b": 13.0,
-      "ties": 0.0,
-      "games": 21.0
-    },
-    {
-      "a": "ckpt:2494",
-      "b": "ckpt:2499",
-      "wins_a": 8.0,
-      "wins_b": 17.0,
-      "ties": 0.0,
-      "games": 25.0
-    },
-    {
-      "a": "ckpt:2497",
-      "b": "random",
-      "wins_a": 23.833333333333332,
-      "wins_b": 0.5,
-      "ties": 0.0,
-      "games": 24.333333333333332
-    },
-    {
-      "a": "ckpt:1923",
-      "b": "ckpt:2497",
-      "wins_a": 3.0,
-      "wins_b": 15.0,
-      "ties": 0.0,
-      "games": 18.0
-    },
-    {
-      "a": "ckpt:1801",
-      "b": "ckpt:1803",
-      "wins_a": 6.666666666666666,
-      "wins_b": 4.666666666666666,
-      "ties": 0.0,
-      "games": 11.333333333333332
-    },
-    {
-      "a": "ckpt:2496",
-      "b": "ckpt:2500",
-      "wins_a": 16.0,
-      "wins_b": 13.833333333333332,
-      "ties": 0.0,
-      "games": 29.833333333333332
-    },
-    {
-      "a": "ckpt:2498",
-      "b": "ckpt:2501",
-      "wins_a": 13.0,
-      "wins_b": 23.0,
-      "ties": 0.0,
-      "games": 36.0
-    },
-    {
-      "a": "ckpt:1923",
-      "b": "ckpt:2501",
-      "wins_a": 6.0,
-      "wins_b": 11.0,
-      "ties": 0.0,
-      "games": 17.0
-    },
-    {
-      "a": "ckpt:1912",
-      "b": "ckpt:2501",
-      "wins_a": 4.0,
-      "wins_b": 9.0,
-      "ties": 0.0,
-      "games": 13.0
-    },
-    {
-      "a": "ckpt:1922",
-      "b": "ckpt:2498",
-      "wins_a": 6.0,
-      "wins_b": 9.0,
-      "ties": 0.0,
-      "games": 15.0
-    },
-    {
-      "a": "ckpt:1876",
-      "b": "ckpt:2497",
-      "wins_a": 8.0,
-      "wins_b": 16.0,
-      "ties": 0.0,
-      "games": 24.0
-    },
-    {
-      "a": "ckpt:1842",
-      "b": "ckpt:2497",
-      "wins_a": 4.0,
-      "wins_b": 13.0,
-      "ties": 0.0,
-      "games": 17.0
-    },
-    {
-      "a": "ckpt:1895",
-      "b": "ckpt:2497",
-      "wins_a": 13.0,
-      "wins_b": 11.0,
-      "ties": 0.0,
-      "games": 24.0
-    },
-    {
-      "a": "ckpt:1805",
-      "b": "ckpt:2501",
-      "wins_a": 5.0,
-      "wins_b": 9.0,
-      "ties": 0.0,
-      "games": 14.0
-    },
-    {
-      "a": "ckpt:1912",
-      "b": "ckpt:2499",
-      "wins_a": 5.0,
-      "wins_b": 10.0,
-      "ties": 0.0,
-      "games": 15.0
-    },
-    {
-      "a": "ckpt:1895",
-      "b": "ckpt:2499",
-      "wins_a": 7.0,
-      "wins_b": 7.0,
-      "ties": 0.0,
-      "games": 14.0
-    },
-    {
-      "a": "ckpt:1926",
-      "b": "ckpt:2499",
-      "wins_a": 2.0,
-      "wins_b": 13.0,
-      "ties": 0.0,
-      "games": 15.0
-    },
-    {
-      "a": "ckpt:2497",
-      "b": "ckpt:2499",
-      "wins_a": 9.0,
-      "wins_b": 13.0,
-      "ties": 0.0,
-      "games": 22.0
-    },
-    {
-      "a": "ckpt:1894",
-      "b": "ckpt:1922",
-      "wins_a": 4.0,
-      "wins_b": 7.0,
-      "ties": 0.0,
-      "games": 11.0
-    },
-    {
-      "a": "ckpt:1895",
-      "b": "ckpt:2501",
-      "wins_a": 7.0,
-      "wins_b": 13.0,
-      "ties": 0.0,
-      "games": 20.0
-    },
-    {
-      "a": "ckpt:1869",
-      "b": "ckpt:2494",
-      "wins_a": 4.0,
-      "wins_b": 6.0,
-      "ties": 0.0,
-      "games": 10.0
-    },
-    {
-      "a": "ckpt:1869",
-      "b": "ckpt:1922",
-      "wins_a": 2.0,
-      "wins_b": 2.0,
-      "ties": 0.0,
-      "games": 4.0
-    },
-    {
-      "a": "ckpt:1895",
-      "b": "ckpt:1912",
-      "wins_a": 6.0,
-      "wins_b": 4.0,
-      "ties": 0.0,
-      "games": 10.0
-    },
-    {
-      "a": "ckpt:1803",
-      "b": "ckpt:2494",
-      "wins_a": 3.0,
-      "wins_b": 9.0,
-      "ties": 0.0,
-      "games": 12.0
-    },
-    {
-      "a": "ckpt:1926",
-      "b": "ckpt:2496",
-      "wins_a": 4.0,
-      "wins_b": 10.0,
-      "ties": 0.0,
-      "games": 14.0
-    },
-    {
-      "a": "ckpt:1912",
-      "b": "ckpt:2495",
-      "wins_a": 5.0,
-      "wins_b": 9.0,
-      "ties": 0.0,
-      "games": 14.0
-    },
-    {
-      "a": "ckpt:1869",
-      "b": "ckpt:1912",
-      "wins_a": 5.0,
-      "wins_b": 4.0,
-      "ties": 0.0,
-      "games": 9.0
-    },
-    {
-      "a": "ckpt:1842",
-      "b": "ckpt:2495",
-      "wins_a": 6.0,
-      "wins_b": 11.0,
-      "ties": 0.0,
-      "games": 17.0
-    },
-    {
-      "a": "ckpt:1842",
-      "b": "ckpt:2494",
-      "wins_a": 5.0,
-      "wins_b": 8.0,
-      "ties": 0.0,
-      "games": 13.0
-    },
-    {
-      "a": "ckpt:1922",
-      "b": "ckpt:2494",
-      "wins_a": 4.0,
-      "wins_b": 9.0,
-      "ties": 0.0,
-      "games": 13.0
-    },
-    {
-      "a": "ckpt:1801",
-      "b": "ckpt:2497",
-      "wins_a": 3.0,
-      "wins_b": 14.0,
-      "ties": 0.0,
-      "games": 17.0
-    },
-    {
-      "a": "ckpt:2497",
-      "b": "ckpt:2501",
-      "wins_a": 5.0,
-      "wins_b": 10.0,
-      "ties": 0.0,
-      "games": 15.0
-    },
-    {
-      "a": "ckpt:1801",
-      "b": "ckpt:1876",
-      "wins_a": 9.0,
-      "wins_b": 9.0,
-      "ties": 0.0,
-      "games": 18.0
-    },
-    {
-      "a": "ckpt:1876",
-      "b": "ckpt:1926",
-      "wins_a": 7.0,
-      "wins_b": 5.0,
-      "ties": 0.0,
-      "games": 12.0
-    },
-    {
-      "a": "ckpt:1926",
-      "b": "ckpt:2501",
-      "wins_a": 3.0,
-      "wins_b": 19.0,
-      "ties": 0.0,
-      "games": 22.0
-    },
-    {
-      "a": "ckpt:2494",
-      "b": "ckpt:2500",
-      "wins_a": 8.0,
-      "wins_b": 4.0,
-      "ties": 0.0,
-      "games": 12.0
-    },
-    {
-      "a": "ckpt:1894",
-      "b": "ckpt:2496",
-      "wins_a": 7.0,
-      "wins_b": 10.0,
-      "ties": 0.0,
-      "games": 17.0
-    },
-    {
-      "a": "ckpt:1877",
-      "b": "ckpt:2501",
-      "wins_a": 2.0,
-      "wins_b": 14.0,
-      "ties": 0.0,
-      "games": 16.0
-    },
-    {
-      "a": "ckpt:1801",
-      "b": "ckpt:1922",
-      "wins_a": 5.666666666666667,
-      "wins_b": 8.666666666666666,
-      "ties": 0.0,
-      "games": 14.333333333333332
-    },
-    {
-      "a": "ckpt:1912",
-      "b": "ckpt:1922",
-      "wins_a": 5.0,
-      "wins_b": 5.0,
-      "ties": 0.0,
-      "games": 10.0
-    },
-    {
-      "a": "ckpt:2499",
-      "b": "ckpt:2500",
-      "wins_a": 8.0,
-      "wins_b": 9.0,
-      "ties": 0.0,
-      "games": 17.0
-    },
-    {
-      "a": "ckpt:1842",
-      "b": "ckpt:1877",
-      "wins_a": 6.0,
-      "wins_b": 4.0,
-      "ties": 0.0,
-      "games": 10.0
-    },
-    {
-      "a": "ckpt:1877",
-      "b": "ckpt:1922",
-      "wins_a": 6.0,
-      "wins_b": 6.0,
-      "ties": 0.0,
-      "games": 12.0
-    },
-    {
-      "a": "ckpt:1805",
-      "b": "ckpt:2500",
-      "wins_a": 5.0,
-      "wins_b": 8.0,
-      "ties": 0.0,
-      "games": 13.0
-    },
-    {
-      "a": "ckpt:1805",
-      "b": "ckpt:2498",
-      "wins_a": 3.833333333333333,
-      "wins_b": 13.166666666666668,
-      "ties": 0.0,
-      "games": 17.0
-    },
-    {
-      "a": "ckpt:1922",
-      "b": "ckpt:2495",
-      "wins_a": 7.0,
-      "wins_b": 11.0,
-      "ties": 0.0,
-      "games": 18.0
-    },
-    {
-      "a": "ckpt:1877",
-      "b": "ckpt:1894",
-      "wins_a": 4.0,
-      "wins_b": 6.0,
-      "ties": 0.0,
-      "games": 10.0
-    },
-    {
-      "a": "ckpt:1869",
-      "b": "ckpt:1876",
-      "wins_a": 7.0,
-      "wins_b": 4.0,
-      "ties": 0.0,
-      "games": 11.0
-    },
-    {
-      "a": "ckpt:1805",
-      "b": "ckpt:1869",
-      "wins_a": 9.666666666666668,
-      "wins_b": 7.833333333333333,
-      "ties": 0.0,
-      "games": 17.5
-    },
-    {
-      "a": "ckpt:2498",
-      "b": "ckpt:2499",
-      "wins_a": 8.0,
-      "wins_b": 11.0,
-      "ties": 0.0,
-      "games": 19.0
-    },
-    {
-      "a": "ckpt:2494",
-      "b": "ckpt:2501",
-      "wins_a": 5.0,
-      "wins_b": 6.0,
-      "ties": 0.0,
-      "games": 11.0
-    },
-    {
-      "a": "ckpt:1801",
-      "b": "ckpt:2501",
-      "wins_a": 3.0,
-      "wins_b": 15.0,
-      "ties": 0.0,
-      "games": 18.0
-    },
-    {
-      "a": "ckpt:1876",
-      "b": "heuristic",
-      "wins_a": 6.833333333333332,
-      "wins_b": 9.833333333333332,
-      "ties": 0.0,
-      "games": 16.666666666666664
-    },
-    {
-      "a": "ckpt:1803",
-      "b": "ckpt:2499",
-      "wins_a": 4.666666666666666,
-      "wins_b": 12.333333333333334,
-      "ties": 0.0,
-      "games": 17.0
-    },
-    {
-      "a": "ckpt:1803",
-      "b": "ckpt:1926",
-      "wins_a": 4.0,
-      "wins_b": 8.0,
-      "ties": 0.0,
-      "games": 12.0
-    },
-    {
-      "a": "ckpt:1912",
-      "b": "ckpt:2494",
-      "wins_a": 5.0,
-      "wins_b": 6.0,
-      "ties": 0.0,
-      "games": 11.0
-    },
-    {
-      "a": "ckpt:1895",
-      "b": "ckpt:1923",
-      "wins_a": 1.0,
-      "wins_b": 4.0,
-      "ties": 0.0,
-      "games": 5.0
-    },
-    {
-      "a": "ckpt:1803",
-      "b": "ckpt:2501",
-      "wins_a": 5.0,
-      "wins_b": 8.0,
-      "ties": 0.0,
-      "games": 13.0
-    },
-    {
-      "a": "ckpt:1926",
-      "b": "ckpt:2495",
-      "wins_a": 10.0,
-      "wins_b": 5.0,
-      "ties": 0.0,
-      "games": 15.0
-    },
-    {
-      "a": "ckpt:1805",
-      "b": "ckpt:2499",
-      "wins_a": 4.0,
-      "wins_b": 7.0,
-      "ties": 0.0,
-      "games": 11.0
-    },
-    {
-      "a": "ckpt:1922",
-      "b": "ckpt:2497",
-      "wins_a": 2.0,
-      "wins_b": 10.0,
-      "ties": 0.0,
-      "games": 12.0
-    },
-    {
-      "a": "ckpt:1842",
-      "b": "ckpt:1922",
-      "wins_a": 4.0,
-      "wins_b": 6.0,
-      "ties": 0.0,
-      "games": 10.0
-    },
-    {
-      "a": "ckpt:1923",
-      "b": "ckpt:2498",
-      "wins_a": 1.0,
-      "wins_b": 17.0,
-      "ties": 0.0,
-      "games": 18.0
-    },
-    {
-      "a": "ckpt:1877",
-      "b": "ckpt:1923",
-      "wins_a": 8.0,
-      "wins_b": 4.0,
-      "ties": 0.0,
-      "games": 12.0
-    },
-    {
-      "a": "ckpt:1895",
-      "b": "ckpt:2500",
-      "wins_a": 10.0,
-      "wins_b": 9.833333333333332,
-      "ties": 0.0,
-      "games": 19.833333333333332
-    },
-    {
-      "a": "ckpt:2495",
-      "b": "ckpt:2498",
-      "wins_a": 5.0,
-      "wins_b": 7.0,
-      "ties": 0.0,
-      "games": 12.0
-    },
-    {
-      "a": "ckpt:2500",
-      "b": "random",
-      "wins_a": 17.333333333333332,
-      "wins_b": 0.0,
-      "ties": 0.0,
-      "games": 17.333333333333332
-    },
-    {
-      "a": "ckpt:2496",
-      "b": "ckpt:2499",
-      "wins_a": 12.0,
-      "wins_b": 14.0,
-      "ties": 0.0,
-      "games": 26.0
-    },
-    {
-      "a": "ckpt:2496",
-      "b": "heuristic",
-      "wins_a": 9.5,
-      "wins_b": 10.166666666666666,
-      "ties": 0.0,
-      "games": 19.666666666666664
-    },
-    {
-      "a": "ckpt:1894",
-      "b": "ckpt:1923",
-      "wins_a": 5.0,
-      "wins_b": 5.0,
-      "ties": 0.0,
-      "games": 10.0
-    },
-    {
-      "a": "ckpt:1895",
-      "b": "ckpt:2495",
-      "wins_a": 9.0,
-      "wins_b": 6.0,
-      "ties": 0.0,
-      "games": 15.0
-    },
-    {
-      "a": "ckpt:1805",
-      "b": "random",
-      "wins_a": 8.666666666666668,
-      "wins_b": 0.0,
-      "ties": 0.0,
-      "games": 8.666666666666668
-    },
-    {
-      "a": "ckpt:1803",
-      "b": "ckpt:1877",
-      "wins_a": 5.0,
-      "wins_b": 2.0,
-      "ties": 0.0,
-      "games": 7.0
-    },
-    {
-      "a": "ckpt:1801",
-      "b": "ckpt:1805",
-      "wins_a": 8.0,
-      "wins_b": 7.0,
-      "ties": 0.0,
-      "games": 15.0
-    },
-    {
-      "a": "ckpt:1869",
-      "b": "ckpt:1894",
-      "wins_a": 4.0,
-      "wins_b": 4.0,
-      "ties": 0.0,
-      "games": 8.0
-    },
-    {
-      "a": "ckpt:1926",
-      "b": "random",
-      "wins_a": 6.0,
-      "wins_b": 0.0,
-      "ties": 0.0,
-      "games": 6.0
-    },
-    {
-      "a": "ckpt:1877",
-      "b": "ckpt:1926",
-      "wins_a": 2.0,
-      "wins_b": 2.0,
-      "ties": 0.0,
-      "games": 4.0
-    },
-    {
-      "a": "ckpt:2495",
-      "b": "random",
-      "wins_a": 19.333333333333332,
-      "wins_b": 0.0,
-      "ties": 0.0,
-      "games": 19.333333333333332
-    },
-    {
-      "a": "ckpt:1869",
-      "b": "random",
-      "wins_a": 8.333333333333334,
-      "wins_b": 0.0,
-      "ties": 0.0,
-      "games": 8.333333333333334
-    },
-    {
-      "a": "ckpt:1876",
-      "b": "ckpt:1922",
-      "wins_a": 10.0,
-      "wins_b": 1.0,
-      "ties": 0.0,
-      "games": 11.0
-    },
-    {
-      "a": "ckpt:1801",
-      "b": "ckpt:2499",
-      "wins_a": 11.166666666666666,
-      "wins_b": 11.0,
-      "ties": 0.0,
-      "games": 22.166666666666668
-    },
-    {
-      "a": "ckpt:1803",
-      "b": "random",
-      "wins_a": 5.0,
-      "wins_b": 0.0,
-      "ties": 0.0,
-      "games": 5.0
-    },
-    {
-      "a": "ckpt:1803",
-      "b": "ckpt:1912",
-      "wins_a": 4.0,
-      "wins_b": 2.0,
-      "ties": 0.0,
-      "games": 6.0
-    },
-    {
-      "a": "ckpt:1805",
-      "b": "ckpt:1923",
-      "wins_a": 7.0,
-      "wins_b": 4.0,
-      "ties": 0.0,
-      "games": 11.0
-    },
-    {
-      "a": "ckpt:1894",
-      "b": "ckpt:2497",
-      "wins_a": 5.0,
-      "wins_b": 10.0,
-      "ties": 0.0,
-      "games": 15.0
-    },
-    {
-      "a": "ckpt:1876",
-      "b": "ckpt:1877",
-      "wins_a": 7.0,
-      "wins_b": 3.0,
-      "ties": 0.0,
-      "games": 10.0
-    },
-    {
-      "a": "ckpt:1894",
-      "b": "random",
-      "wins_a": 6.0,
-      "wins_b": 0.0,
-      "ties": 0.0,
-      "games": 6.0
-    },
-    {
-      "a": "ckpt:1801",
-      "b": "ckpt:1912",
-      "wins_a": 4.0,
-      "wins_b": 6.0,
-      "ties": 0.0,
-      "games": 10.0
-    },
-    {
-      "a": "ckpt:1894",
-      "b": "ckpt:2499",
-      "wins_a": 2.0,
-      "wins_b": 6.0,
-      "ties": 0.0,
-      "games": 8.0
-    },
-    {
-      "a": "ckpt:1926",
-      "b": "ckpt:2497",
-      "wins_a": 4.0,
-      "wins_b": 6.0,
-      "ties": 0.0,
-      "games": 10.0
-    },
-    {
-      "a": "ckpt:2500",
-      "b": "ckpt:2502",
-      "wins_a": 33.16666666666665,
-      "wins_b": 34.33333333333332,
-      "ties": 0.0,
-      "games": 67.49999999999997
-    },
-    {
-      "a": "ckpt:2502",
-      "b": "random",
-      "wins_a": 63.333333333333435,
-      "wins_b": 1.0,
-      "ties": 0.0,
-      "games": 64.33333333333344
-    },
-    {
-      "a": "ckpt:1922",
-      "b": "ckpt:2502",
-      "wins_a": 20.666666666666657,
-      "wins_b": 29.16666666666662,
-      "ties": 0.0,
-      "games": 49.83333333333328
-    },
-    {
-      "a": "ckpt:2496",
-      "b": "ckpt:2502",
-      "wins_a": 26.666666666666636,
-      "wins_b": 31.999999999999968,
-      "ties": 0.0,
-      "games": 58.6666666666666
-    },
-    {
-      "a": "ckpt:1801",
-      "b": "ckpt:2502",
-      "wins_a": 17.83333333333333,
-      "wins_b": 34.166666666666636,
-      "ties": 0.0,
-      "games": 51.999999999999964
-    },
-    {
-      "a": "ckpt:2502",
-      "b": "heuristic",
-      "wins_a": 44.833333333333385,
-      "wins_b": 15.166666666666675,
-      "ties": 0.0,
-      "games": 60.000000000000064
-    },
-    {
-      "a": "ckpt:1801",
-      "b": "ckpt:2503",
-      "wins_a": 21.99999999999999,
-      "wins_b": 33.83333333333331,
-      "ties": 0.0,
-      "games": 55.8333333333333
-    },
-    {
-      "a": "ckpt:2503",
-      "b": "heuristic",
-      "wins_a": 56.0000000000001,
-      "wins_b": 13.333333333333337,
-      "ties": 0.0,
-      "games": 69.33333333333346
-    },
-    {
-      "a": "ckpt:2499",
-      "b": "ckpt:2503",
-      "wins_a": 26.166666666666636,
-      "wins_b": 35.166666666666664,
-      "ties": 0.0,
-      "games": 61.3333333333333
-    },
-    {
-      "a": "ckpt:2495",
-      "b": "ckpt:2503",
-      "wins_a": 21.999999999999982,
-      "wins_b": 34.999999999999986,
-      "ties": 0.0,
-      "games": 56.99999999999997
-    },
-    {
-      "a": "ckpt:1803",
-      "b": "ckpt:2503",
-      "wins_a": 19.666666666666657,
-      "wins_b": 31.499999999999957,
-      "ties": 0.0,
-      "games": 51.166666666666615
-    },
-    {
-      "a": "ckpt:2503",
-      "b": "random",
-      "wins_a": 64.33333333333348,
-      "wins_b": 0.5,
-      "ties": 0.0,
-      "games": 64.83333333333348
-    },
-    {
-      "a": "ckpt:1869",
-      "b": "ckpt:2504",
-      "wins_a": 19.833333333333325,
-      "wins_b": 32.49999999999995,
-      "ties": 0.0,
-      "games": 52.33333333333327
-    },
-    {
-      "a": "ckpt:2504",
-      "b": "random",
-      "wins_a": 62.50000000000012,
-      "wins_b": 0.5,
-      "ties": 0.0,
-      "games": 63.00000000000012
-    },
-    {
-      "a": "ckpt:2504",
-      "b": "heuristic",
-      "wins_a": 71.00000000000013,
-      "wins_b": 12.833333333333336,
-      "ties": 0.0,
-      "games": 83.83333333333346
-    },
-    {
-      "a": "ckpt:2497",
-      "b": "ckpt:2504",
-      "wins_a": 21.333333333333318,
-      "wins_b": 42.50000000000006,
-      "ties": 0.0,
-      "games": 63.83333333333337
-    },
-    {
-      "a": "ckpt:2504",
-      "b": "heuristic_opus",
-      "wins_a": 58.00000000000007,
-      "wins_b": 25.16666666666668,
-      "ties": 0.0,
-      "games": 83.16666666666674
-    },
-    {
-      "a": "ckpt:1805",
-      "b": "ckpt:2504",
-      "wins_a": 15.000000000000005,
-      "wins_b": 48.16666666666678,
-      "ties": 0.0,
-      "games": 63.166666666666785
-    },
-    {
-      "a": "ckpt:2498",
-      "b": "ckpt:2504",
-      "wins_a": 16.50000000000001,
-      "wins_b": 36.16666666666667,
-      "ties": 0.0,
-      "games": 52.666666666666686
-    },
-    {
-      "a": "ckpt:2498",
-      "b": "heuristic_opus",
-      "wins_a": 4.833333333333333,
-      "wins_b": 4.333333333333333,
-      "ties": 0.0,
-      "games": 9.166666666666666
+      "wins_a_3p": 129.0,
+      "wins_b_3p": 24.0,
+      "wins_a_4p": 184.0,
+      "wins_b_4p": 156.0
     },
     {
       "a": "heuristic_opus",
       "b": "random",
-      "wins_a": 41.49999999999999,
-      "wins_b": 0.0,
-      "ties": 0.0,
-      "games": 41.49999999999999
-    },
-    {
-      "a": "ckpt:1805",
-      "b": "heuristic_opus",
-      "wins_a": 1.1666666666666665,
-      "wins_b": 3.166666666666667,
-      "ties": 0.0,
-      "games": 4.333333333333334
+      "wins_a_3p": 134.0,
+      "wins_b_3p": 9.0,
+      "wins_a_4p": 229.0,
+      "wins_b_4p": 131.0
     },
     {
       "a": "heuristic",
       "b": "heuristic_opus",
-      "wins_a": 9.666666666666666,
-      "wins_b": 29.5,
-      "ties": 0.0,
-      "games": 39.166666666666664
-    },
-    {
-      "a": "ckpt:1869",
-      "b": "heuristic_opus",
-      "wins_a": 0.5,
-      "wins_b": 2.8333333333333335,
-      "ties": 0.0,
-      "games": 3.3333333333333335
-    },
-    {
-      "a": "ckpt:2497",
-      "b": "heuristic_opus",
-      "wins_a": 3.333333333333333,
-      "wins_b": 2.8333333333333335,
-      "ties": 0.0,
-      "games": 6.166666666666667
+      "wins_a_3p": 75.0,
+      "wins_b_3p": 129.0,
+      "wins_a_4p": 139.0,
+      "wins_b_4p": 205.0
     },
     {
       "a": "bedrock_claude_sonnet",
       "b": "random",
-      "wins_a": 9.333333333333334,
-      "wins_b": 5.333333333333333,
-      "ties": 0.0,
-      "games": 14.666666666666668
+      "wins_a_4p": 10.0,
+      "wins_b_4p": 0.0,
+      "wins_a_2p": 4.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 7.0,
+      "wins_b_3p": 0.0
     },
     {
       "a": "bedrock_claude_sonnet",
       "b": "heuristic",
-      "wins_a": 5.833333333333333,
-      "wins_b": 9.166666666666668,
-      "ties": 0.0,
-      "games": 15.000000000000002
+      "wins_a_4p": 7.0,
+      "wins_b_4p": 1.0,
+      "wins_a_3p": 1.0,
+      "wins_b_3p": 2.0,
+      "wins_a_2p": 2.0,
+      "wins_b_2p": 0.0
+    },
+    {
+      "a": "bedrock_claude_sonnet",
+      "b": "ckpt:2651",
+      "wins_a_4p": 0.0,
+      "wins_b_4p": 0.0,
+      "wins_a_2p": 1.0,
+      "wins_b_2p": 0.0,
+      "wins_a_3p": 1.0,
+      "wins_b_3p": 0.0
     },
     {
       "a": "bedrock_claude_sonnet",
       "b": "heuristic_opus",
-      "wins_a": 4.333333333333333,
-      "wins_b": 12.000000000000002,
-      "ties": 0.0,
-      "games": 16.333333333333332
-    },
-    {
-      "a": "bedrock_claude_sonnet",
-      "b": "ckpt:2504",
-      "wins_a": 1.0,
-      "wins_b": 4.0,
-      "ties": 0.0,
-      "games": 5.0
-    },
-    {
-      "a": "bedrock_claude_sonnet",
-      "b": "ckpt:2507",
-      "wins_a": 4.5,
-      "wins_b": 8.5,
-      "ties": 0.0,
-      "games": 13.0
-    },
-    {
-      "a": "ckpt:2503",
-      "b": "ckpt:2510",
-      "wins_a": 20.166666666666654,
-      "wins_b": 30.99999999999995,
-      "ties": 0.0,
-      "games": 51.1666666666666
-    },
-    {
-      "a": "ckpt:2510",
-      "b": "heuristic",
-      "wins_a": 60.1666666666668,
-      "wins_b": 6.166666666666666,
-      "ties": 0.0,
-      "games": 66.33333333333347
-    },
-    {
-      "a": "ckpt:2500",
-      "b": "ckpt:2510",
-      "wins_a": 18.33333333333333,
-      "wins_b": 49.50000000000011,
-      "ties": 0.0,
-      "games": 67.83333333333343
-    },
-    {
-      "a": "ckpt:2510",
-      "b": "heuristic_opus",
-      "wins_a": 51.50000000000007,
-      "wins_b": 22.666666666666675,
-      "ties": 0.0,
-      "games": 74.16666666666676
-    },
-    {
-      "a": "ckpt:1895",
-      "b": "ckpt:2510",
-      "wins_a": 14.333333333333336,
-      "wins_b": 41.16666666666671,
-      "ties": 0.0,
-      "games": 55.50000000000004
-    },
-    {
-      "a": "ckpt:2505",
-      "b": "ckpt:2510",
-      "wins_a": 35.499999999999964,
-      "wins_b": 46.1666666666667,
-      "ties": 0.0,
-      "games": 81.66666666666666
-    },
-    {
-      "a": "ckpt:2510",
-      "b": "random",
-      "wins_a": 62.00000000000012,
-      "wins_b": 1.0,
-      "ties": 0.0,
-      "games": 63.00000000000012
-    },
-    {
-      "a": "ckpt:2505",
-      "b": "heuristic",
-      "wins_a": 14.666666666666664,
-      "wins_b": 5.0,
-      "ties": 0.0,
-      "games": 19.666666666666664
-    },
-    {
-      "a": "ckpt:1895",
-      "b": "ckpt:2505",
-      "wins_a": 0.8333333333333333,
-      "wins_b": 5.666666666666665,
-      "ties": 0.0,
-      "games": 6.499999999999998
-    },
-    {
-      "a": "ckpt:1895",
-      "b": "heuristic_opus",
-      "wins_a": 2.1666666666666665,
-      "wins_b": 6.5,
-      "ties": 0.0,
-      "games": 8.666666666666666
-    },
-    {
-      "a": "ckpt:2500",
-      "b": "ckpt:2505",
-      "wins_a": 2.333333333333333,
-      "wins_b": 3.0,
-      "ties": 0.0,
-      "games": 5.333333333333333
-    },
-    {
-      "a": "ckpt:1895",
-      "b": "ckpt:2503",
-      "wins_a": 2.5,
-      "wins_b": 6.666666666666666,
-      "ties": 0.0,
-      "games": 9.166666666666666
-    },
-    {
-      "a": "ckpt:2505",
-      "b": "heuristic_opus",
-      "wins_a": 11.166666666666664,
-      "wins_b": 10.0,
-      "ties": 0.0,
-      "games": 21.166666666666668
-    },
-    {
-      "a": "ckpt:2500",
-      "b": "heuristic_opus",
-      "wins_a": 1.6666666666666665,
-      "wins_b": 4.166666666666667,
-      "ties": 0.0,
-      "games": 5.833333333333334
-    },
-    {
-      "a": "ckpt:2505",
-      "b": "random",
-      "wins_a": 13.5,
-      "wins_b": 0.0,
-      "ties": 0.0,
-      "games": 13.5
-    },
-    {
-      "a": "ckpt:2503",
-      "b": "heuristic_opus",
-      "wins_a": 3.9999999999999996,
-      "wins_b": 4.166666666666666,
-      "ties": 0.0,
-      "games": 8.166666666666664
-    },
-    {
-      "a": "ckpt:2500",
-      "b": "ckpt:2503",
-      "wins_a": 0.6666666666666666,
-      "wins_b": 1.3333333333333333,
-      "ties": 0.0,
-      "games": 2.0
-    },
-    {
-      "a": "ckpt:2503",
-      "b": "ckpt:2505",
-      "wins_a": 1.1666666666666665,
-      "wins_b": 3.5000000000000004,
-      "ties": 0.0,
-      "games": 4.666666666666667
-    },
-    {
-      "a": "ckpt:2511",
-      "b": "heuristic",
-      "wins_a": 51.83333333333345,
-      "wins_b": 5.999999999999999,
-      "ties": 0.0,
-      "games": 57.83333333333345
-    },
-    {
-      "a": "ckpt:2511",
-      "b": "random",
-      "wins_a": 70.16666666666667,
-      "wins_b": 0.5,
-      "ties": 0.0,
-      "games": 70.66666666666667
-    },
-    {
-      "a": "ckpt:2504",
-      "b": "ckpt:2511",
-      "wins_a": 41.66666666666672,
-      "wins_b": 49.166666666666785,
-      "ties": 0.0,
-      "games": 90.83333333333351
-    },
-    {
-      "a": "ckpt:2507",
-      "b": "ckpt:2511",
-      "wins_a": 41.00000000000003,
-      "wins_b": 48.66666666666675,
-      "ties": 0.0,
-      "games": 89.66666666666677
-    },
-    {
-      "a": "ckpt:2511",
-      "b": "heuristic_opus",
-      "wins_a": 58.16666666666677,
-      "wins_b": 24.999999999999968,
-      "ties": 0.0,
-      "games": 83.16666666666674
-    },
-    {
-      "a": "ckpt:2507",
-      "b": "heuristic_opus",
-      "wins_a": 7.166666666666664,
-      "wins_b": 6.333333333333331,
-      "ties": 0.0,
-      "games": 13.499999999999996
-    },
-    {
-      "a": "ckpt:2507",
-      "b": "random",
-      "wins_a": 11.000000000000002,
-      "wins_b": 0.5,
-      "ties": 0.0,
-      "games": 11.500000000000002
-    },
-    {
-      "a": "ckpt:2504",
-      "b": "ckpt:2507",
-      "wins_a": 6.499999999999998,
-      "wins_b": 7.9999999999999964,
-      "ties": 0.0,
-      "games": 14.499999999999995
-    },
-    {
-      "a": "ckpt:2507",
-      "b": "heuristic",
-      "wins_a": 11.000000000000002,
-      "wins_b": 1.5,
-      "ties": 0.0,
-      "games": 12.500000000000002
-    },
-    {
-      "a": "ckpt:2510",
-      "b": "ckpt:2512",
-      "wins_a": 40.83333333333339,
-      "wins_b": 51.000000000000135,
-      "ties": 0.0,
-      "games": 91.83333333333353
-    },
-    {
-      "a": "ckpt:2505",
-      "b": "ckpt:2512",
-      "wins_a": 41.50000000000006,
-      "wins_b": 47.50000000000011,
-      "ties": 0.0,
-      "games": 89.00000000000017
-    },
-    {
-      "a": "ckpt:2512",
-      "b": "random",
-      "wins_a": 72.50000000000007,
-      "wins_b": 1.5,
-      "ties": 0.0,
-      "games": 74.00000000000007
-    },
-    {
-      "a": "ckpt:2512",
-      "b": "heuristic_opus",
-      "wins_a": 61.00000000000016,
-      "wins_b": 29.999999999999975,
-      "ties": 0.0,
-      "games": 91.00000000000014
-    },
-    {
-      "a": "ckpt:2512",
-      "b": "heuristic",
-      "wins_a": 64.50000000000018,
-      "wins_b": 11.000000000000002,
-      "ties": 0.0,
-      "games": 75.50000000000018
-    },
-    {
-      "a": "ckpt:2509",
-      "b": "ckpt:2513",
-      "wins_a": 20.49999999999999,
-      "wins_b": 37.500000000000014,
-      "ties": 0.0,
-      "games": 58.0
-    },
-    {
-      "a": "ckpt:2496",
-      "b": "ckpt:2513",
-      "wins_a": 15.500000000000007,
-      "wins_b": 48.16666666666677,
-      "ties": 0.0,
-      "games": 63.66666666666678
-    },
-    {
-      "a": "ckpt:2513",
-      "b": "heuristic_opus",
-      "wins_a": 47.83333333333344,
-      "wins_b": 12.666666666666673,
-      "ties": 0.0,
-      "games": 60.500000000000114
-    },
-    {
-      "a": "ckpt:2502",
-      "b": "ckpt:2513",
-      "wins_a": 26.666666666666632,
-      "wins_b": 33.833333333333314,
-      "ties": 0.0,
-      "games": 60.49999999999994
-    },
-    {
-      "a": "ckpt:2513",
-      "b": "heuristic",
-      "wins_a": 45.3333333333334,
-      "wins_b": 11.000000000000002,
-      "ties": 0.0,
-      "games": 56.3333333333334
-    },
-    {
-      "a": "ckpt:2497",
-      "b": "ckpt:2513",
-      "wins_a": 14.333333333333341,
-      "wins_b": 35.833333333333314,
-      "ties": 0.0,
-      "games": 50.16666666666666
-    },
-    {
-      "a": "ckpt:2513",
-      "b": "random",
-      "wins_a": 59.50000000000015,
-      "wins_b": 1.0,
-      "ties": 0.0,
-      "games": 60.50000000000015
-    },
-    {
-      "a": "ckpt:2502",
-      "b": "ckpt:2509",
-      "wins_a": 3.166666666666667,
-      "wins_b": 2.6666666666666665,
-      "ties": 0.0,
-      "games": 5.833333333333334
-    },
-    {
-      "a": "ckpt:2509",
-      "b": "heuristic_opus",
-      "wins_a": 4.833333333333334,
-      "wins_b": 1.9999999999999998,
-      "ties": 0.0,
-      "games": 6.833333333333333
-    },
-    {
-      "a": "ckpt:2497",
-      "b": "ckpt:2502",
-      "wins_a": 1.4999999999999998,
-      "wins_b": 6.999999999999998,
-      "ties": 0.0,
-      "games": 8.499999999999998
-    },
-    {
-      "a": "ckpt:2496",
-      "b": "heuristic_opus",
-      "wins_a": 1.0,
-      "wins_b": 3.6666666666666674,
-      "ties": 0.0,
-      "games": 4.666666666666668
-    },
-    {
-      "a": "ckpt:2496",
-      "b": "ckpt:2509",
-      "wins_a": 1.833333333333333,
-      "wins_b": 4.0,
-      "ties": 0.0,
-      "games": 5.833333333333333
-    },
-    {
-      "a": "ckpt:2497",
-      "b": "ckpt:2509",
-      "wins_a": 1.9999999999999998,
-      "wins_b": 1.9999999999999998,
-      "ties": 0.0,
-      "games": 3.9999999999999996
-    },
-    {
-      "a": "ckpt:2509",
-      "b": "heuristic",
-      "wins_a": 6.833333333333334,
-      "wins_b": 3.6666666666666665,
-      "ties": 0.0,
-      "games": 10.5
-    },
-    {
-      "a": "ckpt:2502",
-      "b": "heuristic_opus",
-      "wins_a": 4.0,
-      "wins_b": 2.8333333333333335,
-      "ties": 0.0,
-      "games": 6.833333333333334
-    },
-    {
-      "a": "ckpt:2509",
-      "b": "random",
-      "wins_a": 5.333333333333333,
-      "wins_b": 0.0,
-      "ties": 0.0,
-      "games": 5.333333333333333
-    },
-    {
-      "a": "ckpt:2498",
-      "b": "ckpt:2514",
-      "wins_a": 18.999999999999996,
-      "wins_b": 41.33333333333337,
-      "ties": 0.0,
-      "games": 60.33333333333337
-    },
-    {
-      "a": "ckpt:2514",
-      "b": "heuristic_opus",
-      "wins_a": 48.33333333333342,
-      "wins_b": 22.83333333333333,
-      "ties": 0.0,
-      "games": 71.16666666666676
-    },
-    {
-      "a": "ckpt:2514",
-      "b": "heuristic",
-      "wins_a": 48.50000000000009,
-      "wins_b": 12.500000000000005,
-      "ties": 0.0,
-      "games": 61.0000000000001
-    },
-    {
-      "a": "ckpt:1895",
-      "b": "ckpt:2514",
-      "wins_a": 7.333333333333332,
-      "wins_b": 56.16666666666679,
-      "ties": 0.0,
-      "games": 63.50000000000013
-    },
-    {
-      "a": "ckpt:1876",
-      "b": "ckpt:2514",
-      "wins_a": 10.166666666666666,
-      "wins_b": 39.33333333333333,
-      "ties": 0.0,
-      "games": 49.49999999999999
-    },
-    {
-      "a": "ckpt:2514",
-      "b": "random",
-      "wins_a": 63.50000000000013,
-      "wins_b": 0.5,
-      "ties": 0.0,
-      "games": 64.00000000000013
-    },
-    {
-      "a": "ckpt:2503",
-      "b": "ckpt:2514",
-      "wins_a": 24.166666666666643,
-      "wins_b": 36.66666666666667,
-      "ties": 0.0,
-      "games": 60.833333333333314
-    },
-    {
-      "a": "ckpt:1876",
-      "b": "ckpt:2503",
-      "wins_a": 0.8333333333333333,
-      "wins_b": 3.5000000000000004,
-      "ties": 0.0,
-      "games": 4.333333333333334
-    },
-    {
-      "a": "ckpt:1876",
-      "b": "heuristic_opus",
-      "wins_a": 1.0,
-      "wins_b": 8.5,
-      "ties": 0.0,
-      "games": 9.500000000000002
-    },
-    {
-      "a": "ckpt:2498",
-      "b": "ckpt:2503",
-      "wins_a": 2.1666666666666665,
-      "wins_b": 3.3333333333333335,
-      "ties": 0.0,
-      "games": 5.5
-    },
-    {
-      "a": "ckpt:2509",
-      "b": "ckpt:2515",
-      "wins_a": 30.49999999999997,
-      "wins_b": 28.166666666666625,
-      "ties": 0.0,
-      "games": 58.6666666666666
-    },
-    {
-      "a": "ckpt:2515",
-      "b": "heuristic",
-      "wins_a": 47.333333333333435,
-      "wins_b": 9.666666666666668,
-      "ties": 0.0,
-      "games": 57.0000000000001
-    },
-    {
-      "a": "ckpt:2515",
-      "b": "random",
-      "wins_a": 54.1666666666668,
-      "wins_b": 0.0,
-      "ties": 0.0,
-      "games": 54.1666666666668
-    },
-    {
-      "a": "ckpt:2510",
-      "b": "ckpt:2515",
-      "wins_a": 28.833333333333304,
-      "wins_b": 32.49999999999997,
-      "ties": 0.0,
-      "games": 61.33333333333327
-    },
-    {
-      "a": "ckpt:2495",
-      "b": "ckpt:2515",
-      "wins_a": 12.000000000000004,
-      "wins_b": 41.00000000000004,
-      "ties": 0.0,
-      "games": 53.00000000000004
-    },
-    {
-      "a": "ckpt:2505",
-      "b": "ckpt:2515",
-      "wins_a": 20.83333333333332,
-      "wins_b": 35.833333333333336,
-      "ties": 0.0,
-      "games": 56.66666666666666
-    },
-    {
-      "a": "ckpt:2515",
-      "b": "heuristic_opus",
-      "wins_a": 45.00000000000008,
-      "wins_b": 14.000000000000009,
-      "ties": 0.0,
-      "games": 59.000000000000085
-    },
-    {
-      "a": "ckpt:2495",
-      "b": "ckpt:2510",
-      "wins_a": 2.333333333333333,
-      "wins_b": 4.666666666666666,
-      "ties": 0.0,
-      "games": 6.999999999999999
-    },
-    {
-      "a": "ckpt:2495",
-      "b": "ckpt:2509",
-      "wins_a": 1.6666666666666665,
-      "wins_b": 4.833333333333333,
-      "ties": 0.0,
-      "games": 6.5
-    },
-    {
-      "a": "ckpt:2495",
-      "b": "heuristic_opus",
-      "wins_a": 2.6666666666666665,
-      "wins_b": 4.333333333333334,
-      "ties": 0.0,
-      "games": 7.0
-    },
-    {
-      "a": "ckpt:2505",
-      "b": "ckpt:2509",
-      "wins_a": 3.5000000000000004,
-      "wins_b": 4.333333333333334,
-      "ties": 0.0,
-      "games": 7.833333333333334
-    },
-    {
-      "a": "ckpt:2509",
-      "b": "ckpt:2510",
-      "wins_a": 2.6666666666666665,
-      "wins_b": 3.0,
-      "ties": 0.0,
-      "games": 5.666666666666666
-    },
-    {
-      "a": "ckpt:2495",
-      "b": "ckpt:2505",
-      "wins_a": 2.333333333333333,
-      "wins_b": 3.666666666666667,
-      "ties": 0.0,
-      "games": 6.0
-    },
-    {
-      "a": "ckpt:2514",
-      "b": "ckpt:2516",
-      "wins_a": 25.499999999999968,
-      "wins_b": 21.666666666666647,
-      "ties": 0.0,
-      "games": 47.166666666666615
-    },
-    {
-      "a": "ckpt:2516",
-      "b": "heuristic_opus",
-      "wins_a": 48.66666666666675,
-      "wins_b": 22.49999999999998,
-      "ties": 0.0,
-      "games": 71.16666666666673
-    },
-    {
-      "a": "ckpt:2512",
-      "b": "ckpt:2516",
-      "wins_a": 24.49999999999997,
-      "wins_b": 30.833333333333304,
-      "ties": 0.0,
-      "games": 55.33333333333327
-    },
-    {
-      "a": "ckpt:2516",
-      "b": "random",
-      "wins_a": 45.000000000000085,
-      "wins_b": 0.0,
-      "ties": 0.0,
-      "games": 45.000000000000085
-    },
-    {
-      "a": "ckpt:2504",
-      "b": "ckpt:2516",
-      "wins_a": 24.999999999999968,
-      "wins_b": 44.833333333333414,
-      "ties": 0.0,
-      "games": 69.83333333333339
-    },
-    {
-      "a": "ckpt:1876",
-      "b": "ckpt:2516",
-      "wins_a": 10.16666666666667,
-      "wins_b": 43.33333333333341,
-      "ties": 0.0,
-      "games": 53.50000000000008
-    },
-    {
-      "a": "ckpt:2516",
-      "b": "heuristic",
-      "wins_a": 42.666666666666735,
-      "wins_b": 6.499999999999998,
-      "ties": 0.0,
-      "games": 49.166666666666735
-    },
-    {
-      "a": "ckpt:1876",
-      "b": "ckpt:2504",
-      "wins_a": 0.5,
-      "wins_b": 5.499999999999999,
-      "ties": 0.0,
-      "games": 5.999999999999999
-    },
-    {
-      "a": "ckpt:2512",
-      "b": "ckpt:2514",
-      "wins_a": 4.5,
-      "wins_b": 3.0,
-      "ties": 0.0,
-      "games": 7.5
-    },
-    {
-      "a": "ckpt:2504",
-      "b": "ckpt:2514",
-      "wins_a": 1.9999999999999998,
-      "wins_b": 3.5000000000000004,
-      "ties": 0.0,
-      "games": 5.5
-    },
-    {
-      "a": "ckpt:1876",
-      "b": "ckpt:2512",
-      "wins_a": 0.8333333333333333,
-      "wins_b": 1.833333333333333,
-      "ties": 0.0,
-      "games": 2.666666666666666
-    },
-    {
-      "a": "ckpt:2504",
-      "b": "ckpt:2512",
-      "wins_a": 1.6666666666666665,
-      "wins_b": 2.8333333333333335,
-      "ties": 0.0,
-      "games": 4.5
+      "wins_a_4p": 4.0,
+      "wins_b_4p": 1.0,
+      "wins_a_3p": 1.0,
+      "wins_b_3p": 4.0,
+      "wins_a_2p": 1.0,
+      "wins_b_2p": 2.0
     }
   ],
   "anchors": {
-    "random": 1000.0,
-    "heuristic": 2500.0
+    "random": 1000.0
   },
-  "rating_system": "anchored_bt",
+  "rating_system": "anchored_bt_per_pc",
   "floating_entities": {
     "bedrock_claude_sonnet": {
-      "rating": 2258.8400119233897,
-      "games": 64
+      "rating": 3124.8635059191142,
+      "games": 25,
+      "rating_2p": 2099.935434009312,
+      "rating_3p": 1758.2156143391157,
+      "rating_4p": 5887.793573537115
+    },
+    "heuristic": {
+      "rating": 1523.1986557409764,
+      "games": 6649,
+      "rating_2p": 1665.956427147041,
+      "rating_3p": 1675.6952567367152,
+      "rating_4p": 1346.4146464952796
     },
     "heuristic_opus": {
-      "rating": 2858.858213042188,
-      "games": 804
+      "rating": 2056.188181386976,
+      "games": 6466,
+      "rating_2p": 2049.3004878377947,
+      "rating_3p": 2003.0583463507905,
+      "rating_4p": 2100.328314368844
     }
   }
 }
