@@ -32,30 +32,6 @@ def svc_workspace(isolated_store: JsonPlayStore) -> PlayService:
     return PlayService(workspace_root=_workspace_root(), play_store=isolated_store, device="cpu")
 
 
-def test_validate_rejects_net_in_three_player_game(svc_workspace: PlayService) -> None:
-    nets = [m for m in svc_workspace.list_models() if m["kind"] == "net"]
-    if not nets:
-        pytest.skip("no scanned net checkpoints in this workspace checkout")
-    net_id = str(nets[0]["id"])
-    with pytest.raises(ValueError, match="net checkpoints"):
-        svc_workspace.validate_and_build_opponents(
-            num_players=3,
-            human_seat=0,
-            opponents={1: "random", 2: net_id},
-            num_sims=8,
-            policy_seed_basis=42,
-        )
-
-
-def test_fit_human_rating_respects_entity_id() -> None:
-    from play import human_rating as HE
-
-    anchors = {"opp": 2000.0}
-    rows = [{"a": "human:alice", "b": "opp", "wins_a": 10.0, "wins_b": 0.0, "ties": 0.0}]
-    r = HE.fit_human_rating(rows, anchors, human_entity="human:alice")
-    assert r > anchors["opp"]
-
-
 def test_reconstruct_session_matches_steps(svc: PlayService) -> None:
     id1 = AU.UserIdentity(username="u1")
     body = {"num_players": 2, "human_seat": 0, "opponents": {1: "random"}, "num_sims": 0}

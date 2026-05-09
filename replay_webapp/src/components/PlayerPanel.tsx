@@ -1,6 +1,7 @@
 import { CardData, NobleData, PlayerInfo, PlayerSnapshot, GEM_COLORS, COLOR_NAMES, GEM_TEXT_COLORS } from "../types";
 import { CardTile } from "./CardTile";
 import { GemIcon } from "./GemIcon";
+import { Tooltip } from "./Tooltip";
 
 interface PlayerPanelProps {
   playerIdx: number;
@@ -71,19 +72,37 @@ export function PlayerPanel({
           gap: 4,
         }}
       >
-        <span
-          style={{
-            fontWeight: "bold",
-            fontSize: 12,
-            color: isCurrentPlayer ? "#e8c848" : isWinner ? "#4caf50" : "#e0e6f0",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-          }}
-          title={info.description ?? undefined}
-        >
-          P{playerIdx}: {info.name}{phaseLabel}
-        </span>
+        {info.description ? (
+          <Tooltip content={<span>{info.description}</span>} position="right">
+            <span
+              style={{
+                fontWeight: "bold",
+                fontSize: 12,
+                color: isCurrentPlayer ? "#e8c848" : isWinner ? "#4caf50" : "#e0e6f0",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                borderBottom: "1px dotted #7a94b8",
+                cursor: "help",
+              }}
+            >
+              P{playerIdx + 1}: {info.name}{phaseLabel}
+            </span>
+          </Tooltip>
+        ) : (
+          <span
+            style={{
+              fontWeight: "bold",
+              fontSize: 12,
+              color: isCurrentPlayer ? "#e8c848" : isWinner ? "#4caf50" : "#e0e6f0",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            P{playerIdx + 1}: {info.name}{phaseLabel}
+          </span>
+        )}
         <span
           style={{
             fontWeight: "bold",

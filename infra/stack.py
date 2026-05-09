@@ -24,34 +24,6 @@ from constructs import Construct
 _PROJECT_ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 
-def _load_league_checkpoints() -> list[dict]:
-    """Read league.json and return entries whose checkpoint files exist on disk."""
-    import json
-
-    league_json = _PROJECT_ROOT / "agent" / "runs" / "league" / "league.json"
-    if not league_json.exists():
-        return []
-
-    with open(league_json) as f:
-        data = json.load(f)
-
-    league_dir = league_json.parent
-    entries = []
-    for entry in data.get("entries", []):
-        ckpt_path = league_dir / entry["path"]
-        if ckpt_path.exists():
-            entries.append({
-                "idx": entry["idx"],
-                "tag": entry.get("tag", f"idx{entry['idx']}"),
-                "path": str(ckpt_path),
-                "filename": entry["path"],
-                "rating": float(entry.get("rating", 1500.0)),
-                "hidden": entry.get("hidden"),
-                "arch": entry.get("arch"),
-            })
-    return entries
-
-
 class SplendorStack(Stack):
     """AWS infrastructure for the Splendor game webapp."""
 
@@ -100,15 +72,9 @@ class SplendorStack(Stack):
             block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
         )
 
-        models_bucket = s3.Bucket(
-            self,
-            "ModelsBucket",
-            removal_policy=RemovalPolicy.DESTROY,
-            auto_delete_objects=True,
-            block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
-        )
-
         # --- Lambda Function (Docker image for PyTorch support) ---
+        # League checkpoints and data are baked into the container image
+        # (no S3 models bucket needed).
 
         api_function = lambda_.DockerImageFunction(
             self,
@@ -117,7 +83,12 @@ class SplendorStack(Stack):
                 str(_PROJECT_ROOT),
                 file="infra/lambda.Dockerfile",
                 exclude=[
-                    "agent/runs",
+                    "agent/runs/attn256_v1",
+                    "agent/runs/real30_v10",
+                    "agent/runs/real30_v11",
+                    "agent/runs/real30_v12",
+                    "agent/runs/optuna_gpu-tune-cold.db",
+                    "agent/runs/league_eval_full.log",
                     "replay_webapp/node_modules",
                     ".venv",
                     ".git",
@@ -133,16 +104,12 @@ class SplendorStack(Stack):
             environment={
                 "GAMES_TABLE": games_table.table_name,
                 "USERS_TABLE": users_table.table_name,
-                "MODELS_BUCKET": models_bucket.bucket_name,
-                "MODELS_MANIFEST": "checkpoints/manifest.json",
-                "LEAGUE_DATA_KEY": "league/league.json",
             },
         )
 
-        # Grant Lambda access to DynamoDB tables and models bucket
+        # Grant Lambda access to DynamoDB tables
         games_table.grant_read_write_data(api_function)
         users_table.grant_read_write_data(api_function)
-        models_bucket.grant_read(api_function)
 
         # Grant Lambda access to Bedrock for LLM-based opponents
         api_function.add_to_role_policy(
@@ -201,7 +168,7 @@ class SplendorStack(Stack):
             default_root_object="index.html",
         )
 
-        # --- Frontend Build and Deployment (Task 8.3) ---
+        # --- Frontend Build and Deployment ---
 
         webapp_dist_path = str(_PROJECT_ROOT / "replay_webapp" / "dist")
 
@@ -215,68 +182,6 @@ class SplendorStack(Stack):
             distribution=distribution,
             distribution_paths=["/*"],
         )
-
-        # --- Model Checkpoint Upload ---
-        # Reads league.json at synth time and uploads all checkpoints that
-        # exist on disk (the league maintains a rolling window of ~24).
-
-        import json
-
-        league_checkpoints = _load_league_checkpoints()
-
-        manifest_entries = []
-        for ckpt in league_checkpoints:
-            s3_key = f"checkpoints/league/{ckpt['filename']}"
-            manifest_entries.append({
-                "run": "league",
-                "tag": ckpt["tag"],
-                "idx": ckpt["idx"],
-                "s3_key": s3_key,
-                "rating": ckpt["rating"],
-                "hidden": ckpt.get("hidden"),
-                "arch": ckpt.get("arch"),
-                "s3_bucket": models_bucket.bucket_name,
-            })
-
-        # Deploy each checkpoint file to S3
-        for i, ckpt in enumerate(league_checkpoints):
-            ckpt_dir = str(pathlib.Path(ckpt["path"]).parent)
-            filename = ckpt["filename"]
-            s3deploy.BucketDeployment(
-                self,
-                f"CheckpointDeployment{i}",
-                sources=[s3deploy.Source.asset(ckpt_dir, exclude=["*", f"!{filename}"])],
-                destination_bucket=models_bucket,
-                destination_key_prefix="checkpoints/league",
-                prune=False,
-            )
-
-        # Generate and upload the manifest JSON
-        manifest_json = json.dumps(manifest_entries, indent=2)
-        s3deploy.BucketDeployment(
-            self,
-            "ManifestDeployment",
-            sources=[s3deploy.Source.data("checkpoints/manifest.json", manifest_json)],
-            destination_bucket=models_bucket,
-            prune=False,
-        )
-
-        # --- League Data Upload ---
-        # Upload league.json so the Lambda can compute unified ratings
-        # matching the local server's combined_ratings() logic.
-        league_json_path = _PROJECT_ROOT / "agent" / "runs" / "league" / "league.json"
-        if league_json_path.exists():
-            s3deploy.BucketDeployment(
-                self,
-                "LeagueDataDeployment",
-                sources=[s3deploy.Source.asset(
-                    str(league_json_path.parent),
-                    exclude=["*", "!league.json"],
-                )],
-                destination_bucket=models_bucket,
-                destination_key_prefix="league",
-                prune=False,
-            )
 
         # --- Outputs ---
 

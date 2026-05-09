@@ -51,14 +51,10 @@ export interface HumanRatingHistoryEntry {
 
 export interface UserMe {
   username: string;
-  rating_system?: string;
   rating: number | null;
   games: number;
   wins: number;
   placed: boolean;
-  anchors?: Record<string, number>;
-  history?: HumanRatingHistoryEntry[];
-  results?: Record<string, unknown>[];
 }
 
 export interface GameListItem {
@@ -82,6 +78,9 @@ export interface LeaderboardCombinedEntry {
   model_id?: string;
   bot_kind?: string;
   description?: string | null;
+  rating_2p?: number | null;
+  rating_3p?: number | null;
+  rating_4p?: number | null;
 }
 
 export interface LeaderboardResponse {
@@ -119,9 +118,7 @@ export interface PlayStep {
   state_after: GameSnapshot;
 }
 
-export interface EloUpdateResult {
-  old_elo: number;
-  new_elo: number;
+export interface RatingUpdateResult {
   old_rating: number;
   new_rating: number;
   delta: number;
@@ -148,7 +145,7 @@ export interface PlayView {
   winners: number[] | null;
   final_scores: { points: number; cards: number; nobles: number }[] | null;
   seed: number;
-  elo_update: EloUpdateResult | null;
+  rating_update: RatingUpdateResult | null;
   aborted: boolean;
   abort_reason?: string | null;
   ai_thinking_since?: string | null;

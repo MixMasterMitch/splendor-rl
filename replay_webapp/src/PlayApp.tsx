@@ -2,8 +2,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PlaySetup } from "./components/PlaySetup";
 import { PlayGame } from "./components/PlayGame";
 import { LoadingSpinner } from "./components/LoadingSpinner";
+import { Tooltip } from "./components/Tooltip";
 import type {
   GameListItem,
+  LeaderboardCombinedEntry,
   LeaderboardResponse,
   ModelInfo,
   NewGameRequest,
@@ -206,6 +208,39 @@ function UsernameGate({ onChosen }: { onChosen: (u: string) => void }) {
         </button>
       </div>
     </div>
+  );
+}
+
+function RatingCell({ row }: { row: LeaderboardCombinedEntry }) {
+  const hasBreakdown = row.rating_2p != null || row.rating_3p != null || row.rating_4p != null;
+  const ratingText = row.rating.toFixed(0);
+
+  if (!hasBreakdown) {
+    return <span>{ratingText}</span>;
+  }
+
+  const breakdownContent = (
+    <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+      <div style={{ fontWeight: 600, marginBottom: 2, color: "#e8c848" }}>Rating Breakdown</div>
+      {row.rating_2p != null && (
+        <div><span style={{ color: "#7a94b8" }}>2-player:</span> {row.rating_2p.toFixed(0)}</div>
+      )}
+      {row.rating_3p != null && (
+        <div><span style={{ color: "#7a94b8" }}>3-player:</span> {row.rating_3p.toFixed(0)}</div>
+      )}
+      {row.rating_4p != null && (
+        <div><span style={{ color: "#7a94b8" }}>4-player:</span> {row.rating_4p.toFixed(0)}</div>
+      )}
+      <div style={{ borderTop: "1px solid #3a4f6f", paddingTop: 3, marginTop: 2 }}>
+        <span style={{ color: "#7a94b8" }}>Combined:</span> <span style={{ color: "#e8c848" }}>{ratingText}</span>
+      </div>
+    </div>
+  );
+
+  return (
+    <Tooltip content={breakdownContent} position="right">
+      <span style={{ borderBottom: "1px dotted #e8c848", cursor: "help" }}>{ratingText}</span>
+    </Tooltip>
   );
 }
 
@@ -438,7 +473,7 @@ function PlayAppLoggedIn({ username }: { username: string }) {
         // (sub-phase like discard/noble pick), we're done.
         if (afterHuman.status === "ended") {
           updateView(afterHuman);
-          if (afterHuman.elo_update) {
+          if (afterHuman.rating_update) {
             void refreshMe();
             void refreshLeaderboard();
           }
@@ -468,7 +503,7 @@ function PlayAppLoggedIn({ username }: { username: string }) {
           setView(null);
           navigate("lobby");
           void refreshGames();
-        } else if (afterAi.status === "ended" && afterAi.elo_update) {
+        } else if (afterAi.status === "ended" && afterAi.rating_update) {
           void refreshMe();
           void refreshLeaderboard();
         }
@@ -657,10 +692,18 @@ function PlayAppLoggedIn({ username }: { username: string }) {
               {(leaderboard?.entities ?? []).map((row, i) => (
                 <tr key={`${row.entity_id ?? row.model_id ?? row.label}-${i}`}>
                   <td style={{ padding: "4px 8px", color: "#e0e6f0" }}>{i + 1}</td>
-                  <td style={{ padding: "4px 8px", color: "#e0e6f0" }} title={row.description ?? undefined}>{row.label}</td>
+                  <td style={{ padding: "4px 8px", color: "#e0e6f0" }}>
+                    {row.description ? (
+                      <Tooltip content={<span>{row.description}</span>} position="right">
+                        <span style={{ borderBottom: "1px dotted #7a94b8", cursor: "help" }}>{row.label}</span>
+                      </Tooltip>
+                    ) : row.label}
+                  </td>
                   <td style={{ padding: "4px 8px", color: "#e0e6f0" }}>{row.kind}</td>
                   <td style={{ padding: "4px 8px", color: "#e8c848" }}>
-                    {row.rating != null ? row.rating.toFixed(0) : "Unplaced"}
+                    {row.rating != null ? (
+                      <RatingCell row={row} />
+                    ) : "Unplaced"}
                   </td>
                   <td style={{ padding: "4px 8px", color: "#e0e6f0" }}>{row.kind === "human" && row.games != null ? row.games : ""}</td>
                 </tr>

@@ -12,12 +12,12 @@ from typing import Any, Protocol, Iterable
 from play import auth as AU
 from play import human_rating as HE
 from play import models as MD
-from replay import players as POL
+from play import players as POL
 from play import ratings as RT
 from play.llm.policy import LLMBedrockPolicy
 from play.llm.rate_limiter import LLMRateLimiter, RateLimitExceeded
 from play.state import GameSession
-from play.store import GameStatus, JsonPlayStore
+from play.store import GameStatus
 
 logger = logging.getLogger(__name__)
 
@@ -132,38 +132,38 @@ class PlayService:
             entity_id = MD.model_entity_id(m)
             lookup_id = RT._normalize_entity(entity_id)
             if lookup_id in ratings:
-                m["rating"] = ratings[lookup_id]
+                m["rating"] = round(ratings[lookup_id])
             # Pull game count from floating_entities (e.g. bedrock_claude_sonnet)
             fe = floating.get(entity_id)
             if fe is not None:
                 m["games"] = int(fe.get("games", m.get("games", 0)))
                 if lookup_id not in ratings:
-                    m["rating"] = float(fe.get("rating", m.get("rating", MD.DEFAULT_INITIAL_RATING)))
+                    m["rating"] = round(float(fe.get("rating", m.get("rating", MD.DEFAULT_INITIAL_RATING))))
         return builtins
 
     def human_rating_store(self, identity: AU.UserIdentity) -> HE.HumanRatingStore:
-        path = self.play_store.user_rating_path(identity.username)
+        # For DynamoPlayStore, this method is overridden by the Lambda handler.
+        # This default implementation works with JsonPlayStore (local file store).
+        path = self.play_store.user_rating_path(identity.username)  # type: ignore[attr-defined]
         return HE.HumanRatingStore(path, human_entity=AU.human_entity_id(identity))
 
     def me(self, identity: AU.UserIdentity) -> dict[str, Any]:
         hr = self.human_rating_store(identity)
         hr.set_profile(identity.username)
         snap = hr.snapshot()
-        # Strip internal "ties" field from results for the API response.
-        results = [
-            {k: v for k, v in r.items() if k != "ties"}
-            for r in snap.get("results", [])
-        ]
+        # Compute calibrated combined rating from history.
+        anchors = RT.bot_anchors_per_pc(self.workspace_root)
+        combined = RT.combined_rating_for_blob(snap, anchors)
+        rating = round(combined) if combined is not None else None
+        # Only show rating if placed.
+        if not snap["placed"]:
+            rating = None
         return {
             "username": identity.username,
-            "rating": snap["rating"],
+            "rating": rating,
             "games": snap["games"],
             "wins": snap["wins"],
             "placed": snap["placed"],
-            "rating_system": snap.get("rating_system"),
-            "anchors": snap.get("anchors"),
-            "history": snap.get("history"),
-            "results": results,
         }
 
     def leaderboard(self) -> dict[str, Any]:
@@ -182,7 +182,6 @@ class PlayService:
             "initial_state": session.initial_state,
             "aborted": session.aborted,
             "rating_update": session.rating_update,
-            "elo_update": session.rating_update,  # backward compat
         }
 
     def _finalize_rating_if_needed(
@@ -214,6 +213,12 @@ class PlayService:
                 }
             )
         hr = self.human_rating_store(identity)
+
+        # Compute calibrated combined rating BEFORE recording the game.
+        anchors = RT.bot_anchors_per_pc(self.workspace_root)
+        snap_before = hr.snapshot()
+        old_rating = RT.combined_rating_for_blob(snap_before, anchors)
+
         update = hr.record_game(
             opponents=opponents_payload,
             human_rank=ranks[session.human_seat],
@@ -223,15 +228,22 @@ class PlayService:
             seed=session.seed,
             meta={"game_id": session.game_id},
         )
-        # Also record pairwise results into the shared league so that bot
-        # ratings (e.g. bedrock_claude_sonnet) reflect actual game outcomes
-        # on the leaderboard instead of staying at the static default.
-        # NOTE: This is now a no-op. LLM bot ratings should be tracked
-        # independently (like human ratings), not in the ML training league.
+
+        # Compute calibrated combined rating AFTER recording the game.
+        snap_after = hr.snapshot()
+        new_rating = RT.combined_rating_for_blob(snap_after, anchors)
+
+        # Fall back to default if calibrated computation fails (e.g. no
+        # opponents in the league manifest).
+        if old_rating is None:
+            old_rating = float(HE.DEFAULT_INITIAL_RATING)
+        if new_rating is None:
+            new_rating = float(HE.DEFAULT_INITIAL_RATING)
+
         session.rating_update = {
-            "old_rating": update["old_rating"],
-            "new_rating": update["new_rating"],
-            "delta": update["delta"],
+            "old_rating": old_rating,
+            "new_rating": new_rating,
+            "delta": new_rating - old_rating,
             "games": update["games"],
             "per_opponent": update["per_opponent"],
         }
@@ -337,10 +349,7 @@ class PlayService:
                 raise ValueError(f"unknown model_id: {model_id!r}")
             if m["kind"] == "human":
                 raise ValueError("human-vs-human games are not supported")
-            if m["kind"] == "net" and num_players > 2:
-                raise ValueError(
-                    "net checkpoints are trained for 2-player games only"
-                )
+
             if m["kind"] == "llm_bedrock":
                 llm_count += 1
                 if llm_count > 1:

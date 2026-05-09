@@ -9,7 +9,7 @@ import torch
 
 from agent.env import actions as A
 from agent.env import batched_engine as BE
-from replay import players as POL
+from play import players as POL
 from play import views as V
 from play.models import DEFAULT_INITIAL_RATING
 
@@ -227,7 +227,6 @@ class GameSession:
             "final_scores": final,
             "seed": self.seed,
             "rating_update": self.rating_update,
-            "elo_update": self.rating_update,  # backward compat for old readers
             "aborted": self.aborted,
         }
         if status == "ai_thinking" and self.ai_thinking_since is not None:

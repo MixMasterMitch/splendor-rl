@@ -187,7 +187,7 @@ class TestMCTSDiscardPerspective:
         state (via replay_persisted_steps) and how the engine actually works.
         """
         from play.state import GameSession
-        from replay import players as POL
+        from play import players as POL
 
         seed = 1778076568  # from a real local game
         num_players = 2
@@ -196,7 +196,7 @@ class TestMCTSDiscardPerspective:
         # Create a session the same way the webapp does
         policy = POL.NetPolicy(_LATEST_CKPT, num_sims=16, device="cpu")
         seat_policies = {1: policy}
-        seat_models = {1: {"id": "test_net", "kind": "net", "label": "ML Bot",
+        seat_models = {1: {"id": "test_net", "kind": "net", "label": "RL Trained Bot",
                            "ckpt": str(_LATEST_CKPT), "rating": 3000.0}}
 
         session = GameSession(

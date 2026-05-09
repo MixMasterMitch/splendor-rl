@@ -1,21 +1,86 @@
-"""Leaderboard rows from rated agents plus persisted human rating files.
+"""Fast leaderboard ratings using fixed bot ratings from league.json.
 
-Ratings are computed by combining ALL available match data — league eval
-games (checkpoints vs bots) and human interactive games — into a single
-Bradley-Terry MLE fit anchored to random=1000.
+Bot ratings are read directly from the league manifest (pre-computed by the
+training pipeline). Human ratings are computed per-PC via single-variable
+bisection against fixed bot anchors — O(1) per human, no multi-entity MLE.
+
+Per-PC ratings are calibrated to a common scale using hardcoded multipliers
+and combined into a single rating weighted by games played at each PC.
 """
 
 from __future__ import annotations
 
 import logging
+import math
 import pathlib
 from typing import Any
 
-from play import human_rating as HE
 from play import models as MD
-from play.store import JsonPlayStore
 
 logger = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# Constants (mirrored from agent/train/ranking.py to avoid torch import)
+# ---------------------------------------------------------------------------
+
+RANDOM_ANCHOR_RATING: float = 1000.0
+DEFAULT_INITIAL_RATING: float = 1500.0
+RATING_SCALE: float = 1000.0
+PLAYER_COUNTS = (2, 3, 4)
+CALIBRATION_SCALE = {2: 1.0, 3: 2.0, 4: 3.0}
+
+# Bayesian regularization for per-PC rating fits.
+PRIOR_MEAN_RATING: float = 1500.0
+PRIOR_GHOST_GAMES: float = 4.0
+
+# Minimum wins before a human appears on the leaderboard.
+PLACEMENT_WINS_REQUIRED: int = 5
+
+
+def calibrate_rating(raw: float, pc: int) -> float:
+    """Scale a raw per-PC rating to the common (2p-equivalent) scale."""
+    return RANDOM_ANCHOR_RATING + (raw - RANDOM_ANCHOR_RATING) * CALIBRATION_SCALE[pc]
+
+
+# ---------------------------------------------------------------------------
+# Public helpers for computing calibrated combined ratings
+# ---------------------------------------------------------------------------
+
+
+def bot_anchors_per_pc(workspace_root: pathlib.Path) -> dict[int, dict[str, float]]:
+    """Build per-PC anchor maps from the league manifest.
+
+    Returns: {pc: {entity_id: raw_rating}} for use with _compute_human_ratings.
+    """
+    manifest = _load_league_manifest(workspace_root)
+    bot_data = _bot_ratings_from_league(manifest)
+    anchors: dict[int, dict[str, float]] = {pc: {} for pc in PLAYER_COUNTS}
+    for entity, data in bot_data.items():
+        for pc in PLAYER_COUNTS:
+            raw = data.get(f"raw_{pc}p")
+            if raw is not None:
+                anchors[pc][entity] = raw
+    for pc in PLAYER_COUNTS:
+        anchors[pc]["random"] = RANDOM_ANCHOR_RATING
+    return anchors
+
+
+def combined_rating_for_blob(
+    blob: dict[str, Any],
+    anchors_per_pc: dict[int, dict[str, float]],
+) -> float | None:
+    """Compute the calibrated combined rating for a single human blob.
+
+    Returns the weighted-average calibrated rating, or None if no per-PC
+    rating could be computed.
+    """
+    human_data = _compute_human_ratings(blob, anchors_per_pc)
+    return human_data.get("rating")
+
+
+# ---------------------------------------------------------------------------
+# Legacy helper kept for lambda_handler.py compatibility
+# ---------------------------------------------------------------------------
 
 
 def _add_eval_results(
@@ -23,14 +88,9 @@ def _add_eval_results(
 ) -> None:
     """Synthesize pairwise results from per-entry eval winrate stats.
 
-    League entries store rank_winrate_vs_heuristic_opus (and similar) from
-    batch evaluations. We convert these into pairwise result records so they
-    contribute to the unified rating fit.
+    Used by lambda_handler.py which still does its own LBFGS fit.
     """
-    # Number of games per eval batch (from the rank eval, typically 512 games
-    # split across opponents). Use a conservative estimate.
     EVAL_GAMES = 256
-
     for opponent in ("heuristic_opus",):
         wr_key = f"rank_winrate_vs_{opponent}"
         wr = entry.get(wr_key)
@@ -49,128 +109,402 @@ def _add_eval_results(
         })
 
 
-def _normalize_entity(entity_id: str) -> str:
-    """Map model IDs to league entity IDs so results connect properly.
+# ---------------------------------------------------------------------------
+# Bot ratings from league.json (fixed, no fitting)
+# ---------------------------------------------------------------------------
 
-    The human rating system uses model IDs like "net:league:1926" while the
-    league uses "ckpt:1926". This normalizes to the league format.
+
+def _load_league_manifest(workspace_root: pathlib.Path) -> dict[str, Any]:
+    """Load the league.json manifest directly (no torch dependency).
+
+    Checks workspace_root first, then falls back to the module-relative path
+    (for Lambda where workspace_root is /tmp/workspace but league.json is
+    bundled alongside the code).
     """
+    import json
+
+    league_path = workspace_root / "agent" / "runs" / "league" / "league.json"
+    if not league_path.exists():
+        # Fallback: module-relative path (bundled in container image)
+        league_path = pathlib.Path(__file__).resolve().parent.parent / "agent" / "runs" / "league" / "league.json"
+    if not league_path.exists():
+        return {}
+    try:
+        with open(league_path) as f:
+            return json.load(f)
+    except Exception:
+        logger.debug("Failed to load league.json", exc_info=True)
+        return {}
+
+
+def _bot_ratings_from_league(
+    manifest: dict[str, Any],
+) -> dict[str, dict[str, Any]]:
+    """Extract per-PC ratings and game counts for all bots from the league manifest.
+
+    NOTE: league.json stores CALIBRATED per-PC ratings (already scaled to the
+    common 2p-equivalent scale). We store both the calibrated values (for
+    display) and back-compute raw values (for use as anchors in human fitting).
+
+    Returns: {entity_id: {"rating": combined, "rating_2p": calibrated, ...,
+                           "raw_2p": uncalibrated, ..., "games": int}}
+    """
+    out: dict[str, dict[str, Any]] = {}
+
+    # Checkpoint entries
+    for entry in manifest.get("entries", []):
+        idx = int(entry.get("idx", -1))
+        entity = f"ckpt:{idx}"
+        data: dict[str, Any] = {"games": int(entry.get("games", 0))}
+        for pc in PLAYER_COUNTS:
+            calibrated = entry.get(f"rating_{pc}p")
+            if calibrated is not None:
+                calibrated = float(calibrated)
+                data[f"rating_{pc}p"] = calibrated
+                # Back-compute raw: calibrated = RANDOM + (raw - RANDOM) * scale
+                # => raw = RANDOM + (calibrated - RANDOM) / scale
+                scale = CALIBRATION_SCALE[pc]
+                raw = RANDOM_ANCHOR_RATING + (calibrated - RANDOM_ANCHOR_RATING) / scale
+                data[f"raw_{pc}p"] = raw
+        if "rating" in entry:
+            data["rating"] = float(entry["rating"])
+        out[entity] = data
+
+    # Floating entities (heuristic, heuristic_opus, bedrock_claude_sonnet, etc.)
+    for entity, fe in manifest.get("floating_entities", {}).items():
+        data: dict[str, Any] = {"games": int(fe.get("games", 0))}
+        for pc in PLAYER_COUNTS:
+            calibrated = fe.get(f"rating_{pc}p")
+            if calibrated is not None:
+                calibrated = float(calibrated)
+                data[f"rating_{pc}p"] = calibrated
+                scale = CALIBRATION_SCALE[pc]
+                raw = RANDOM_ANCHOR_RATING + (calibrated - RANDOM_ANCHOR_RATING) / scale
+                data[f"raw_{pc}p"] = raw
+        if "rating" in fe:
+            data["rating"] = float(fe["rating"])
+        out[entity] = data
+
+    return out
+
+
+# ---------------------------------------------------------------------------
+# Human rating computation (single-variable bisection per PC)
+# ---------------------------------------------------------------------------
+
+
+def _expected_score(r_a: float, r_b: float) -> float:
+    """Probability that A beats B under Bradley-Terry with scale 1000."""
+    return 1.0 / (1.0 + math.pow(10.0, (r_b - r_a) / RATING_SCALE))
+
+
+def _fit_human_rating_single(
+    results_for_pc: list[tuple[str, float, float]],
+    anchors: dict[str, float],
+    prior_mean: float = PRIOR_MEAN_RATING,
+    prior_ghost_games: float = PRIOR_GHOST_GAMES,
+) -> float | None:
+    """Fit a single human's rating for one player count via bisection.
+
+    results_for_pc: list of (opponent_entity, wins_human, wins_opponent)
+    anchors: {entity: rating} for all opponents (fixed)
+
+    Returns the fitted rating, or None if no data for this PC.
+    """
+    matches: list[tuple[float, float, float]] = []
+    for opp_entity, wins_h, wins_o in results_for_pc:
+        opp_rating = anchors.get(opp_entity)
+        if opp_rating is None:
+            continue
+        n = wins_h + wins_o
+        if n <= 0:
+            continue
+        matches.append((opp_rating, wins_h, n))
+
+    if not matches:
+        return None
+
+    ghost_n = max(0.0, float(prior_ghost_games))
+    ghost_score = 0.5 * ghost_n
+
+    def gradient(r: float) -> float:
+        g = 0.0
+        for opp_r, human_score, n in matches:
+            p = _expected_score(r, opp_r)
+            g += human_score - n * p
+        if ghost_n > 0:
+            g += ghost_score - ghost_n * _expected_score(r, prior_mean)
+        return g
+
+    lo, hi = -5000.0, 8000.0
+    if gradient(lo) <= 0:
+        return lo
+    if gradient(hi) >= 0:
+        return hi
+    for _ in range(80):
+        mid = 0.5 * (lo + hi)
+        if gradient(mid) > 0:
+            lo = mid
+        else:
+            hi = mid
+    return 0.5 * (lo + hi)
+
+
+def _normalize_entity(entity_id: str) -> str:
+    """Map model IDs to league entity IDs so results connect properly."""
     if entity_id.startswith("net:league:"):
         idx = entity_id.split(":")[-1]
         return f"ckpt:{idx}"
-    # Other net model IDs: "net:<run>:<idx>"
     if entity_id.startswith("net:") and entity_id.count(":") == 2:
         _, _run, idx = entity_id.split(":")
         return f"ckpt:{idx}"
     return entity_id
 
 
-def combined_ratings(
-    workspace_root: pathlib.Path, store: JsonPlayStore
-) -> dict[str, float]:
-    """Fit ratings from the union of league results and human game results.
+def _build_human_per_pc_results(
+    blob: dict[str, Any],
+) -> dict[int, list[tuple[str, float, float]]]:
+    """Build per-PC pairwise results for a human from their history.
 
-    Merges all pairwise match data into one pool and runs a single
-    fit_anchored_ratings call. This gives every entity (checkpoints, bots,
-    LLM agents, humans) a rating on the same unified scale.
+    For each game in history:
+    - Determine player count from len(ranks) or len(opponents)+1
+    - Human wins: record 1/(p-1) wins against each losing opponent
+    - Human loses: record 1 loss against the winner only
 
-    Anchors: random=1000 (fixed).
+    Handles legacy entries that lack ``ranks`` but have ``opponents[].score``
+    and ``human_rank``.
+
+    Returns: {pc: [(opponent_entity, wins_human, wins_opponent), ...]}
     """
-    from agent.train import league as LG
-    from agent.train import ranking as R
+    # Accumulate per (pc, opponent) -> (wins_h, wins_o)
+    accum: dict[tuple[int, str], list[float, float]] = {}
 
-    anchors: dict[str, float] = dict(R.DEFAULT_ANCHORS)
-    all_results: list[dict[str, Any]] = []
+    for entry in blob.get("history", []):
+        if entry.get("legacy"):
+            continue
+        opponents = entry.get("opponents", [])
+        if not opponents:
+            continue
 
-    # 1. League results (checkpoint vs checkpoint, checkpoint vs bots)
-    league_root = workspace_root / "agent" / "runs" / "league"
-    if league_root.exists():
-        try:
-            league = LG.League(league_root)
-            all_results.extend(league.manifest.get("results", []))
-            # Also synthesize pairwise results from per-entry eval stats.
-            # Each entry has rank_winrate_vs_heuristic_opus etc. from batch
-            # evals that aren't recorded as explicit pairwise results.
-            for entry in league.manifest.get("entries", []):
-                idx = int(entry.get("idx", -1))
-                entity = f"ckpt:{idx}"
-                _add_eval_results(all_results, entity, entry)
-        except Exception:
-            logger.debug("Failed to load league results", exc_info=True)
+        ranks = entry.get("ranks")
+        if ranks:
+            pc = len(ranks)
+        else:
+            # Legacy entries without ranks: infer PC from opponents list
+            pc = len(opponents) + 1
 
-    # 2. Human game results (human vs bots/checkpoints)
-    #    Human results use model IDs like "net:league:1926" while the league
-    #    uses "ckpt:1926". Normalize to league format so they connect.
+        if pc not in (2, 3, 4):
+            continue
+        human_rank = int(entry.get("human_rank", -1))
+
+        # Weight per pairwise comparison: 1/(p-1) keeps total weight = 1 per game
+        weight = 1.0 / (pc - 1)
+
+        if human_rank == 0:
+            # Human won: record weight wins against each opponent
+            for opp in opponents:
+                entity = _normalize_entity(str(opp["entity_id"]))
+                key = (pc, entity)
+                if key not in accum:
+                    accum[key] = [0.0, 0.0]
+                accum[key][0] += weight
+        elif ranks:
+            # Human lost and we have full rank info: record 1 loss against
+            # the winner (rank 0) only.
+            for opp in opponents:
+                opp_seat = int(opp["seat"])
+                opp_rank = ranks[opp_seat]
+                if opp_rank == 0:
+                    entity = _normalize_entity(str(opp["entity_id"]))
+                    key = (pc, entity)
+                    if key not in accum:
+                        accum[key] = [0.0, 0.0]
+                    accum[key][1] += 1.0
+                    break
+        else:
+            # Legacy entry without ranks: use opponent score field.
+            # score=0.0 means that opponent beat the human.
+            # In 2p this is unambiguous (the single opponent won).
+            # In multiplayer, record a loss against each opponent that beat
+            # the human, weighted so total loss weight = 1.
+            losers = [opp for opp in opponents if float(opp.get("score", 1.0)) == 0.0]
+            if not losers:
+                # Fallback: if no score info, assume single opponent won
+                losers = opponents[:1]
+            loss_weight = 1.0 / len(losers) if losers else 1.0
+            for opp in losers:
+                entity = _normalize_entity(str(opp["entity_id"]))
+                key = (pc, entity)
+                if key not in accum:
+                    accum[key] = [0.0, 0.0]
+                accum[key][1] += loss_weight
+
+    # Group by PC
+    per_pc: dict[int, list[tuple[str, float, float]]] = {pc: [] for pc in PLAYER_COUNTS}
+    for (pc, entity), (wins_h, wins_o) in accum.items():
+        per_pc[pc].append((entity, wins_h, wins_o))
+
+    return per_pc
+
+
+def _compute_human_ratings(
+    blob: dict[str, Any],
+    bot_anchors_per_pc: dict[int, dict[str, float]],
+) -> dict[str, Any]:
+    """Compute per-PC and combined rating for a single human.
+
+    Returns: {"rating": combined, "rating_2p": ..., "rating_3p": ..., "rating_4p": ...,
+              "games_2p": ..., "games_3p": ..., "games_4p": ...}
+    """
+    per_pc_results = _build_human_per_pc_results(blob)
+
+    calibrated_sum = 0.0
+    weight_sum = 0.0
+    out: dict[str, Any] = {}
+
+    for pc in PLAYER_COUNTS:
+        results = per_pc_results[pc]
+        if not results:
+            continue
+        anchors = bot_anchors_per_pc.get(pc, {})
+        raw = _fit_human_rating_single(results, anchors)
+        if raw is None:
+            continue
+        cal = calibrate_rating(raw, pc)
+        out[f"rating_{pc}p"] = cal
+        # Weight by number of games at this PC
+        games_at_pc = sum(wh + wo for _, wh, wo in results)
+        out[f"games_{pc}p"] = games_at_pc
+        calibrated_sum += cal * games_at_pc
+        weight_sum += games_at_pc
+
+    if weight_sum > 0:
+        out["rating"] = calibrated_sum / weight_sum
+    else:
+        out["rating"] = None
+
+    return out
+
+
+# ---------------------------------------------------------------------------
+# Public API (used by service.py)
+# ---------------------------------------------------------------------------
+
+
+def _load_floating_entities(workspace_root: pathlib.Path) -> dict[str, dict[str, Any]]:
+    """Load floating_entities from league.json."""
+    manifest = _load_league_manifest(workspace_root)
+    return manifest.get("floating_entities", {})
+
+def combined_ratings(
+    workspace_root: pathlib.Path, store: Any
+) -> dict[str, float]:
+    """Return combined ratings for all entities (bots + humans).
+
+    Bot ratings come directly from league.json. Human ratings are computed
+    via fast single-variable bisection per PC.
+    """
+    manifest = _load_league_manifest(workspace_root)
+    bot_data = _bot_ratings_from_league(manifest)
+
+    # Build per-PC anchor maps using RAW (uncalibrated) ratings for human fitting
+    bot_anchors_per_pc: dict[int, dict[str, float]] = {pc: {} for pc in PLAYER_COUNTS}
+    for entity, data in bot_data.items():
+        for pc in PLAYER_COUNTS:
+            raw = data.get(f"raw_{pc}p")
+            if raw is not None:
+                bot_anchors_per_pc[pc][entity] = raw
+    # Always include random anchor
+    for pc in PLAYER_COUNTS:
+        bot_anchors_per_pc[pc]["random"] = RANDOM_ANCHOR_RATING
+
+    out: dict[str, float] = {"random": RANDOM_ANCHOR_RATING}
+
+    # Bot combined ratings
+    for entity, data in bot_data.items():
+        if "rating" in data:
+            out[entity] = data["rating"]
+
+    # Human ratings
     for blob in store.list_all_user_rating_blobs():
         uname = str(blob.get("username") or blob.get("google_sub") or "")
         if not uname:
             continue
-        for r in blob.get("results", []):
-            normalized = dict(r)
-            normalized["a"] = _normalize_entity(normalized["a"])
-            normalized["b"] = _normalize_entity(normalized["b"])
-            all_results.append(normalized)
+        human_data = _compute_human_ratings(blob, bot_anchors_per_pc)
+        rating = human_data.get("rating")
+        if rating is not None:
+            out[f"human:{uname}"] = rating
 
-    if not all_results:
-        return dict(anchors)
+    return out
 
-    # Collect initial guesses from league entries for faster convergence.
-    initial: dict[str, float] = {}
-    if league_root.exists():
-        try:
-            league = LG.League(league_root)
-            for entry in league.manifest.get("entries", []):
-                idx = int(entry.get("idx", -1))
-                entity = f"ckpt:{idx}"
-                rating = entry.get("rating")
-                if rating is not None:
-                    initial[entity] = float(rating)
-            # Also use floating entity ratings as initial guesses
-            for entity, fe in league.manifest.get("floating_entities", {}).items():
-                rating = fe.get("rating")
-                if rating is not None:
-                    initial[entity] = float(rating)
-        except Exception:
-            pass
 
-    try:
-        return R.fit_anchored_ratings(
-            all_results, anchors=anchors, initial=initial
-        )
-    except Exception:
-        logger.debug("Failed to compute combined ratings", exc_info=True)
-        return dict(anchors)
+def combined_ratings_detailed(
+    workspace_root: pathlib.Path, store: Any
+) -> dict[str, dict]:
+    """Return per-PC and combined ratings for all entities.
+
+    Returns: {entity: {"rating": combined, "rating_2p": ..., "rating_3p": ..., "rating_4p": ...}}
+    """
+    manifest = _load_league_manifest(workspace_root)
+    bot_data = _bot_ratings_from_league(manifest)
+
+    # Build per-PC anchor maps using RAW ratings for human fitting
+    bot_anchors_per_pc: dict[int, dict[str, float]] = {pc: {} for pc in PLAYER_COUNTS}
+    for entity, data in bot_data.items():
+        for pc in PLAYER_COUNTS:
+            raw = data.get(f"raw_{pc}p")
+            if raw is not None:
+                bot_anchors_per_pc[pc][entity] = raw
+    for pc in PLAYER_COUNTS:
+        bot_anchors_per_pc[pc]["random"] = RANDOM_ANCHOR_RATING
+
+    out: dict[str, dict] = {}
+
+    # Bot ratings: per-PC values from league.json are already calibrated
+    for entity, data in bot_data.items():
+        entry: dict[str, Any] = {}
+        calibrated_sum = 0.0
+        weight_sum = 0.0
+        for pc in PLAYER_COUNTS:
+            cal = data.get(f"rating_{pc}p")  # Already calibrated in league.json
+            if cal is not None:
+                entry[f"rating_{pc}p"] = cal
+                # Use equal weight for bots (they play many games at each PC)
+                weight = 1.0
+                calibrated_sum += cal * weight
+                weight_sum += weight
+        if weight_sum > 0:
+            entry["rating"] = calibrated_sum / weight_sum
+        elif "rating" in data:
+            entry["rating"] = data["rating"]
+        else:
+            entry["rating"] = None
+        out[entity] = entry
+
+    # Human ratings
+    for blob in store.list_all_user_rating_blobs():
+        uname = str(blob.get("username") or blob.get("google_sub") or "")
+        if not uname:
+            continue
+        human_data = _compute_human_ratings(blob, bot_anchors_per_pc)
+        out[f"human:{uname}"] = human_data
+
+    return out
 
 
 # Public alias used by service.py
 league_ratings = combined_ratings
 
 
-def _load_floating_entities(workspace_root: pathlib.Path) -> dict[str, dict[str, Any]]:
-    """Load floating_entities from league.json (e.g. bedrock_claude_sonnet, heuristic_opus)."""
-    from agent.train import league as LG
-
-    league_root = workspace_root / "agent" / "runs" / "league"
-    if not league_root.exists():
-        return {}
-    try:
-        league = LG.League(league_root)
-        return league.manifest.get("floating_entities", {})
-    except Exception:
-        return {}
-
-
 def agent_leaderboard_rows(
-    workspace_root: pathlib.Path, store: JsonPlayStore
+    workspace_root: pathlib.Path, store: Any
 ) -> list[dict[str, Any]]:
+    """Build leaderboard rows for bot agents."""
     rows: list[dict[str, Any]] = []
     all_models = MD.discover_models(workspace_root)
-
-    # Single unified rating fit from all match data.
-    ratings = combined_ratings(workspace_root, store)
-
-    # Load floating entities from league.json for game counts and fallback ratings.
-    floating = _load_floating_entities(workspace_root)
+    manifest = _load_league_manifest(workspace_root)
+    bot_data = _bot_ratings_from_league(manifest)
+    floating = manifest.get("floating_entities", {})
 
     # For ML (net) models, only include the highest-rated one.
     net_models = [m for m in all_models if m["kind"] == "net"]
@@ -187,67 +521,132 @@ def agent_leaderboard_rows(
     for m in models_to_show:
         label = str(m["label"])
         if m["kind"] == "net":
-            label = "ML Bot"
+            label = "RL Trained Bot"
         entity_id = MD.model_entity_id(m)
-        # Use the unified rating if the entity has match data, otherwise
-        # fall back to the static rating from the model definition.
-        # Normalize the entity ID to match the league format used in the fit.
         lookup_id = _normalize_entity(entity_id)
-        rating = ratings.get(lookup_id, float(m.get("rating", 0.0)))
 
-        # For game count, prefer floating_entities (from league.json) which
-        # tracks games played via llm_rating_games.py. Fall back to model def.
+        # Get ratings from league data (already calibrated per-PC)
+        entity_data = bot_data.get(lookup_id, {})
+
+        # Per-PC ratings (already calibrated in league.json)
+        # For the random bot (anchor), rating is 1000 at all player counts.
+        if m["kind"] == "random":
+            rating_2p = RANDOM_ANCHOR_RATING
+            rating_3p = RANDOM_ANCHOR_RATING
+            rating_4p = RANDOM_ANCHOR_RATING
+        else:
+            rating_2p = entity_data.get("rating_2p")
+            rating_3p = entity_data.get("rating_3p")
+            rating_4p = entity_data.get("rating_4p")
+
+        # Combined rating: average of calibrated per-PC values
+        calibrated_vals = [v for v in (rating_2p, rating_3p, rating_4p) if v is not None]
+        if calibrated_vals:
+            rating = sum(calibrated_vals) / len(calibrated_vals)
+        elif "rating" in entity_data:
+            rating = entity_data["rating"]
+        else:
+            rating = float(m.get("rating", 0.0))
+
+        # Game count from floating entities or model definition
         games = int(m.get("games", 0))
         fe = floating.get(entity_id)
         if fe is not None:
             games = int(fe.get("games", games))
-            # Also use floating entity rating as fallback if not in unified fit
-            if lookup_id not in ratings:
+            # Fallback rating for entities not in league entries
+            if lookup_id not in bot_data:
                 rating = float(fe.get("rating", rating))
 
-        rows.append(
-            {
-                "kind": "agent",
-                "entity_id": entity_id,
-                "label": label,
-                "model_id": str(m["id"]),
-                "bot_kind": str(m["kind"]),
-                "rating": rating,
-                "games": games,
-                "description": m.get("description"),
-            }
-        )
+        row: dict[str, Any] = {
+            "kind": "agent",
+            "entity_id": entity_id,
+            "label": label,
+            "model_id": str(m["id"]),
+            "bot_kind": str(m["kind"]),
+            "rating": round(rating),
+            "games": games,
+            "description": m.get("description"),
+        }
+        if rating_2p is not None:
+            row["rating_2p"] = round(rating_2p)
+        if rating_3p is not None:
+            row["rating_3p"] = round(rating_3p)
+        if rating_4p is not None:
+            row["rating_4p"] = round(rating_4p)
+        rows.append(row)
     return rows
 
 
-def human_leaderboard_rows(store: JsonPlayStore) -> list[dict[str, Any]]:
+def human_leaderboard_rows(
+    workspace_root_or_store: Any,
+    store: Any = None,
+) -> list[dict[str, Any]]:
+    """Build leaderboard rows for human players.
+
+    Accepts either (workspace_root, store) or just (store,) for backward
+    compatibility with lambda_handler.py. When called with just a store,
+    human ratings fall back to the stored per-user rating (no per-PC refit).
+    """
+    if store is None:
+        # Called as human_leaderboard_rows(store) — legacy lambda path
+        actual_store = workspace_root_or_store
+        bot_anchors_per_pc: dict[int, dict[str, float]] | None = None
+    else:
+        # Called as human_leaderboard_rows(workspace_root, store)
+        actual_store = store
+        workspace_root = workspace_root_or_store
+        manifest = _load_league_manifest(workspace_root)
+        bot_data = _bot_ratings_from_league(manifest)
+        bot_anchors_per_pc = {pc: {} for pc in PLAYER_COUNTS}
+        for entity, data in bot_data.items():
+            for pc in PLAYER_COUNTS:
+                raw = data.get(f"raw_{pc}p")
+                if raw is not None:
+                    bot_anchors_per_pc[pc][entity] = raw
+        for pc in PLAYER_COUNTS:
+            bot_anchors_per_pc[pc]["random"] = RANDOM_ANCHOR_RATING
+
     out: list[dict[str, Any]] = []
-    for blob in store.list_all_user_rating_blobs():
+    for blob in actual_store.list_all_user_rating_blobs():
         uname = str(blob.get("username") or blob.get("google_sub") or "")
         if not uname:
             continue
         wins = int(blob.get("wins", 0))
-        if wins < HE.PLACEMENT_WINS_REQUIRED:
+        if wins < PLACEMENT_WINS_REQUIRED:
             continue
-        rating = float(blob.get("rating", HE.DEFAULT_INITIAL_RATING))
         games = int(blob.get("games", 0))
-        label = uname
-        out.append(
-            {
-                "kind": "human",
-                "entity_id": f"human:{uname}",
-                "label": label,
-                "username": uname,
-                "rating": rating,
-                "games": games,
-            }
-        )
+
+        if bot_anchors_per_pc is not None:
+            human_data = _compute_human_ratings(blob, bot_anchors_per_pc)
+            rating = human_data.get("rating")
+        else:
+            human_data = {}
+            rating = None
+
+        if rating is None:
+            rating = float(blob.get("rating", DEFAULT_INITIAL_RATING))
+
+        row: dict[str, Any] = {
+            "kind": "human",
+            "entity_id": f"human:{uname}",
+            "label": uname,
+            "username": uname,
+            "rating": round(rating),
+            "games": games,
+        }
+        for pc in PLAYER_COUNTS:
+            val = human_data.get(f"rating_{pc}p")
+            if val is not None:
+                row[f"rating_{pc}p"] = round(val)
+        out.append(row)
     return out
 
 
-def leaderboard_response(workspace_root: pathlib.Path, store: JsonPlayStore) -> dict[str, Any]:
+def leaderboard_response(workspace_root: pathlib.Path, store: Any) -> dict[str, Any]:
+    """Build the full leaderboard response."""
     agents = agent_leaderboard_rows(workspace_root, store)
-    humans = human_leaderboard_rows(store)
+    humans = human_leaderboard_rows(workspace_root, store)
+
     entities = humans + agents
     entities.sort(key=lambda r: float(r.get("rating", 0.0)), reverse=True)
     return {"entities": entities}

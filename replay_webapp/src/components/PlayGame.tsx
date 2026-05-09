@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Board } from "./Board";
 import { ActionLog } from "./ActionLog";
+import { Tooltip } from "./Tooltip";
 import { PlayView, PlaySeatInfo } from "../play_types";
 import { ReplayStep, PlayerInfo } from "../types";
 
@@ -20,14 +21,14 @@ function seatLabel(p: PlaySeatInfo): string {
 }
 
 function ratingDeltaText(view: PlayView, placed?: boolean, wins?: number): string | null {
-  if (!view.elo_update) return null;
+  if (!view.rating_update) return null;
   if (!placed) {
     const w = wins ?? 0;
     return `Placement match (${w}/5 wins)`;
   }
-  const u = view.elo_update;
-  const oldR = u.old_rating ?? u.old_elo;
-  const newR = u.new_rating ?? u.new_elo;
+  const u = view.rating_update;
+  const oldR = u.old_rating;
+  const newR = u.new_rating;
   const sign = u.delta >= 0 ? "+" : "";
   return `Rating: ${oldR.toFixed(0)} → ${newR.toFixed(0)} (${sign}${u.delta.toFixed(1)})`;
 }
@@ -147,10 +148,20 @@ export function PlayGame({
                 marginRight: 12,
                 fontWeight: view.current_player === p.seat ? "bold" : "normal",
               }}
-              title={p.description ?? undefined}
             >
-              {seatLabel(p)}
-              {p.rating != null ? ` [${p.rating.toFixed(0)}]` : ""}
+              {p.description ? (
+                <Tooltip content={<span>{p.description}</span>} position="bottom">
+                  <span style={{ borderBottom: "1px dotted #7a94b8", cursor: "help" }}>
+                    {seatLabel(p)}
+                    {p.rating != null ? ` [${p.rating.toFixed(0)}]` : ""}
+                  </span>
+                </Tooltip>
+              ) : (
+                <>
+                  {seatLabel(p)}
+                  {p.rating != null ? ` [${p.rating.toFixed(0)}]` : ""}
+                </>
+              )}
             </span>
           ))}
         </span>

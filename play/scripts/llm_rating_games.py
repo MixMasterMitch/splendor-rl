@@ -25,7 +25,7 @@ from agent.env import actions as A
 from agent.env import batched_engine as BE
 from agent.train import league as LG
 from play.llm.policy import LLMBedrockPolicy
-from replay import players as POL
+from play import players as POL
 
 # Suppress verbose LLM/boto logging — only show errors
 import logging

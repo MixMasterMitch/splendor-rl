@@ -105,17 +105,20 @@ def extract_pairwise_results(
     finished: torch.Tensor,
     num_players_per_game: int,
 ) -> List[PairwiseResult]:
-    """Extract normalized pairwise results from finished games.
+    """Extract pairwise results from finished games.
 
     For a game with N players where player A wins:
-      A beats B with weight 1/(N-1)
-      A beats C with weight 1/(N-1)
+      A beats B with weight 1.0
+      A beats C with weight 1.0
       etc.
+
+    This produces (N-1) pairwise records per game, each with weight 1.0.
+    The game-count logic in recompute_ratings divides by (N-1) to recover
+    the actual number of physical games, so we must NOT normalize here.
 
     Only finished games contribute results.
     """
     results: List[PairwiseResult] = []
-    norm = 1.0 / max(num_players_per_game - 1, 1)
     B = winner_seats.shape[0]
 
     for b in range(B):
@@ -134,7 +137,7 @@ def extract_pairwise_results(
             results.append(PairwiseResult(
                 winner=winner_name,
                 loser=loser_name,
-                weight=norm,
+                weight=1.0,
                 num_players=num_players_per_game,
             ))
     return results

@@ -78,15 +78,13 @@ def _get_service():
                 model = {**model, "ckpt": local_path}
             else:
                 model_id = model.get("id", "unknown")
-                s3_key = model.get("_s3_key", "")
                 logger.error(
-                    "Checkpoint download failed for model %s (s3_key=%s).",
-                    model_id, s3_key,
+                    "Checkpoint not found for model %s.", model_id,
                 )
                 raise FileNotFoundError(
-                    f"ML checkpoint unavailable for model {model_id!r} "
-                    f"(S3 key: {s3_key!r}). The checkpoint may have been "
-                    f"removed from the models bucket."
+                    f"ML checkpoint unavailable for model {model_id!r}. "
+                    f"The checkpoint may not have been included in the "
+                    f"container image build."
                 )
         return _original_build_policy(model, num_sims, seed, device)
 
@@ -97,43 +95,46 @@ def _get_service():
 
 
 def _load_manifest() -> list[dict[str, Any]]:
-    """Load deployed models manifest from S3, env var, or bundled file."""
-    # Try loading from S3 first
-    bucket = os.environ.get("MODELS_BUCKET", "")
-    manifest_key = os.environ.get("MODELS_MANIFEST", "")
-    if bucket and manifest_key:
-        try:
-            import boto3
-            s3 = boto3.client("s3")
-            resp = s3.get_object(Bucket=bucket, Key=manifest_key)
-            data = json.loads(resp["Body"].read().decode("utf-8"))
-            # Inject s3_bucket into each entry
-            for entry in data:
-                entry.setdefault("s3_bucket", bucket)
-            logger.info(f"Loaded manifest from s3://{bucket}/{manifest_key} with {len(data)} entries")
-            return data
-        except Exception as e:
-            logger.warning(f"Failed to load manifest from S3: {e}")
+    """Load active league entries directly from league.json.
 
-    # Fallback: env var with JSON content
-    manifest_env = os.environ.get("MODELS_MANIFEST_JSON")
-    if manifest_env:
-        return json.loads(manifest_env)
+    Only entries with "active": true are returned as playable models.
+    """
+    league_dir = _LEAGUE_JSON_PATH.parent
+    if not _LEAGUE_JSON_PATH.exists():
+        return []
 
-    # Fallback: bundled file
-    manifest_path = pathlib.Path(__file__).parent / "models_manifest.json"
-    if manifest_path.exists():
-        with open(manifest_path) as f:
-            return json.load(f)
+    with open(_LEAGUE_JSON_PATH) as f:
+        data = json.load(f)
 
-    return []
+    manifest = []
+    for e in data.get("entries", []):
+        if not e.get("active"):
+            continue
+
+        ckpt_path = league_dir / e["path"]
+        manifest.append({
+            "run": "league",
+            "tag": e.get("tag", f"idx{e['idx']}"),
+            "idx": e["idx"],
+            "rating": float(e.get("rating", 1500.0)),
+            "hidden": e.get("hidden"),
+            "arch": e.get("arch"),
+            "local_path": str(ckpt_path),
+        })
+
+    if manifest:
+        logger.info(f"Loaded {len(manifest)} active entries from league.json")
+    return manifest
 
 
 _league_data_cache: dict[str, Any] | None = None
 
+# Path to bundled league.json (baked into container image)
+_LEAGUE_JSON_PATH = pathlib.Path(__file__).resolve().parent.parent / "agent" / "runs" / "league" / "league.json"
+
 
 def _load_league_data() -> dict[str, Any]:
-    """Load league.json from S3 for unified rating computation.
+    """Load league.json from bundled file (baked into container image).
 
     Cached after first load (league data doesn't change during a Lambda
     invocation lifecycle).
@@ -142,20 +143,14 @@ def _load_league_data() -> dict[str, Any]:
     if _league_data_cache is not None:
         return _league_data_cache
 
-    bucket = os.environ.get("MODELS_BUCKET", "")
-    league_key = os.environ.get("LEAGUE_DATA_KEY", "")
-    if bucket and league_key:
-        try:
-            import boto3
-            s3 = boto3.client("s3")
-            resp = s3.get_object(Bucket=bucket, Key=league_key)
-            data = json.loads(resp["Body"].read().decode("utf-8"))
-            logger.info(f"Loaded league data from s3://{bucket}/{league_key}")
-            _league_data_cache = data
-            return data
-        except Exception as e:
-            logger.warning(f"Failed to load league data from S3: {e}")
+    if _LEAGUE_JSON_PATH.exists():
+        with open(_LEAGUE_JSON_PATH) as f:
+            data = json.load(f)
+        logger.info(f"Loaded bundled league data from {_LEAGUE_JSON_PATH}")
+        _league_data_cache = data
+        return data
 
+    logger.warning(f"League data not found at {_LEAGUE_JSON_PATH}")
     _league_data_cache = {}
     return {}
 
@@ -164,56 +159,42 @@ _unified_ratings_cache: dict[str, float] | None = None
 
 
 def _compute_unified_ratings() -> dict[str, float]:
-    """Compute unified ratings from league data + human game results.
+    """Return unified ratings for all entities (bots + humans).
 
-    Cached for the Lambda container lifecycle. Used to enrich model ratings
-    across all endpoints (agents list, game views, etc.).
+    Bot ratings come directly from league.json (pre-computed, no fitting).
+    Cached for the Lambda container lifecycle.
     """
     global _unified_ratings_cache
     if _unified_ratings_cache is not None:
         return _unified_ratings_cache
 
-    from play.ratings import _add_eval_results, _normalize_entity
-    from agent.train import ranking as R
+    from play.ratings import _normalize_entity
 
     league_data = _load_league_data()
-    anchors: dict[str, float] = dict(R.DEFAULT_ANCHORS)
-    all_results: list[dict[str, Any]] = []
+    unified: dict[str, float] = {"random": 1000.0}
 
+    # Bot ratings: read directly from league.json (already computed by training pipeline)
     if league_data:
-        all_results.extend(league_data.get("results", []))
         for entry in league_data.get("entries", []):
             idx = int(entry.get("idx", -1))
             entity = f"ckpt:{idx}"
-            _add_eval_results(all_results, entity, entry)
+            rating = entry.get("rating")
+            if rating is not None:
+                unified[entity] = float(rating)
+        for entity, fe in league_data.get("floating_entities", {}).items():
+            rating = fe.get("rating")
+            if rating is not None:
+                unified[entity] = float(rating)
 
+    # Human ratings: use stored per-user rating (already computed at game end)
     store = _get_dynamo_store()
     for blob in store.list_all_user_rating_blobs():
         uname = str(blob.get("username") or blob.get("google_sub") or "")
         if not uname:
             continue
-        for r in blob.get("results", []):
-            normalized = dict(r)
-            normalized["a"] = _normalize_entity(normalized["a"])
-            normalized["b"] = _normalize_entity(normalized["b"])
-            all_results.append(normalized)
-
-    unified: dict[str, float] = dict(anchors)
-    if all_results:
-        initial: dict[str, float] = {}
-        if league_data:
-            for entry in league_data.get("entries", []):
-                idx = int(entry.get("idx", -1))
-                entity = f"ckpt:{idx}"
-                rating = entry.get("rating")
-                if rating is not None:
-                    initial[entity] = float(rating)
-        try:
-            unified = R.fit_anchored_ratings(
-                all_results, anchors=anchors, initial=initial
-            )
-        except Exception:
-            logger.warning("Failed to compute unified ratings", exc_info=True)
+        rating = blob.get("rating")
+        if rating is not None:
+            unified[f"human:{uname}"] = float(rating)
 
     _unified_ratings_cache = unified
     return unified
@@ -292,16 +273,14 @@ def _make_manifest_list_models():
             rating = float(entry.get("rating", _HAR))
             net_models.append({
                 "id": f"net:{run}:{idx}",
-                "label": "ML Bot",
+                "label": "RL Trained Bot",
                 "kind": "net",
                 "run": run, "tag": tag, "idx": idx,
-                "ckpt": None,
                 "rating": rating,
                 "games": int(entry.get("games", 0)),
                 "hidden": entry.get("hidden"), "arch": entry.get("arch"),
-                "score_hint": entry.get("score_hint"),
-                "winrate_vs_heuristic": entry.get("winrate_vs_heuristic"),
-                "_s3_bucket": entry.get("s3_bucket", ""),
+                "description": "Trained neural network that learned to play through self-play",
+                "_local_path": entry.get("local_path", ""),
                 "_s3_key": entry.get("s3_key", ""),
             })
         return net_models
@@ -335,35 +314,23 @@ def _make_manifest_list_models():
 
 
 def _ensure_checkpoint_local(model: dict[str, Any]) -> str | None:
-    """Download a net model's checkpoint from S3 to /tmp if needed.
+    """Resolve a net model's checkpoint to a local path.
 
-    Returns the local path, or None if download fails or model is unavailable.
+    Checkpoints are baked into the container image (or on disk for local dev).
+    Returns the local path, or None if the checkpoint file doesn't exist.
     """
     if model.get("kind") != "net":
         return None
 
-    s3_bucket = model.get("_s3_bucket", "")
-    s3_key = model.get("_s3_key", "")
-    if not s3_bucket or not s3_key:
-        # Fallback: try MODELS_BUCKET env var
-        s3_bucket = os.environ.get("MODELS_BUCKET", "")
-        if not s3_bucket:
-            return None
+    # Check for explicit local_path from manifest
+    local_path_str = model.get("_local_path", "")
+    if local_path_str:
+        local_path = pathlib.Path(local_path_str)
+        if local_path.exists():
+            return str(local_path)
 
-    local_path = pathlib.Path(f"/tmp/checkpoints/{s3_key}")
-    if local_path.exists():
-        return str(local_path)
-
-    local_path.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        import boto3
-        s3 = boto3.client("s3")
-        logger.info(f"Downloading checkpoint s3://{s3_bucket}/{s3_key} -> {local_path}")
-        s3.download_file(s3_bucket, s3_key, str(local_path))
-        return str(local_path)
-    except Exception as e:
-        logger.warning(f"Failed to download checkpoint s3://{s3_bucket}/{s3_key}: {e}")
-        return None
+    logger.warning(f"Checkpoint not found for model {model.get('id', 'unknown')}")
+    return None
 
 
 def _make_dynamo_human_rating_store(store):
@@ -409,42 +376,41 @@ def _make_dynamo_human_rating_store(store):
 
 def _lambda_me(identity) -> dict[str, Any]:
     """Handle /me endpoint using DynamoDB directly."""
-    from play import auth as AU
-    from play import human_rating as HE
+    from play.ratings import bot_anchors_per_pc, combined_rating_for_blob
 
-    store = _get_dynamo_store()
     svc = _get_service()
 
     hr = svc.human_rating_store(identity)
     hr.set_profile(identity.username)
     snap = hr.snapshot()
-    # Strip internal "ties" field from results for the API response.
-    results = [
-        {k: v for k, v in r.items() if k != "ties"}
-        for r in snap.get("results", [])
-    ]
+
+    # Compute calibrated combined rating from history.
+    anchors = bot_anchors_per_pc(svc.workspace_root)
+    combined = combined_rating_for_blob(snap, anchors)
+    rating = round(combined) if combined is not None else None
+    if not snap["placed"]:
+        rating = None
+
     return {
         "username": identity.username,
-        "rating": snap["rating"],
+        "rating": rating,
         "games": snap["games"],
         "wins": snap["wins"],
         "placed": snap["placed"],
-        "rating_system": snap.get("rating_system"),
-        "anchors": snap.get("anchors"),
-        "history": snap.get("history"),
-        "results": results,
     }
 
 
 def _lambda_leaderboard() -> dict[str, Any]:
     """Handle /leaderboard endpoint using DynamoDB directly.
 
-    Loads league.json from S3 and combines it with user rating blobs to
-    compute unified ratings — matching the local server's combined_ratings()
-    logic exactly.
+    Bot ratings come directly from league.json (pre-computed, no fitting).
+    Human ratings are computed via fast single-variable bisection per PC.
     """
     from play import models as MD
-    from play.ratings import _add_eval_results, _normalize_entity, human_leaderboard_rows
+    from play.ratings import (
+        _normalize_entity, _bot_ratings_from_league, _compute_human_ratings,
+        human_leaderboard_rows, PLAYER_COUNTS, RANDOM_ANCHOR_RATING,
+    )
 
     store = _get_dynamo_store()
     svc = _get_service()
@@ -453,83 +419,108 @@ def _lambda_leaderboard() -> dict[str, Any]:
     # Load league data from S3 (cached in module-level dict).
     league_data = _load_league_data()
 
-    # Build unified results pool — same as combined_ratings() in ratings.py.
-    from agent.train import ranking as R
-    anchors: dict[str, float] = dict(R.DEFAULT_ANCHORS)
-    all_results: list[dict[str, Any]] = []
-
-    # 1. League results (checkpoint vs checkpoint, checkpoint vs bots)
-    if league_data:
-        all_results.extend(league_data.get("results", []))
-        for entry in league_data.get("entries", []):
-            idx = int(entry.get("idx", -1))
-            entity = f"ckpt:{idx}"
-            _add_eval_results(all_results, entity, entry)
-
-    # 2. Human game results from DynamoDB user rating blobs
-    for blob in store.list_all_user_rating_blobs():
-        uname = str(blob.get("username") or blob.get("google_sub") or "")
-        if not uname:
-            continue
-        for r in blob.get("results", []):
-            normalized = dict(r)
-            normalized["a"] = _normalize_entity(normalized["a"])
-            normalized["b"] = _normalize_entity(normalized["b"])
-            all_results.append(normalized)
-
-    # Compute unified ratings.
-    unified_ratings: dict[str, float] = dict(anchors)
-    if all_results:
-        # Collect initial guesses from league entries for faster convergence.
-        initial: dict[str, float] = {}
-        if league_data:
-            for entry in league_data.get("entries", []):
-                idx = int(entry.get("idx", -1))
-                entity = f"ckpt:{idx}"
-                rating = entry.get("rating")
-                if rating is not None:
-                    initial[entity] = float(rating)
-        try:
-            unified_ratings = R.fit_anchored_ratings(
-                all_results, anchors=anchors, initial=initial
-            )
-        except Exception:
-            logger.warning("Failed to compute unified ratings", exc_info=True)
-
-    # Agent rows — use unified ratings when available, else static default.
-    # Load floating entities from league data for game counts (e.g. bedrock_claude_sonnet).
+    # Extract bot ratings directly from league.json (no LBFGS fitting)
+    bot_data = _bot_ratings_from_league(league_data) if league_data else {}
     floating: dict[str, dict] = league_data.get("floating_entities", {}) if league_data else {}
 
+    # Agent rows — use pre-computed ratings from league.json
     agents: list[dict[str, Any]] = []
     for m in all_models:
         label = str(m["label"])
         if m["kind"] == "net":
-            label = "ML Bot"
+            label = "RL Trained Bot"
         entity_id = MD.model_entity_id(m)
         lookup_id = _normalize_entity(entity_id)
-        rating = unified_ratings.get(lookup_id, float(m.get("rating", 0.0)))
 
-        # For game count, prefer floating_entities (from league.json) which
-        # tracks games played via llm_rating_games.py.
+        # Get ratings from league data (already calibrated per-PC)
+        entity_data = bot_data.get(lookup_id, {})
+
+        # For the random bot (anchor), rating is 1000 at all player counts.
+        if m["kind"] == "random":
+            rating_2p = RANDOM_ANCHOR_RATING
+            rating_3p = RANDOM_ANCHOR_RATING
+            rating_4p = RANDOM_ANCHOR_RATING
+        else:
+            rating_2p = entity_data.get("rating_2p")
+            rating_3p = entity_data.get("rating_3p")
+            rating_4p = entity_data.get("rating_4p")
+
+        # Combined rating: average of calibrated per-PC values
+        calibrated_vals = [v for v in (rating_2p, rating_3p, rating_4p) if v is not None]
+        if calibrated_vals:
+            rating = sum(calibrated_vals) / len(calibrated_vals)
+        elif "rating" in entity_data:
+            rating = entity_data["rating"]
+        else:
+            rating = float(m.get("rating", 0.0))
+
+        # Game count from floating entities or model definition
         games = int(m.get("games", 0))
         fe = floating.get(entity_id)
         if fe is not None:
             games = int(fe.get("games", games))
-            if lookup_id not in unified_ratings:
+            if lookup_id not in bot_data:
                 rating = float(fe.get("rating", rating))
 
-        agents.append({
+        row: dict[str, Any] = {
             "kind": "agent",
             "entity_id": entity_id,
             "label": label,
             "model_id": str(m["id"]),
             "bot_kind": str(m["kind"]),
-            "rating": rating,
+            "rating": round(rating),
             "games": games,
-        })
+            "description": m.get("description"),
+        }
+        if rating_2p is not None:
+            row["rating_2p"] = round(rating_2p)
+        if rating_3p is not None:
+            row["rating_3p"] = round(rating_3p)
+        if rating_4p is not None:
+            row["rating_4p"] = round(rating_4p)
+        agents.append(row)
 
-    # Human rows — reuse the same logic as the local server.
-    humans = human_leaderboard_rows(store)
+    # Human rows — compute per-PC ratings via fast bisection
+    # Build per-PC anchor maps using RAW (uncalibrated) ratings
+    from play.ratings import CALIBRATION_SCALE
+    bot_anchors_per_pc: dict[int, dict[str, float]] = {pc: {} for pc in PLAYER_COUNTS}
+    for entity, data in bot_data.items():
+        for pc in PLAYER_COUNTS:
+            raw = data.get(f"raw_{pc}p")
+            if raw is not None:
+                bot_anchors_per_pc[pc][entity] = raw
+    for pc in PLAYER_COUNTS:
+        bot_anchors_per_pc[pc]["random"] = RANDOM_ANCHOR_RATING
+
+    from play.ratings import PLACEMENT_WINS_REQUIRED, DEFAULT_INITIAL_RATING as _DEFAULT_RATING
+    humans: list[dict[str, Any]] = []
+    for blob in store.list_all_user_rating_blobs():
+        uname = str(blob.get("username") or blob.get("google_sub") or "")
+        if not uname:
+            continue
+        wins = int(blob.get("wins", 0))
+        if wins < PLACEMENT_WINS_REQUIRED:
+            continue
+        games = int(blob.get("games", 0))
+
+        human_data = _compute_human_ratings(blob, bot_anchors_per_pc)
+        rating_val = human_data.get("rating")
+        if rating_val is None:
+            rating_val = float(blob.get("rating", _DEFAULT_RATING))
+
+        row = {
+            "kind": "human",
+            "entity_id": f"human:{uname}",
+            "label": uname,
+            "username": uname,
+            "rating": round(rating_val),
+            "games": games,
+        }
+        for pc in PLAYER_COUNTS:
+            val = human_data.get(f"rating_{pc}p")
+            if val is not None:
+                row[f"rating_{pc}p"] = round(val)
+        humans.append(row)
 
     combined = humans + agents
     combined.sort(key=lambda r: float(r.get("rating", 0.0)), reverse=True)

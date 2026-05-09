@@ -1,46 +1,72 @@
-"""HTTP server for interactive Splendor (local dev adapter for ``PlayService``)."""
+"""Local HTTP server for interactive Splendor.
+
+Thin wrapper around the Lambda handler logic so local dev and production
+behave identically. Uses the prod DynamoDB tables directly.
+"""
 
 from __future__ import annotations
 
 import argparse
 import json
 import os
-import pathlib
+import subprocess
 import sys
-import traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import urlparse
 
-from play import auth as AU
-from play.service import PlayService
-from play.store import JsonPlayStore
+from play.lambda_handler import _dispatch, _json_response
 
 
-def _workspace_root() -> pathlib.Path:
+def _workspace_root():
+    import pathlib
     return pathlib.Path(__file__).resolve().parent.parent
 
 
-class _Ctx:
-    def __init__(self, svc: PlayService) -> None:
-        self.service = svc
+def _get_table_names_from_stack(stack_name: str, region: str) -> tuple[str, str]:
+    """Resolve DynamoDB table names from the CloudFormation stack."""
+    try:
+        result = subprocess.run(
+            [
+                "aws", "cloudformation", "describe-stack-resources",
+                "--stack-name", stack_name,
+                "--region", region,
+                "--output", "json",
+            ],
+            capture_output=True, text=True, check=True,
+        )
+        resources = json.loads(result.stdout).get("StackResources", [])
+        games_table = ""
+        users_table = ""
+        for r in resources:
+            logical_id = r.get("LogicalResourceId", "")
+            if logical_id.startswith("GamesTable"):
+                games_table = r["PhysicalResourceId"]
+            elif logical_id.startswith("UsersTable"):
+                users_table = r["PhysicalResourceId"]
+        if not games_table or not users_table:
+            print(f"ERROR: Could not find table names in stack {stack_name}", file=sys.stderr)
+            sys.exit(1)
+        return games_table, users_table
+    except (subprocess.CalledProcessError, FileNotFoundError) as e:
+        print(f"ERROR: Failed to query CloudFormation: {e}", file=sys.stderr)
+        sys.exit(1)
 
 
 class _Handler(BaseHTTPRequestHandler):
-    server_context: _Ctx
-
     def log_message(self, format: str, *args: Any) -> None:  # noqa: A002
-        sys.stderr.write(
-            f"[play_server] {self.address_string()} - {format % args}\n"
-        )
+        sys.stderr.write(f"[play_server] {self.address_string()} - {format % args}\n")
 
-    def _send_json(self, status: int, body: Any) -> None:
-        data = json.dumps(body).encode("utf-8")
+    def _send_lambda_response(self, resp: dict[str, Any]) -> None:
+        status = resp.get("statusCode", 200)
+        body = resp.get("body", "")
+        data = body.encode("utf-8") if isinstance(body, str) else body
         self.send_response(status)
-        self.send_header("Content-Type", "application/json")
+        for k, v in resp.get("headers", {}).items():
+            self.send_header(k, v)
         self.send_header("Content-Length", str(len(data)))
         self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
         self.send_header(
             "Access-Control-Allow-Headers",
             "Content-Type, Authorization, X-Splendor-Username",
@@ -48,152 +74,82 @@ class _Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
-    def _read_json_body(self) -> dict[str, Any]:
+    def _read_body(self) -> str:
         length = int(self.headers.get("Content-Length", "0"))
         if length <= 0:
-            return {}
-        raw = self.rfile.read(length)
-        if not raw:
-            return {}
-        try:
-            obj = json.loads(raw.decode("utf-8"))
-        except Exception as e:
-            raise ValueError(f"invalid JSON body: {e}") from e
-        if not isinstance(obj, dict):
-            raise ValueError("JSON body must be an object")
-        return obj
+            return ""
+        return self.rfile.read(length).decode("utf-8")
 
     def _header_map(self) -> dict[str, str]:
-        return {k: v for k, v in self.headers.items()}
+        return {k.lower(): v for k, v in self.headers.items()}
+
+    def _handle(self, method: str) -> None:
+        parsed = urlparse(self.path)
+        path = parsed.path
+        # Parse query params
+        from urllib.parse import parse_qs
+        qp_raw = parse_qs(parsed.query)
+        query_params = {k: v[0] for k, v in qp_raw.items() if v}
+
+        headers = self._header_map()
+        body = self._read_body() if method in ("POST", "PUT", "DELETE") else ""
+
+        resp = _dispatch(method, path, headers, query_params, body)
+        self._send_lambda_response(resp)
 
     def do_OPTIONS(self) -> None:  # noqa: N802
-        self._send_json(200, {"ok": True})
+        self._send_lambda_response(_json_response(200, {"ok": True}))
 
     def do_GET(self) -> None:  # noqa: N802
-        try:
-            self._dispatch_get()
-        except PermissionError as e:
-            self._send_json(403, {"error": str(e)})
-        except KeyError as e:
-            self._send_json(404, {"error": f"not found: {e}"})
-        except ValueError as e:
-            msg = str(e)
-            status = 401 if "missing X-Splendor-Username" in msg else 400
-            self._send_json(status, {"error": msg})
-        except Exception as e:  # noqa: BLE001
-            traceback.print_exc()
-            self._send_json(500, {"error": str(e)})
+        self._handle("GET")
 
     def do_POST(self) -> None:  # noqa: N802
-        try:
-            self._dispatch_post()
-        except PermissionError as e:
-            self._send_json(403, {"error": str(e)})
-        except KeyError as e:
-            self._send_json(404, {"error": f"not found: {e}"})
-        except ValueError as e:
-            msg = str(e)
-            status = 401 if "missing X-Splendor-Username" in msg else 400
-            self._send_json(status, {"error": msg})
-        except Exception as e:  # noqa: BLE001
-            traceback.print_exc()
-            self._send_json(500, {"error": str(e)})
+        self._handle("POST")
 
-    def _dispatch_get(self) -> None:
-        u = urlparse(self.path)
-        p = u.path
-        svc = self.server_context.service
-        qp = parse_qs(u.query)
-        qp1 = {k: v[0] for k, v in qp.items() if v}
-
-        if p == "/api/health":
-            self._send_json(200, {"ok": True})
-            return
-        if p == "/api/agents":
-            self._send_json(200, svc.list_models())
-            return
-        identity = AU.identity_from_headers(self._header_map())
-        if p == "/api/me":
-            self._send_json(200, svc.me(identity))
-            return
-        if p == "/api/leaderboard":
-            self._send_json(200, svc.leaderboard())
-            return
-        if p == "/api/games":
-            st = qp1.get("status")
-            summaries = svc.list_games_summary(identity, st)
-            self._send_json(200, summaries)
-            return
-        parts = p.strip("/").split("/")
-        if len(parts) == 3 and parts[0] == "api" and parts[1] == "games":
-            game_id = parts[2]
-            view = svc.get_view(identity, game_id)
-            self._send_json(200, view)
-            return
-        self._send_json(404, {"error": f"not found: {p}"})
-
-    def _dispatch_post(self) -> None:
-        u = urlparse(self.path)
-        p = u.path
-        svc = self.server_context.service
-        identity = AU.identity_from_headers(self._header_map())
-        body = self._read_json_body()
-        if p == "/api/games":
-            session = svc.create_game(identity, body)
-            with session.lock:
-                self._send_json(201, session.view())
-            return
-        parts = p.strip("/").split("/")
-        if len(parts) == 4 and parts[0] == "api" and parts[1] == "games":
-            game_id = parts[2]
-            verb = parts[3]
-            if verb == "action":
-                action = body.get("action")
-                if not isinstance(action, int):
-                    raise ValueError("body must include integer 'action'")
-                session = svc.apply_human_action(identity, game_id, action)
-                with session.lock:
-                    self._send_json(200, session.view())
-                return
-            if verb == "step-ai":
-                session = svc.step_ai(identity, game_id)
-                with session.lock:
-                    self._send_json(200, session.view())
-                return
-        self._send_json(404, {"error": f"not found: {p}"})
+    def do_DELETE(self) -> None:  # noqa: N802
+        self._handle("DELETE")
 
 
-def serve(ctx: _Ctx, host: str, port: int) -> None:
-    handler_cls = type("BoundHandler", (_Handler,), {"server_context": ctx})
-    httpd = ThreadingHTTPServer((host, port), handler_cls)
+def serve(host: str, port: int) -> None:
+    httpd = ThreadingHTTPServer((host, port), _Handler)
     print(f"play_server listening on http://{host}:{port}")
     httpd.serve_forever()
 
 
 def main(argv: list[str] | None = None) -> None:
-    parser = argparse.ArgumentParser(description="Splendor play server")
+    parser = argparse.ArgumentParser(description="Splendor play server (local dev)")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8765)
-    parser.add_argument("--device", choices=["cpu"], default="cpu")
+    parser.add_argument("--region", default="us-west-2")
+    parser.add_argument("--stack-name", default="SplendorStack")
     parser.add_argument(
-        "--store-root",
-        default=None,
-        help="JSON store directory. Defaults to play/play_data",
+        "--games-table", default=None,
+        help="DynamoDB games table name (auto-resolved from stack if omitted)",
+    )
+    parser.add_argument(
+        "--users-table", default=None,
+        help="DynamoDB users table name (auto-resolved from stack if omitted)",
     )
     args = parser.parse_args(argv)
 
-    ws = _workspace_root()
-    if args.store_root:
-        sr = pathlib.Path(args.store_root)
-        store_root = sr if sr.is_absolute() else ws / sr
+    # Resolve table names
+    if args.games_table and args.users_table:
+        games_table = args.games_table
+        users_table = args.users_table
     else:
-        store_root = ws / "play/play_data"
+        print(f"Resolving table names from stack '{args.stack_name}'...")
+        games_table, users_table = _get_table_names_from_stack(args.stack_name, args.region)
 
-    store = JsonPlayStore(store_root)
-    svc = PlayService(workspace_root=ws, play_store=store, device=args.device)
-    print(f"workspace: {ws}")
-    print(f"play store: {store_root}")
-    serve(_Ctx(svc), args.host, args.port)
+    # Set env vars that lambda_handler reads
+    os.environ.setdefault("GAMES_TABLE", games_table)
+    os.environ.setdefault("USERS_TABLE", users_table)
+    os.environ.setdefault("AWS_REGION", args.region)
+
+    print(f"  GAMES_TABLE: {games_table}")
+    print(f"  USERS_TABLE: {users_table}")
+    print(f"  AWS_REGION:  {args.region}")
+
+    serve(args.host, args.port)
 
 
 if __name__ == "__main__":

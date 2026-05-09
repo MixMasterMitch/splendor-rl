@@ -5,12 +5,9 @@ Result rows store wins per player count:
 
 Rating computation:
 1. Fit separate ratings per player count (anchor: random=1000).
-2. Calibrate each to a common scale using fixed (n-1) multiplier.
+2. Calibrate each to a common scale using 1x/2x/3x multipliers for 2p/3p/4p.
 3. Combined rating = weighted average of calibrated per-PC ratings,
    weighted by actual number of games played at each player count.
-
-This ensures a 4p win is properly credited as 3× harder than a 2p win,
-and the combined rating reflects the actual game distribution.
 """
 
 from __future__ import annotations
@@ -29,7 +26,8 @@ _MIN_PROB = 1e-9
 
 PLAYER_COUNTS = (2, 3, 4)
 # Fixed calibration multipliers for scaling per-PC ratings to a common scale.
-CALIBRATION_SCALE = {2: 1.0, 3: 1.25, 4: 5.0}
+# 2p=1x (baseline), 3p=2x, 4p=3x.
+CALIBRATION_SCALE = {2: 1.0, 3: 2.0, 4: 3.0}
 
 
 @dataclasses.dataclass(frozen=True)
@@ -70,53 +68,66 @@ def add_match_result(
 ) -> None:
     """Record a pairwise result into the results list.
 
-    Results are stored with per-player-count win fields:
-        wins_a_2p, wins_b_2p, wins_a_3p, wins_b_3p, wins_a_4p, wins_b_4p
+    Results are stored with per-player-count fields as integers:
+        wins_a_2p, wins_b_2p, ties_2p, wins_a_3p, wins_b_3p, ties_3p, ...
 
-    Ties are split 50/50 between wins_a and wins_b for backward compat.
+    For the Bradley-Terry fit, ties contribute 0.5 to each side's score.
     """
     if a == b:
         return
-    # Split ties evenly
-    effective_a = wins_a + 0.5 * ties
-    effective_b = wins_b + 0.5 * ties
-    if effective_a + effective_b <= 0:
+    wa_raw = round(wins_a)
+    wb_raw = round(wins_b)
+    ties_raw = round(ties)
+    if wa_raw + wb_raw + ties_raw <= 0:
         return
 
     # Canonicalize order
     if a <= b:
         ca, cb = a, b
-        wa, wb = effective_a, effective_b
+        wa, wb = wa_raw, wb_raw
     else:
         ca, cb = b, a
-        wa, wb = effective_b, effective_a
+        wa, wb = wb_raw, wa_raw
 
     pc = num_players
     key_a = f"wins_a_{pc}p"
     key_b = f"wins_b_{pc}p"
+    key_t = f"ties_{pc}p"
 
     for row in results:
         if row["a"] == ca and row["b"] == cb:
-            row[key_a] = row.get(key_a, 0.0) + wa
-            row[key_b] = row.get(key_b, 0.0) + wb
+            row[key_a] = row.get(key_a, 0) + wa
+            row[key_b] = row.get(key_b, 0) + wb
+            if ties_raw > 0:
+                row[key_t] = row.get(key_t, 0) + ties_raw
             return
 
-    results.append({"a": ca, "b": cb, key_a: wa, key_b: wb})
+    new_row: dict = {"a": ca, "b": cb, key_a: wa, key_b: wb}
+    if ties_raw > 0:
+        new_row[key_t] = ties_raw
+    results.append(new_row)
 
 
 def _extract_pc_results(
     results: Sequence[dict], pc: int
 ) -> list[MatchResult]:
-    """Extract MatchResult list for a specific player count."""
+    """Extract MatchResult list for a specific player count.
+
+    Ties contribute 0.5 to each side's score for the Bradley-Terry fit.
+    """
     key_a = f"wins_a_{pc}p"
     key_b = f"wins_b_{pc}p"
+    key_t = f"ties_{pc}p"
     out: list[MatchResult] = []
     for row in results:
-        wa = float(row.get(key_a, 0.0))
-        wb = float(row.get(key_b, 0.0))
-        if wa + wb <= 0:
+        wa = float(row.get(key_a, 0))
+        wb = float(row.get(key_b, 0))
+        ties = float(row.get(key_t, 0))
+        effective_a = wa + 0.5 * ties
+        effective_b = wb + 0.5 * ties
+        if effective_a + effective_b <= 0:
             continue
-        out.append(MatchResult(a=row["a"], b=row["b"], wins_a=wa, wins_b=wb))
+        out.append(MatchResult(a=row["a"], b=row["b"], wins_a=effective_a, wins_b=effective_b))
     return out
 
 
@@ -215,16 +226,17 @@ def _count_games_per_entity_per_pc(
 
     In a K-player game, one physical game produces (K-1) pairwise result
     entries per participant.  Each result row for player count `pc`
-    contributes (wins_a + wins_b) pairwise entries — divide by (pc - 1)
+    contributes (wins_a + wins_b + ties) pairwise entries — divide by (pc - 1)
     to get actual game count.
     """
     counts: dict[str, dict[int, float]] = {}
     for row in results:
         a, b = row["a"], row["b"]
         for pc in PLAYER_COUNTS:
-            wa = float(row.get(f"wins_a_{pc}p", 0.0))
-            wb = float(row.get(f"wins_b_{pc}p", 0.0))
-            pairwise = wa + wb
+            wa = float(row.get(f"wins_a_{pc}p", 0))
+            wb = float(row.get(f"wins_b_{pc}p", 0))
+            ties = float(row.get(f"ties_{pc}p", 0))
+            pairwise = wa + wb + ties
             if pairwise <= 0:
                 continue
             actual = pairwise / (pc - 1)

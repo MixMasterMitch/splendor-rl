@@ -13,7 +13,7 @@ from agent.train.loop import _latest_ckpt
 from agent.train.league import League
 from agent.train import ranking as R
 from agent.train.replay_buffer import ReplayBuffer
-from replay import players as P
+from play import players as P
 
 
 def test_load_net_from_raw_flat_state_dict_infers_arch_and_hidden(

@@ -99,7 +99,7 @@ def _scan_league_json(path: pathlib.Path, run_id: str) -> list[dict[str, Any]]:
         out.append(
             {
                 "id": model_id,
-                "label": "ML Bot",
+                "label": "RL Trained Bot",
                 "kind": "net",
                 "run": run_id,
                 "tag": tag,

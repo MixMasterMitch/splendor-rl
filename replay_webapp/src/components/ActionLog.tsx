@@ -269,7 +269,7 @@ export function ActionLog({ steps, currentStep, totalSteps, playerInfos, onJump,
           const stepIdx = i + 1;  // stepIdx 1..N matches "after step i"
           const isActive = currentStep === stepIdx;
           const playerColor = PLAYER_COLORS[step.player] ?? "#e0e6f0";
-          const playerName = playerInfos[step.player]?.name ?? `P${step.player}`;
+          const playerName = playerInfos[step.player]?.name ?? `P${step.player + 1}`;
           const phaseLabel = PHASE_LABELS[step.phase] ?? "";
 
           // State before this action: initial_state for step 0, otherwise previous step's state_after

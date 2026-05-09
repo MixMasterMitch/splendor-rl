@@ -172,6 +172,7 @@ class League:
         path = self._resolve_path(entry["path"])
         if path.exists():
             path.unlink()
+        entry["active"] = False
         for key in list(self._net_cache):
             if key[0] == str(path):
                 del self._net_cache[key]
@@ -237,6 +238,7 @@ class League:
                 "games": 0,
                 "hidden": int(net.hidden),
                 "arch": str(net.arch),
+                "active": True,
             }
         )
         if metadata:
@@ -392,33 +394,34 @@ class League:
         ratings: dict[str, float] = {}
         for entity, data in ratings_data.items():
             if data["rating"] is not None:
-                ratings[entity] = data["rating"]
+                ratings[entity] = round(data["rating"])
 
         # Count actual games per entity.
         # In a K-player game, one physical game produces (K-1) pairwise
         # result entries per participant.  Each result row for player count
-        # `pc` contributes (wins_a + wins_b) pairwise entries, but those
-        # represent the same physical games — so divide by (pc - 1) to
-        # avoid overcounting.
+        # `pc` contributes (wins_a + wins_b + ties) pairwise entries, but
+        # those represent the same physical games — so divide by (pc - 1)
+        # to avoid overcounting.
         games_by_entity: dict[str, float] = {key: 0.0 for key in ratings}
         for row in self.manifest["results"]:
             row_total = 0.0
             for pc in (2, 3, 4):
-                wa = float(row.get(f"wins_a_{pc}p", 0.0))
-                wb = float(row.get(f"wins_b_{pc}p", 0.0))
-                pairwise_count = wa + wb
+                wa = float(row.get(f"wins_a_{pc}p", 0))
+                wb = float(row.get(f"wins_b_{pc}p", 0))
+                ties = float(row.get(f"ties_{pc}p", 0))
+                pairwise_count = wa + wb + ties
                 if pairwise_count > 0:
                     row_total += pairwise_count / (pc - 1)
             # Legacy format fallback
             if row_total == 0:
-                row_total = float(row.get("games", 0.0))
+                row_total = float(row.get("games", 0))
             games_by_entity[row["a"]] = games_by_entity.get(row["a"], 0.0) + row_total
             games_by_entity[row["b"]] = games_by_entity.get(row["b"], 0.0) + row_total
 
         for entry in self.manifest["entries"]:
             entity = self._entry_entity_id(int(entry["idx"]))
             if entity in ratings:
-                entry["rating"] = float(ratings[entity])
+                entry["rating"] = round(float(ratings[entity]))
                 entry.pop("elo", None)
                 entry["games"] = int(games_by_entity.get(entity, 0))
                 # Store per-PC ratings on the entry for visibility
@@ -426,7 +429,7 @@ class League:
                 for pc in (2, 3, 4):
                     cal_key = f"calibrated_{pc}p"
                     if cal_key in data:
-                        entry[f"rating_{pc}p"] = data[cal_key]
+                        entry[f"rating_{pc}p"] = round(data[cal_key])
 
         # Persist fitted ratings for floating entities (non-anchor, non-checkpoint
         # participants like heuristic_opus that appear in results).
@@ -436,13 +439,13 @@ class League:
         for entity, data in ratings_data.items():
             if entity not in entry_entities and entity not in anchor_entities:
                 floating[entity] = {
-                    "rating": data["rating"],
+                    "rating": round(data["rating"]),
                     "games": int(games_by_entity.get(entity, 0)),
                 }
                 for pc in (2, 3, 4):
                     cal_key = f"calibrated_{pc}p"
                     if cal_key in data:
-                        floating[entity][f"rating_{pc}p"] = data[cal_key]
+                        floating[entity][f"rating_{pc}p"] = round(data[cal_key])
         if floating:
             self.manifest["floating_entities"] = floating
         self.manifest["rating_system"] = "anchored_bt_per_pc"
@@ -453,7 +456,7 @@ class League:
         e = self.entry_by_idx(idx)
         if e is None:
             return
-        e["rating"] = new_rating
+        e["rating"] = round(new_rating)
         e.pop("elo", None)
         e["games"] = games_played
         self._save_manifest()
