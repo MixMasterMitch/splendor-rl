@@ -25,9 +25,26 @@ RATING_SCALE = 1000.0
 _MIN_PROB = 1e-9
 
 PLAYER_COUNTS = (2, 3, 4)
-# Fixed calibration multipliers for scaling per-PC ratings to a common scale.
-# 2p=1x (baseline), 3p=2x, 4p=3x.
-CALIBRATION_SCALE = {2: 1.0, 3: 2.0, 4: 3.0}
+
+# Calibration is derived from the reference anchors: we scale each PC's
+# rating space so that heuristic_opus maps to the same calibrated value
+# across all player counts. 2p is the baseline (scale=1.0).
+# This replaces the old hand-picked {2: 1.0, 3: 2.0, 4: 3.0} multipliers.
+_CALIBRATION_REFERENCE_ENTITY = "heuristic_opus"
+
+# Per-player-count reference anchors derived from the heuristic triangle
+# (heuristic vs random, heuristic_opus vs random, heuristic vs heuristic_opus).
+# These are fixed BT-MLE fits from the reference matchups and prevent rating
+# scale drift as the ML checkpoint pool evolves.
+REFERENCE_ANCHORS_PER_PC: dict[int, dict[str, float]] = {
+    2: {"random": 1000.0, "heuristic": 2679.6, "heuristic_opus": 3138.6},
+    3: {"random": 1000.0, "heuristic": 2454.6, "heuristic_opus": 2845.4},
+    4: {"random": 1000.0, "heuristic": 1487.2, "heuristic_opus": 1823.5},
+}
+
+# Minimum number of anchors required to disable the Gaussian prior.
+# With >=3 anchors the fit is well-posed without regularization.
+_MIN_ANCHORS_NO_PRIOR = 3
 
 
 @dataclasses.dataclass(frozen=True)
@@ -143,14 +160,27 @@ def fit_ratings_for_pc(
     initial: Mapping[str, float] | None = None,
     max_iter: int = 200,
     prior_sigma: float = 600.0,
+    use_reference_anchors: bool = True,
 ) -> dict[str, float]:
     """Fit Bradley-Terry ratings for a single player count.
 
+    When ``use_reference_anchors`` is True (default), the per-PC reference
+    anchors from REFERENCE_ANCHORS_PER_PC are merged into the anchor set.
+    This pins the rating scale to the fixed heuristic triangle and prevents
+    drift as the ML checkpoint pool evolves.
+
     A Gaussian prior (L2 regularization) with std=prior_sigma pulls ratings
     toward DEFAULT_INITIAL_RATING, preventing divergence when an entity has
-    a perfect record against some opponents.
+    a perfect record against some opponents. The prior is automatically
+    disabled when there are enough anchors (>=3) to make the fit well-posed.
     """
-    anchors_map = dict(DEFAULT_ANCHORS if anchors is None else anchors)
+    base_anchors = dict(DEFAULT_ANCHORS if anchors is None else anchors)
+    if use_reference_anchors:
+        # Merge per-PC reference anchors (reference values take precedence)
+        ref = REFERENCE_ANCHORS_PER_PC.get(pc, {})
+        for k, v in ref.items():
+            base_anchors.setdefault(k, v)
+    anchors_map = base_anchors
     initial_map = {} if initial is None else dict(initial)
 
     matches = _extract_pc_results(results, pc)
@@ -166,6 +196,10 @@ def fit_ratings_for_pc(
     ratings = dict(anchors_map)
     if not free_ids:
         return ratings
+
+    # Disable the Gaussian prior when we have enough anchors to make the
+    # fit well-posed. With 3+ anchors the scale is fully determined.
+    use_prior = len(anchors_map) < _MIN_ANCHORS_NO_PRIOR
 
     init_values = [
         float(initial_map.get(pid, DEFAULT_INITIAL_RATING))
@@ -201,8 +235,10 @@ def fit_ratings_for_pc(
             score_a = torch.tensor(match.score_a, dtype=torch.float64)
             score_b = torch.tensor(match.total_games - match.score_a, dtype=torch.float64)
             loss = loss - score_a * torch.log(prob_a) - score_b * torch.log1p(-prob_a)
-        # Gaussian prior: penalize deviation from prior_mean
-        loss = loss + 0.5 * ((params - prior_mean) ** 2).sum() / prior_var
+        # Gaussian prior: penalize deviation from prior_mean (only when
+        # there are too few anchors to fully determine the scale).
+        if use_prior:
+            loss = loss + 0.5 * ((params - prior_mean) ** 2).sum() / prior_var
         loss.backward()
         return loss
 
@@ -214,8 +250,42 @@ def fit_ratings_for_pc(
     return out
 
 
+def _compute_calibration_scales() -> dict[int, float]:
+    """Derive per-PC calibration scales from the reference anchors.
+
+    The scale maps raw per-PC rating differences (from random=1000) onto the
+    2p scale, using heuristic_opus as the alignment entity. This ensures
+    heuristic_opus has the same calibrated rating at every player count,
+    making the combined rating a meaningful cross-PC average.
+    """
+    ref_entity = _CALIBRATION_REFERENCE_ENTITY
+    baseline_pc = 2
+    anchor_rating = RANDOM_ANCHOR_RATING
+
+    baseline_diff = REFERENCE_ANCHORS_PER_PC[baseline_pc][ref_entity] - anchor_rating
+    if baseline_diff <= 0:
+        # Fallback: if reference entity is at or below anchor, use 1.0 everywhere
+        return {pc: 1.0 for pc in PLAYER_COUNTS}
+
+    scales: dict[int, float] = {}
+    for pc in PLAYER_COUNTS:
+        ref_raw = REFERENCE_ANCHORS_PER_PC[pc].get(ref_entity)
+        if ref_raw is None or (ref_raw - anchor_rating) <= 0:
+            scales[pc] = 1.0
+        else:
+            scales[pc] = baseline_diff / (ref_raw - anchor_rating)
+    return scales
+
+
+CALIBRATION_SCALE: dict[int, float] = _compute_calibration_scales()
+
+
 def calibrate_rating(raw: float, pc: int) -> float:
-    """Scale a raw per-PC rating to the common (2p-equivalent) scale."""
+    """Scale a raw per-PC rating to the common (2p-equivalent) scale.
+
+    Uses the reference-anchor-derived scale so that heuristic_opus has the
+    same calibrated value at every player count.
+    """
     return RANDOM_ANCHOR_RATING + (raw - RANDOM_ANCHOR_RATING) * CALIBRATION_SCALE[pc]
 
 
@@ -251,11 +321,15 @@ def compute_ratings(
     results: Sequence[dict],
     anchors: Mapping[str, float] | None = None,
     initial: Mapping[str, float] | None = None,
+    use_reference_anchors: bool = True,
 ) -> dict[str, dict]:
     """Compute per-PC and combined ratings for all entities.
 
     The combined rating is a weighted average of calibrated per-PC ratings,
     weighted by the actual number of games played at each player count.
+
+    When ``use_reference_anchors`` is True (default), per-PC reference
+    anchors are used to pin the rating scale.
 
     Returns: {entity: {"rating_2p": ..., "rating_3p": ..., "rating_4p": ...,
                         "calibrated_2p": ..., "calibrated_3p": ..., "calibrated_4p": ...,
@@ -263,7 +337,10 @@ def compute_ratings(
     """
     per_pc: dict[int, dict[str, float]] = {}
     for pc in PLAYER_COUNTS:
-        per_pc[pc] = fit_ratings_for_pc(results, pc, anchors=anchors, initial=initial)
+        per_pc[pc] = fit_ratings_for_pc(
+            results, pc, anchors=anchors, initial=initial,
+            use_reference_anchors=use_reference_anchors,
+        )
 
     # Count actual games per entity per player count for weighting
     games_per_entity_pc = _count_games_per_entity_per_pc(results)

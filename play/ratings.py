@@ -4,8 +4,9 @@ Bot ratings are read directly from the league manifest (pre-computed by the
 training pipeline). Human ratings are computed per-PC via single-variable
 bisection against fixed bot anchors — O(1) per human, no multi-entity MLE.
 
-Per-PC ratings are calibrated to a common scale using hardcoded multipliers
-and combined into a single rating weighted by games played at each PC.
+Per-PC ratings are calibrated to a common scale using reference-anchor-derived
+multipliers (heuristic_opus aligned across all PCs) and combined into a single
+rating weighted by games played at each PC.
 """
 
 from __future__ import annotations
@@ -27,7 +28,23 @@ RANDOM_ANCHOR_RATING: float = 1000.0
 DEFAULT_INITIAL_RATING: float = 1500.0
 RATING_SCALE: float = 1000.0
 PLAYER_COUNTS = (2, 3, 4)
-CALIBRATION_SCALE = {2: 1.0, 3: 2.0, 4: 3.0}
+
+# Per-player-count reference anchors (mirrored from agent/train/ranking.py).
+# These pin the rating scale to the fixed heuristic triangle.
+REFERENCE_ANCHORS_PER_PC: dict[int, dict[str, float]] = {
+    2: {"random": 1000.0, "heuristic": 2679.6, "heuristic_opus": 3138.6},
+    3: {"random": 1000.0, "heuristic": 2454.6, "heuristic_opus": 2845.4},
+    4: {"random": 1000.0, "heuristic": 1487.2, "heuristic_opus": 1823.5},
+}
+
+# Calibration scales derived from reference anchors: scale each PC so that
+# heuristic_opus maps to the same calibrated value (2p baseline) at every PC.
+_CALIBRATION_REF_ENTITY = "heuristic_opus"
+_BASELINE_DIFF = REFERENCE_ANCHORS_PER_PC[2][_CALIBRATION_REF_ENTITY] - RANDOM_ANCHOR_RATING
+CALIBRATION_SCALE: dict[int, float] = {
+    pc: _BASELINE_DIFF / max(1e-9, REFERENCE_ANCHORS_PER_PC[pc][_CALIBRATION_REF_ENTITY] - RANDOM_ANCHOR_RATING)
+    for pc in PLAYER_COUNTS
+}
 
 # Bayesian regularization for per-PC rating fits.
 PRIOR_MEAN_RATING: float = 1500.0

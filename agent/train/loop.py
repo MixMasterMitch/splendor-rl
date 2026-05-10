@@ -390,6 +390,38 @@ def run_loop(run: Run, cfg: LoopConfig, explicit_fields: set[str] | None = None)
     # Per-phase timing instrumentation
     phase_timer = PhaseTimer(device=device, sync_cuda=True)
 
+    # -- On resume: check if the current checkpoint has eval games. If not,
+    # kick off an async eval immediately so we don't lose a checkpoint_every
+    # worth of iterations before getting a rating for it. --
+    if start_iter > 0:
+        resume_tag = f"i{start_iter}"
+        resume_entry = None
+        for entry in league.list_entries():
+            if entry.get("tag") == resume_tag:
+                resume_entry = entry
+                break
+        if resume_entry is not None and int(resume_entry.get("games", 0)) == 0:
+            resume_entity = f"ckpt:{resume_entry['idx']}"
+            run.event("resume_eval_needed", {
+                "iteration": start_iter,
+                "entity": resume_entity,
+                "reason": "resumed checkpoint has no eval games",
+            })
+            snapshot = {k: v.detach().cpu().clone() for k, v in net.state_dict().items()}
+            league_paths = _get_league_opponent_paths(
+                league, cfg.eval_league_opponents, seed=start_iter * 31
+            )
+            entries = league.list_entries()
+            _last_eval_league_map = {}
+            for i, lpath in enumerate(league_paths):
+                for entry in entries:
+                    if str(league._resolve_path(entry["path"])) == lpath:
+                        _last_eval_league_map[f"league_{i}"] = int(entry["idx"])
+                        break
+            _last_eval_entity = resume_entity
+            eval_handle.launch(snapshot, league_paths, start_iter, seed=start_iter * 7)
+            run.event("resume_eval_launched", {"iteration": start_iter, "entity": resume_entity})
+
     while True:
         elapsed_min = (time.monotonic() - t_start) / 60.0
         iters_done = cur_iter - start_iter
