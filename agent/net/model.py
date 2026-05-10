@@ -1,14 +1,20 @@
 """Policy + value network.
 
-Architecture (V1):
+Architecture (V4 — per-PC heads):
 - MLP trunk over `global_feat` -> hidden vector h_g (dim H)
+- Learned player-count embedding (3×H) added to h_g to condition on game mode
 - Per-card MLP embedding of `card_feat` -> h_c (B, N_CARDS, H)
 - Cross attention: query = h_g projected, keys/values = h_c. Output: h_attn (B, H)
-- Policy head: MLP over (h_g + h_attn) producing `NUM_ACTIONS` logits. Masked
-  before softmax.
-- Value head: MLP over (h_g + h_attn) producing `MAX_PLAYERS` scalars representing
-  each seat's predicted final placement score (seat 0 = current player, seats
-  rotated as in encoder). Inactive seats' targets are masked at loss time.
+- Per-PC policy heads (3×): MLP over (h_g + h_attn) producing `NUM_ACTIONS` logits.
+  Routed by player count. Masked before softmax.
+- Per-PC value heads (3×): MLP over (h_g + h_attn) producing `MAX_PLAYERS` scalars
+  representing each seat's predicted final placement score. Routed by player count.
+
+The per-PC heads allow each player count (2p/3p/4p) to develop specialized
+strategy without interfering with other modes. The shared trunk learns game
+fundamentals that transfer across all player counts.
+
+Old checkpoints with shared heads are auto-migrated on load (see checkpointing.py).
 """
 
 from __future__ import annotations
@@ -40,6 +46,10 @@ class SplendorNet(nn.Module):
         self.hidden = hidden
         self.arch = arch
         self._compiled = False
+        # Learned player-count embedding: index 0=2p, 1=3p, 2=4p.
+        # Added to the global trunk output to condition the representation
+        # on game mode before attention and heads.
+        self.pc_embed = nn.Embedding(3, hidden)
         if arch == "attn":
             self.g_trunk = nn.Sequential(
                 nn.Linear(ENC.D_GLOBAL, hidden),
@@ -72,16 +82,20 @@ class SplendorNet(nn.Module):
             )
         else:
             raise ValueError(f"unsupported SplendorNet arch: {arch}")
-        self.policy_head = nn.Sequential(
-            nn.Linear(hidden * 2, hidden),
-            nn.GELU(),
-            nn.Linear(hidden, NUM_ACTIONS),
-        )
-        self.value_head = nn.Sequential(
-            nn.Linear(hidden * 2, hidden),
-            nn.GELU(),
-            nn.Linear(hidden, BE.MAX_PLAYERS),
-        )
+        # Per-player-count policy and value heads.
+        # Each PC gets its own 2-layer MLP so it can specialize strategy
+        # without interfering with other PCs. Initialized from the same
+        # weights at migration time for warm-start continuity.
+        self.policy_heads = nn.ModuleDict({
+            "0": nn.Sequential(nn.Linear(hidden * 2, hidden), nn.GELU(), nn.Linear(hidden, NUM_ACTIONS)),
+            "1": nn.Sequential(nn.Linear(hidden * 2, hidden), nn.GELU(), nn.Linear(hidden, NUM_ACTIONS)),
+            "2": nn.Sequential(nn.Linear(hidden * 2, hidden), nn.GELU(), nn.Linear(hidden, NUM_ACTIONS)),
+        })
+        self.value_heads = nn.ModuleDict({
+            "0": nn.Sequential(nn.Linear(hidden * 2, hidden), nn.GELU(), nn.Linear(hidden, BE.MAX_PLAYERS)),
+            "1": nn.Sequential(nn.Linear(hidden * 2, hidden), nn.GELU(), nn.Linear(hidden, BE.MAX_PLAYERS)),
+            "2": nn.Sequential(nn.Linear(hidden * 2, hidden), nn.GELU(), nn.Linear(hidden, BE.MAX_PLAYERS)),
+        })
 
         self._compile_mode = compile_mode
         if compile_forward:
@@ -95,22 +109,32 @@ class SplendorNet(nn.Module):
         # model shape skip recompilation.
         import os
         os.environ.setdefault("TORCHINDUCTOR_FX_GRAPH_CACHE", "1")
+        # Suppress CUDAGraph dynamic shape warnings — with dynamic=True the
+        # compiled kernels handle variable batch sizes correctly; the warning
+        # is about CUDAGraph caching overhead which is negligible here.
+        import torch._inductor.config
+        torch._inductor.config.triton.cudagraph_dynamic_shape_warn_limit = None
+        # Allow .item() calls in compiled graphs without graph-break warnings.
+        torch._dynamo.config.capture_scalar_outputs = True
+        # dynamic=True: compile a single graph that handles any batch size via
+        # symbolic shapes. Avoids recompilation thrashing during league selfplay
+        # where 24+ opponents each get different-sized subsets per turn.
         compiled = torch.compile(
             self._forward_impl,
             mode=self._compile_mode,
-            dynamic=False,
+            dynamic=True,
             fullgraph=False,
         )
         compiled_value = torch.compile(
             self._forward_value_impl,
             mode=self._compile_mode,
-            dynamic=False,
+            dynamic=True,
             fullgraph=False,
         )
         compiled_raw = torch.compile(
             self._forward_raw_impl,
             mode=self._compile_mode,
-            dynamic=False,
+            dynamic=True,
             fullgraph=False,
         )
         self._compiled_forward = compiled
@@ -159,6 +183,10 @@ class SplendorNet(nn.Module):
     ) -> torch.Tensor:
         if self.arch == "attn":
             h_g = self.g_trunk(global_feat)
+            # Add learned player-count conditioning.
+            # PC one-hot is at global_feat[:, 10:13] (after gems=6, phase_scalar=1, phase_oh=3).
+            pc_idx = global_feat[:, 10:13].argmax(dim=-1)  # (B,) in {0,1,2}
+            h_g = h_g + self.pc_embed(pc_idx)
             h_c = self.c_embed(card_feat)
             query = h_g.unsqueeze(1)  # (B,1,H)
             attn_out, _ = self.attn(query, h_c, h_c, need_weights=False)
@@ -167,7 +195,17 @@ class SplendorNet(nn.Module):
         flat_input = torch.cat(
             [global_feat, card_feat.reshape(card_feat.shape[0], -1)], dim=-1
         )
-        return self.flat_trunk(flat_input)
+        h = self.flat_trunk(flat_input)
+        # Add learned player-count conditioning for flat arch too.
+        pc_idx = global_feat[:, 10:13].argmax(dim=-1)
+        # For flat arch, hidden*2 output; add pc_embed to first half.
+        pc_vec = self.pc_embed(pc_idx)
+        h[:, :self.hidden] = h[:, :self.hidden] + pc_vec
+        return h
+
+    def _pc_idx_from_global(self, global_feat: torch.Tensor) -> torch.Tensor:
+        """Extract player-count index (0=2p, 1=3p, 2=4p) from global_feat."""
+        return global_feat[:, 10:13].argmax(dim=-1)  # (B,)
 
     def _forward_impl(
         self,
@@ -187,8 +225,27 @@ class SplendorNet(nn.Module):
         card_feat: torch.Tensor,
     ) -> tuple[torch.Tensor, torch.Tensor]:
         combined = self._combined_features(global_feat, card_feat)
-        logits = self.policy_head(combined)
-        value = torch.tanh(self.value_head(combined))
+        pc_idx = self._pc_idx_from_global(global_feat)
+
+        # Route through PC-specific heads. In a batch all samples have the
+        # same PC (selfplay runs one PC per iteration), so we fast-path that
+        # common case. Mixed-PC batches (e.g. replay buffer) use scatter.
+        unique_pcs = pc_idx.unique()
+        if unique_pcs.numel() == 1:
+            pc = str(int(unique_pcs.item()))
+            logits = self.policy_heads[pc](combined)
+            value = torch.tanh(self.value_heads[pc](combined))
+        else:
+            B = combined.shape[0]
+            # Run all heads and gather — avoids dtype issues with AMP and
+            # graph breaks from indexed assignment.
+            all_logits = torch.stack([self.policy_heads[str(i)](combined) for i in range(3)], dim=0)  # (3, B, A)
+            all_values = torch.stack([torch.tanh(self.value_heads[str(i)](combined)) for i in range(3)], dim=0)  # (3, B, P)
+            # Gather by pc_idx: (B,) -> index into dim 0
+            idx_p = pc_idx.unsqueeze(-1).expand(-1, all_logits.shape[-1]).unsqueeze(0)  # (1, B, A)
+            logits = all_logits.gather(0, idx_p).squeeze(0)  # (B, A)
+            idx_v = pc_idx.unsqueeze(-1).expand(-1, all_values.shape[-1]).unsqueeze(0)  # (1, B, P)
+            value = all_values.gather(0, idx_v).squeeze(0)  # (B, P)
         return logits, value
 
     def _forward_value_impl(
@@ -197,7 +254,16 @@ class SplendorNet(nn.Module):
         card_feat: torch.Tensor,
     ) -> torch.Tensor:
         combined = self._combined_features(global_feat, card_feat)
-        return torch.tanh(self.value_head(combined))
+        pc_idx = self._pc_idx_from_global(global_feat)
+
+        unique_pcs = pc_idx.unique()
+        if unique_pcs.numel() == 1:
+            pc = str(int(unique_pcs.item()))
+            return torch.tanh(self.value_heads[pc](combined))
+        else:
+            all_values = torch.stack([torch.tanh(self.value_heads[str(i)](combined)) for i in range(3)], dim=0)
+            idx_v = pc_idx.unsqueeze(-1).expand(-1, all_values.shape[-1]).unsqueeze(0)
+            return all_values.gather(0, idx_v).squeeze(0)
 
     def net_device(self) -> torch.device:
         return next(self.parameters()).device

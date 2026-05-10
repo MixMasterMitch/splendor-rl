@@ -45,6 +45,7 @@ from .learner import make_optimizer, step as learner_step
 from .league import League
 from .league_selfplay import run_league_selfplay
 from .replay_buffer import ReplayBuffer
+from .profiling import PhaseTimer
 from .selfplay import run_selfplay
 from .unified_eval import UnifiedEvalConfig, UnifiedEvalHandle
 
@@ -59,11 +60,14 @@ class LoopConfig:
     selfplay_games: int = 512
     selfplay_sims: int = 8
     selfplay_max_turns: int = 160
+    # Per-player-count turn scaling: max_turns = turns_per_player * num_players.
+    # When set > 0, overrides selfplay_max_turns with a per-PC computed value.
+    selfplay_turns_per_player: int = 50
     replay_capacity: int = 600_000
     learner_batch: int = 256
     learner_steps_per_iter: int = 192
     entropy_bonus: float = 0.015
-    checkpoint_every: int = 5
+    checkpoint_every: int = 50
     lr: float = 3e-4
     weight_decay: float = 1e-4
     max_iters: int = 20
@@ -71,13 +75,15 @@ class LoopConfig:
     init_from: str = ""
     league_selfplay_every: int = 3
     league_opponent_prob: float = 0.5
+    league_opponent_sims: int = 4  # Opponents don't need full MCTS; saves ~5x on league iters
+    league_distinct_opponents: int = 4  # Cap distinct nets per episode for GPU batching
     league_max_entries: int = 24
     league_keep_recent: int = 8
     rating_random_anchor: float = 1000.0
     # Exploration hyperparameters for self-play root MCTS.
     dirichlet_alpha: float = 0.15
     dirichlet_mix: float = 0.40
-    time_discount: float = 0.995
+    time_discount: float = 1.0
     q_scale: float = 22.0
     use_amp: bool = False
     # Number of recent archive checkpoints to keep. 0 = keep all.
@@ -88,30 +94,45 @@ class LoopConfig:
     eval_games: int = 512
     eval_sims: int = 64
     eval_max_turns: int = 200
+    # Per-player-count turn scaling for eval: max_turns = eval_turns_per_player * num_players.
+    # When set > 0, overrides eval_max_turns with a per-PC computed value.
+    eval_turns_per_player: int = 60
     eval_weight_2p: float = 1.0
-    eval_weight_3p: float = 0.5
+    eval_weight_3p: float = 1.0
     eval_weight_4p: float = 1.0
     eval_league_opponents: int = 4
 
 
 # GPU-optimized defaults applied when the resolved device is CUDA.
+# AMP and compile together give ~1.7x self-play throughput on attn/256.
+# See agent/scripts/profile_selfplay.py for benchmarks.
 _GPU_DEFAULTS: dict[str, object] = {
     "selfplay_games": 4096,
     "selfplay_sims": 32,
     "learner_batch": 4096,
     "replay_capacity": 820_000,
     "learner_steps_per_iter": 64,
+    "use_amp": True,
+    "compile_net": True,
 }
 
 
-def apply_device_defaults(cfg: LoopConfig, device: str) -> LoopConfig:
-    """Return a new LoopConfig with device-conditional defaults applied."""
+def apply_device_defaults(cfg: LoopConfig, device: str, explicit_fields: set[str] | None = None) -> LoopConfig:
+    """Return a new LoopConfig with device-conditional defaults applied.
+
+    Fields listed in ``explicit_fields`` are never overridden, even if they
+    match the factory default. This allows callers to distinguish "user didn't
+    specify" from "user explicitly set to the default value".
+    """
     if not device.startswith("cuda"):
         return dataclasses.replace(cfg)
 
+    explicit_fields = explicit_fields or set()
     factory_defaults = LoopConfig()
     overrides: dict[str, object] = {}
     for field_name, gpu_value in _GPU_DEFAULTS.items():
+        if field_name in explicit_fields:
+            continue
         current_value = getattr(cfg, field_name)
         default_value = getattr(factory_defaults, field_name)
         if current_value == default_value:
@@ -137,6 +158,30 @@ def _latest_ckpt(ckpt_dir: pathlib.Path) -> Optional[pathlib.Path]:
         return resume_ckpt
     ckpts = sorted(ckpt_dir.glob("iter_*.pt"))
     return ckpts[-1] if ckpts else None
+
+
+def _league_trigger(cur_iter: int, num_players: int, every: int) -> bool:
+    """Decide whether this (iter, num_players) should use league opponents.
+
+    Previously this was a plain ``cur_iter % every == 0`` check, which was
+    order-sensitive when ``mixed_players`` and ``every`` shared factors. For
+    example, with ``mixed_players=[2,3,4]`` and ``every=3``, the trigger
+    only fired on iterations assigned to the third element (4p), so 2p and
+    3p never got league opponents. That starved 3p self-play of opponent
+    diversity and was the dominant cause of the 3p-below-random plateau.
+
+    Hashing ``(iter, num_players)`` gives each PC its own independent coin
+    flip so the trigger rate per PC is ~1/every regardless of how many
+    entries are in ``mixed_players``.
+    """
+    if every <= 1:
+        return every == 1
+    # md5 is overkill but cheap and gives a well-distributed mix.
+    import hashlib
+    h = hashlib.md5(f"{cur_iter}|{num_players}".encode()).digest()
+    # Use first 8 bytes -> unsigned 64-bit int.
+    n = int.from_bytes(h[:8], "big")
+    return (n % every) == 0
 
 
 def _cleanup_old_checkpoints(ckpt_dir: pathlib.Path, keep: int, run: Run) -> None:
@@ -212,7 +257,7 @@ def _apply_eval_results_to_league(
 
 
 
-def run_loop(run: Run, cfg: LoopConfig) -> dict:
+def run_loop(run: Run, cfg: LoopConfig, explicit_fields: set[str] | None = None) -> dict:
     run.write_config_if_missing(dataclasses.asdict(cfg))
     run.event("loop_start", {"config": dataclasses.asdict(cfg)})
 
@@ -228,7 +273,7 @@ def run_loop(run: Run, cfg: LoopConfig) -> dict:
         },
     )
 
-    cfg = apply_device_defaults(cfg, device)
+    cfg = apply_device_defaults(cfg, device, explicit_fields=explicit_fields)
     _validate_buffer_capacity(cfg, run)
     run.event("effective_config", dataclasses.asdict(cfg))
 
@@ -330,6 +375,7 @@ def run_loop(run: Run, cfg: LoopConfig) -> dict:
             total_games=cfg.eval_games,
             num_sims=cfg.eval_sims,
             max_turns=cfg.eval_max_turns,
+            turns_per_player=cfg.eval_turns_per_player,
             weight_2p=cfg.eval_weight_2p,
             weight_3p=cfg.eval_weight_3p,
             weight_4p=cfg.eval_weight_4p,
@@ -340,6 +386,9 @@ def run_loop(run: Run, cfg: LoopConfig) -> dict:
     _last_eval_league_map: dict[str, int] = {}
     # Track which entity the eval was launched for (so results go to the right entry)
     _last_eval_entity: str = ""
+
+    # Per-phase timing instrumentation
+    phase_timer = PhaseTimer(device=device, sync_cuda=True)
 
     while True:
         elapsed_min = (time.monotonic() - t_start) / 60.0
@@ -407,41 +456,52 @@ def run_loop(run: Run, cfg: LoopConfig) -> dict:
         else:
             iter_num_players = cfg.num_players
 
+        # Compute per-PC max_turns for selfplay
+        sp_max_turns = (
+            cfg.selfplay_turns_per_player * iter_num_players
+            if cfg.selfplay_turns_per_player > 0
+            else cfg.selfplay_max_turns
+        )
+
         use_league = (
             cfg.league_selfplay_every > 0
-            and cur_iter % cfg.league_selfplay_every == 0
+            and _league_trigger(cur_iter, iter_num_players, cfg.league_selfplay_every)
             and len(league.list_entries()) > 0
         )
         if use_league:
-            sp_metrics = run_league_selfplay(
-                net,
-                buffer,
-                league,
-                num_players=iter_num_players,
-                num_games=cfg.selfplay_games,
-                device=device,
-                max_turns=cfg.selfplay_max_turns,
-                num_sims=cfg.selfplay_sims,
-                seed=cur_iter,
-                league_prob=cfg.league_opponent_prob,
-                time_discount=cfg.time_discount,
-            )
+            with phase_timer.phase("selfplay"):
+                sp_metrics = run_league_selfplay(
+                    net,
+                    buffer,
+                    league,
+                    num_players=iter_num_players,
+                    num_games=cfg.selfplay_games,
+                    device=device,
+                    max_turns=sp_max_turns,
+                    num_sims=cfg.selfplay_sims,
+                    seed=cur_iter,
+                    league_prob=cfg.league_opponent_prob,
+                    time_discount=cfg.time_discount,
+                    opponent_sims=cfg.league_opponent_sims,
+                    max_distinct_opponents=cfg.league_distinct_opponents,
+                )
             run.event("league_selfplay_done", {"iter": cur_iter, "num_players": iter_num_players, **sp_metrics})
         else:
-            sp_metrics = run_selfplay(
-                net,
-                buffer,
-                num_players=iter_num_players,
-                num_games=cfg.selfplay_games,
-                device=device,
-                max_turns=cfg.selfplay_max_turns,
-                num_sims=cfg.selfplay_sims,
-                seed=cur_iter,
-                time_discount=cfg.time_discount,
-                dirichlet_alpha=cfg.dirichlet_alpha,
-                dirichlet_mix=cfg.dirichlet_mix,
-                q_scale=cfg.q_scale,
-            )
+            with phase_timer.phase("selfplay"):
+                sp_metrics = run_selfplay(
+                    net,
+                    buffer,
+                    num_players=iter_num_players,
+                    num_games=cfg.selfplay_games,
+                    device=device,
+                    max_turns=sp_max_turns,
+                    num_sims=cfg.selfplay_sims,
+                    seed=cur_iter,
+                    time_discount=cfg.time_discount,
+                    dirichlet_alpha=cfg.dirichlet_alpha,
+                    dirichlet_mix=cfg.dirichlet_mix,
+                    q_scale=cfg.q_scale,
+                )
             run.event("selfplay_done", {"iter": cur_iter, "num_players": iter_num_players, **sp_metrics})
 
         # Train
@@ -450,23 +510,29 @@ def run_loop(run: Run, cfg: LoopConfig) -> dict:
             run.write_heartbeat({"iter": cur_iter, "phase": "learner"})
             accum = {"loss": 0.0, "policy_loss": 0.0, "value_loss": 0.0, "entropy": 0.0}
             steps = 0
-            for _ in range(cfg.learner_steps_per_iter):
-                m = learner_step(
-                    net, buffer, optim,
-                    batch_size=cfg.learner_batch,
-                    entropy_bonus=cfg.entropy_bonus,
-                    device=device,
-                    grad_scaler=grad_scaler,
-                )
-                for k, v in m.items():
-                    accum[k] = accum.get(k, 0.0) + v
-                steps += 1
+            with phase_timer.phase("learner"):
+                for _ in range(cfg.learner_steps_per_iter):
+                    m = learner_step(
+                        net, buffer, optim,
+                        batch_size=cfg.learner_batch,
+                        entropy_bonus=cfg.entropy_bonus,
+                        device=device,
+                        grad_scaler=grad_scaler,
+                    )
+                    for k, v in m.items():
+                        accum[k] = accum.get(k, 0.0) + v
+                    steps += 1
             for k in accum:
                 accum[k] /= max(steps, 1)
             train_metrics = accum
             run.event("learner_done", {"iter": cur_iter, **train_metrics})
         else:
             run.event("learner_skipped_empty_buffer", {"iter": cur_iter, "buffer": len(buffer)})
+
+        # Emit per-iteration phase timing
+        iter_times = phase_timer.iter_summary()
+        if iter_times:
+            run.event("iter_timing", {"iter": cur_iter, **{f"t_{k}_s": round(v, 3) for k, v in iter_times.items()}})
 
         # -- Checkpoint + Unified Eval (every checkpoint_every iterations) --
         if cur_iter % cfg.checkpoint_every == 0:

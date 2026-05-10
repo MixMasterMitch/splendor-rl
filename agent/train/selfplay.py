@@ -85,7 +85,7 @@ def run_selfplay(
     num_sims: int = 4,
     seed: int = 0,
     temperature_schedule: Optional[callable] = None,
-    time_discount: float = 0.995,
+    time_discount: float = 1.0,
     dirichlet_alpha: float = 0.3,
     dirichlet_mix: float = 0.25,
     q_scale: float = 10.0,

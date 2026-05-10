@@ -34,8 +34,7 @@ def _infer_arch(state_dict: dict[str, torch.Tensor]) -> tuple[int, str]:
 
     The ``flat`` architecture has a ``flat_trunk.0.weight`` key while the
     ``attn`` architecture has ``g_trunk.0.weight``.  Hidden size is derived
-    from the policy head's input dimension (``policy_head.0.weight`` has
-    shape ``[hidden, hidden*2]``).
+    from the policy head's input dimension.
     """
     if "flat_trunk.0.weight" in state_dict:
         arch = "flat"
@@ -44,8 +43,13 @@ def _infer_arch(state_dict: dict[str, torch.Tensor]) -> tuple[int, str]:
     else:
         raise ValueError("Cannot infer arch from state_dict keys")
 
-    # policy_head.0.weight has shape (hidden, hidden*2)
-    hidden = int(state_dict["policy_head.0.weight"].shape[0])
+    # Support both old (policy_head.0.weight) and new (policy_heads.0.0.weight) layouts.
+    if "policy_head.0.weight" in state_dict:
+        hidden = int(state_dict["policy_head.0.weight"].shape[0])
+    elif "policy_heads.0.0.weight" in state_dict:
+        hidden = int(state_dict["policy_heads.0.0.weight"].shape[0])
+    else:
+        raise ValueError("Cannot infer hidden size: no policy head weight found in state_dict")
     return hidden, arch
 
 
@@ -61,9 +65,12 @@ class UnifiedEvalConfig:
     total_games: int = 512
     num_sims: int = 64
     max_turns: int = 200
-    # Player count weights: 2p=1.0, 3p=0.5, 4p=1.0
+    # Per-player-count turn scaling: max_turns = turns_per_player * num_players.
+    # When set > 0, overrides max_turns with a per-PC computed value.
+    turns_per_player: int = 60
+    # Player count weights: 2p=1.0, 3p=1.0, 4p=1.0
     weight_2p: float = 1.0
-    weight_3p: float = 0.5
+    weight_3p: float = 1.0
     weight_4p: float = 1.0
     # Number of league opponents to sample
     league_opponents: int = 4
@@ -354,13 +361,20 @@ def run_unified_eval(
     for num_players, num_games in [(2, n2), (3, n3), (4, n4)]:
         if num_games == 0:
             continue
+        # Compute per-PC max_turns: use turns_per_player scaling if set,
+        # otherwise fall back to the scalar max_turns.
+        effective_max_turns = (
+            config.turns_per_player * num_players
+            if config.turns_per_player > 0
+            else config.max_turns
+        )
         pairwise, metrics = _run_multiplayer_games(
             num_players=num_players,
             num_games=num_games,
             policies=policies,
             eval_agent_name=eval_agent_name,
             seed=seed + num_players * 1000,
-            max_turns=config.max_turns,
+            max_turns=effective_max_turns,
         )
         all_pairwise.extend(pairwise)
         all_metrics.update(metrics)

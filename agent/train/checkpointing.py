@@ -110,6 +110,62 @@ def checkpoint_net_spec(payload: dict[str, object]) -> NetSpec:
     return NetSpec(hidden=hidden, arch=arch)
 
 
+def _migrate_state_dict(sd: dict[str, "torch.Tensor"], net: M.SplendorNet) -> dict[str, "torch.Tensor"]:
+    """Auto-migrate old state dicts to the current model architecture.
+
+    Handles:
+    - Missing pc_embed.weight: initialized to zeros.
+    - g_trunk.0.weight / flat_trunk.0.weight size mismatch from D_GLOBAL change
+      (old had 1 dim for num_players scalar, new has 3 for one-hot): zero-pads
+      2 columns after position 10.
+    - Shared policy_head/value_head -> per-PC policy_heads/value_heads: replicates
+      the shared weights into all 3 heads.
+    """
+    import torch as _torch
+
+    new_sd = dict(sd)
+    hidden = net.hidden
+
+    # Detect if migration is needed
+    needs_migration = (
+        "pc_embed.weight" not in new_sd
+        or "policy_head.0.weight" in new_sd  # old shared head still present
+    )
+
+    if not needs_migration:
+        return new_sd
+
+    # 1. Expand first linear layer for the 2 extra input dims
+    for trunk_key in ("g_trunk.0.weight", "flat_trunk.0.weight"):
+        if trunk_key in new_sd:
+            w = new_sd[trunk_key]
+            expected_in = net.state_dict()[trunk_key].shape[1]
+            if w.shape[1] < expected_in:
+                prefix = w[:, :11]
+                suffix = w[:, 11:]
+                pad = _torch.zeros(w.shape[0], expected_in - w.shape[1], dtype=w.dtype, device=w.device)
+                new_sd[trunk_key] = _torch.cat([prefix, pad, suffix], dim=1)
+
+    # 2. Add pc_embed.weight as zeros
+    if "pc_embed.weight" not in new_sd:
+        new_sd["pc_embed.weight"] = _torch.zeros(3, hidden)
+
+    # 3. Convert shared heads to per-PC heads
+    for head_name in ("policy_head", "value_head"):
+        heads_name = head_name.replace("_head", "_heads")
+        old_keys = [k for k in new_sd if k.startswith(f"{head_name}.")]
+        new_keys = [k for k in new_sd if k.startswith(f"{heads_name}.")]
+        if old_keys and not new_keys:
+            for old_key in list(old_keys):
+                suffix = old_key[len(f"{head_name}."):]
+                for pc in ("0", "1", "2"):
+                    new_key = f"{heads_name}.{pc}.{suffix}"
+                    new_sd[new_key] = new_sd[old_key].clone()
+                del new_sd[old_key]
+
+    return new_sd
+
+
 def load_net_from_checkpoint(
     path: str | pathlib.Path,
     map_location: str | torch.device = "cpu",
@@ -117,7 +173,8 @@ def load_net_from_checkpoint(
     payload = load_checkpoint_payload(path, map_location=map_location)
     spec = checkpoint_net_spec(payload)
     net = M.SplendorNet(hidden=spec.hidden, arch=spec.arch)
-    net.load_state_dict(checkpoint_net_state_dict(payload))
+    sd = _migrate_state_dict(checkpoint_net_state_dict(payload), net)
+    net.load_state_dict(sd)
     return net, payload
 
 

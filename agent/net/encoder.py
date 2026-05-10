@@ -35,11 +35,13 @@ D_SEAT_FEAT = D_GEMS + D_BONUSES + D_PLAYER_META  # 15
 
 D_NOBLES_FLAT = BE.MAX_NOBLE_SLOTS * (C.NUM_COLORS + 1)  # 5 * 6 = 30
 
+D_PC_OH = 3  # one-hot for 2p/3p/4p
+
 D_GLOBAL = (
     D_GEMS  # gem pool
     + 1  # phase (one-hot 3) -> store as int
     + 3  # phase one-hot
-    + 1  # num_players
+    + D_PC_OH  # num_players one-hot (2p/3p/4p)
     + 1  # last_trigger present
     + 1  # turns_since_trigger
     + MAX_PLAYERS * D_SEAT_FEAT
@@ -138,7 +140,9 @@ def encode_state_python(
 
     last_trig_present = (engine.last_trigger >= 0).to(torch.float32).unsqueeze(-1)
     turns_since = engine.turns_since_trigger.to(torch.float32).unsqueeze(-1)
-    num_players_feat = torch.full((B, 1), float(nP), device=device)
+    # One-hot player count: index 0=2p, 1=3p, 2=4p
+    pc_idx = torch.full((B,), nP - 2, dtype=torch.long, device=device)
+    num_players_oh = torch.nn.functional.one_hot(pc_idx, num_classes=3).to(torch.float32)  # (B, 3)
     phase_scalar = phase.to(torch.float32).unsqueeze(-1)
 
     global_feat = torch.cat(
@@ -146,7 +150,7 @@ def encode_state_python(
             gp,
             phase_scalar,
             phase_oh,
-            num_players_feat,
+            num_players_oh,
             last_trig_present,
             turns_since,
             rot_flat,

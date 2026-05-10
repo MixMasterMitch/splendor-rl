@@ -48,7 +48,7 @@ def _final_values_from_ranks(ranks: list[int], num_players: int) -> torch.Tensor
 
 def encode_replay_to_samples(
     replay: dict,
-    time_discount: float = 0.995,
+    time_discount: float = 1.0,
     device: str = "cpu",
 ) -> Optional[dict]:
     """Replay a game and produce training samples for all players.
@@ -191,7 +191,7 @@ def encode_replay_to_samples(
 
 def load_all_replays(
     replay_dir: str | pathlib.Path = "agent/training_replays",
-    time_discount: float = 0.995,
+    time_discount: float = 1.0,
     device: str = "cpu",
 ) -> Optional[dict]:
     """Load and encode all replay files in the directory.
@@ -230,7 +230,7 @@ def load_all_replays(
 def inject_replays_into_buffer(
     buffer: ReplayBuffer,
     replay_dir: str | pathlib.Path = "agent/training_replays",
-    time_discount: float = 0.995,
+    time_discount: float = 1.0,
 ) -> int:
     """Load all replays and inject them into the buffer.
 

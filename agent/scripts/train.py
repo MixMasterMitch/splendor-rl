@@ -29,22 +29,28 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--use-amp",
         action="store_true",
-        default=False,
-        help="Enable mixed-precision (AMP) on CUDA. Ignored on CPU.",
+        default=None,
+        help="Enable mixed-precision (AMP) on CUDA. Default: auto-enabled on GPU via device defaults.",
+    )
+    p.add_argument(
+        "--no-amp",
+        dest="use_amp",
+        action="store_false",
+        help="Disable mixed-precision (AMP) even on CUDA.",
     )
     p.add_argument(
         "--no-compile-net",
         dest="compile_net",
         action="store_false",
-        help="Disable torch.compile on the net forward (default: disabled)",
+        help="Disable torch.compile on the net forward.",
     )
     p.add_argument(
         "--compile-net",
         dest="compile_net",
         action="store_true",
-        help="Enable torch.compile on the net forward (experimental on this machine)",
+        help="Enable torch.compile on the net forward. Default: auto-enabled on GPU via device defaults.",
     )
-    p.set_defaults(compile_net=False)
+    p.set_defaults(compile_net=None)
     p.add_argument("--hidden", type=int, default=256)
     p.add_argument(
         "--arch",
@@ -103,8 +109,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--time-discount",
         type=float,
-        default=0.995,
-        help="Per-turn discount on value targets to pressure short games",
+        default=1.0,
+        help="Per-turn discount on value targets (1.0 = disabled; stall penalty handles urgency)",
     )
     p.add_argument(
         "--q-scale",
@@ -124,6 +130,13 @@ def build_parser() -> argparse.ArgumentParser:
         type=int,
         default=3,
         help="Every N iters, replace some self-play games with league-opponent games; 0 disables.",
+    )
+    p.add_argument(
+        "--league-opponent-sims",
+        type=int,
+        default=4,
+        help="MCTS sims for league opponents (0 = same as main agent). Lower values save "
+             "significant time since each opponent runs a separate MCTS expansion.",
     )
     p.add_argument(
         "--league-max-entries",
@@ -172,7 +185,6 @@ def main(argv: list[str] | None = None) -> int:
     loop_kwargs: dict = dict(
         num_players=args.num_players,
         device=args.device,
-        compile_net=args.compile_net,
         hidden=args.hidden,
         arch=args.arch,
         selfplay_games=args.selfplay_games,
@@ -188,6 +200,7 @@ def main(argv: list[str] | None = None) -> int:
         max_iters=args.max_iters,
         max_wall_minutes=args.max_wall_minutes,
         league_selfplay_every=args.league_selfplay_every,
+        league_opponent_sims=args.league_opponent_sims,
         league_max_entries=args.league_max_entries,
         league_keep_recent=args.league_keep_recent,
         rating_random_anchor=args.rating_random_anchor,
@@ -196,17 +209,26 @@ def main(argv: list[str] | None = None) -> int:
         time_discount=args.time_discount,
         q_scale=args.q_scale,
         init_from=args.init_from,
-        use_amp=args.use_amp,
         eval_games=args.eval_games,
         eval_sims=args.eval_sims,
         eval_max_turns=args.eval_max_turns,
         eval_league_opponents=args.eval_league_opponents,
     )
+    # Only set use_amp/compile_net if explicitly specified by the user.
+    # When None (not specified), leave at LoopConfig factory default so
+    # apply_device_defaults can auto-enable them on GPU.
+    explicit_fields: set[str] = set()
+    if args.use_amp is not None:
+        loop_kwargs["use_amp"] = args.use_amp
+        explicit_fields.add("use_amp")
+    if args.compile_net is not None:
+        loop_kwargs["compile_net"] = args.compile_net
+        explicit_fields.add("compile_net")
     if args.mixed_players:
         loop_kwargs["mixed_players"] = args.mixed_players
     cfg = LoopConfig(**loop_kwargs)
     try:
-        result = run_loop(run, cfg)
+        result = run_loop(run, cfg, explicit_fields=explicit_fields)
     except Exception as exc:
         run.event("loop_crashed", {"err": str(exc), "trace": traceback.format_exc()}, level="ERROR")
         run.close()

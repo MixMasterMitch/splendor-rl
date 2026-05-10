@@ -5,10 +5,10 @@ This file is intended for AI assistants and developers working on the project.
 
 ## Current Model
 
-- **Architecture**: attn/192 (attention-based, 192 hidden, ~407K params)
-- **Best checkpoint**: `agent/runs/real30_v9/checkpoints/iter_005290.pt`
-- **Active training run**: `real30_v10` (warm-started from v9 iter 5290)
-- **Shared league**: `agent/runs/league/` (shared across all runs)
+- **Architecture**: attn/256 with per-PC heads (attention-based, 256 hidden, ~900K params)
+- **Best checkpoint**: `agent/runs/league/ckpt_02699_i1200.pt` (league rating 3224, shared-head era)
+- **Active training run**: `attn256_v4` (per-PC heads, warm-started from peak via migration)
+- **Shared league**: `agent/runs/league/` (shared across all runs, auto-migrates old checkpoints)
 
 ## GPU Training
 
@@ -28,40 +28,86 @@ These are the best-known values for GPU training from scratch:
 | dirichlet_alpha | 0.15 | |
 | dirichlet_mix | 0.40 | |
 | entropy_bonus | 0.015 | |
-| time_discount | 0.995 | |
+| time_discount | 1.0 | Disabled; stall penalty handles "don't dawdle" |
+| use_amp | True (GPU) | ~30% faster value forward; auto-enabled on CUDA |
+| compile_net | True (GPU) | ~15% on top of AMP for attn arch; auto-enabled on CUDA |
+| league_opponent_sims | 4 | Opponents use fewer sims; saves ~5× on league iters |
 | async_eval | True | Eval runs on CPU subprocess, doesn't block GPU |
 
 ### Key Findings
 
 - **Learning rate for warm-start must be low** (3e-5). Using 3e-4 on a pre-trained model causes catastrophic forgetting within 2-4 hours.
-- **torch.compile is slower** for this model size. flat/192 runs at 1059 games/s without compile vs 730 games/s with compile. The model is too small for kernel fusion to help.
+- **AMP + torch.compile + TF32 are the GPU defaults** (auto-enabled on CUDA). Combined they give ~1.7× self-play throughput. Disable with `--no-amp` / `--no-compile-net` if needed.
+- **Self-play bottleneck is the MCTS value forward pass** (~60% of wall time without optimizations). With AMP+compile+TF32 the bottleneck shifts to `engine.apply` (branchless game logic), which is already near-optimal.
+- **torch.compile helps attn/256 but hurt flat/192**. The attn architecture has enough compute per kernel for fusion to pay off; flat/192 is too small. The GPU defaults enable compile because the production model is attn/256.
 - **attn architecture OOMs** at selfplay_games > 1024 on RTX 3080 Ti (11.6GB). Use `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True`.
 - **Shared league** lives at `agent/runs/league/` and persists across runs. New runs inherit historical opponents.
 - **Checkpoint cleanup**: `keep_recent_checkpoints=3` auto-deletes old `iter_*.pt` files. League checkpoints are never touched.
 
+### GPU Performance Tuning
+
+Profiled with `python -m agent.scripts.profile_selfplay` (RTX 3080 Ti, attn/256, 256 games, 32 sims):
+
+| Configuration | Total (100 turns) | Dominant phase | Speedup |
+|---|---|---|---|
+| Baseline | 2.83s | value_fwd 59% | 1.0× |
+| AMP only | 2.17s | value_fwd 44% | 1.3× |
+| Compile only | 2.21s | value_fwd 51% | 1.3× |
+| Compile + AMP | 1.84s | value_fwd 35% | 1.5× |
+| **Compile + AMP + TF32** | **1.66s** | engine_apply 43% | **1.7×** |
+
+All three are now enabled by default on CUDA via `configure_device()` (TF32) and `_GPU_DEFAULTS` (AMP, compile).
+
+**Remaining optimization opportunities** (diminishing returns):
+- Pipeline self-play and learning on separate CUDA streams (moderate complexity)
+- Reduce `selfplay_sims` from 32 to 16 (trades target quality for speed)
+- Fuse the encode + forward into a single compiled graph (requires refactoring)
+
+### League Selfplay Performance
+
+League selfplay iterations are **8× slower** than regular selfplay because each
+distinct opponent checkpoint runs a separate MCTS expansion. With 24 league
+entries and `league_prob=0.5`, a 4p game has ~24 tiny-batch MCTS calls per turn.
+
+Fix: `league_opponent_sims=4` (default) uses only 4 sims for opponents vs 32
+for the main agent. Opponents don't need high-quality search — they just provide
+diverse opposition. Expected speedup: ~5× on league iterations (from ~45s to ~10s
+for 4p/1024 games).
+
 ### Starting a Training Run
 
 ```bash
-# Warm-start from existing checkpoint (recommended)
+# Create a migrated checkpoint for a new architecture version
+python3 -m agent.scripts.migrate_checkpoint \
+    --input agent/runs/league/ckpt_02699_i1200.pt \
+    --output agent/runs/attn256_v4/checkpoints/iter_000000.pt
+
+# Start training with per-PC heads (v4+)
+# AMP, torch.compile, and TF32 are auto-enabled on CUDA.
 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True python3 -m agent.scripts.train \
-    --run-id real30_v10 --device cuda --arch attn \
-    --max-iters 2000 --max-wall-minutes 720 \
+    --run-id attn256_v4 --device cuda --arch attn \
+    --max-iters 1000 --max-wall-minutes 240 \
     --selfplay-games 1024 --selfplay-sims 32 \
     --learner-batch 4096 --learner-steps-per-iter 64 \
-    --replay-capacity 820000 --lr 3e-5 \
+    --replay-capacity 820000 --lr 2e-5 \
     --entropy-bonus 0.015 --dirichlet-alpha 0.15 \
-    --dirichlet-mix 0.40 --q-scale 22.0 --time-discount 0.995 \
-    --init-from agent/runs/real30_v9/checkpoints/iter_005290.pt
+    --dirichlet-mix 0.40 --q-scale 22.0 --time-discount 1.0 \
+    --eval-games 1024 --checkpoint-every 100 \
+    --init-from agent/runs/attn256_v4/checkpoints/iter_000000.pt
 
 # Resume an existing run (picks up from latest_resume.pt automatically)
 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True python3 -m agent.scripts.train \
-    --run-id real30_v10 --device cuda --arch attn \
-    --max-iters 5000 --max-wall-minutes 720 \
+    --run-id attn256_v4 --device cuda --arch attn \
+    --max-iters 1000 --max-wall-minutes 240 \
     --selfplay-games 1024 --selfplay-sims 32 \
     --learner-batch 4096 --learner-steps-per-iter 64 \
-    --replay-capacity 820000 --lr 3e-5 \
+    --replay-capacity 820000 --lr 2e-5 \
     --entropy-bonus 0.015 --dirichlet-alpha 0.15 \
-    --dirichlet-mix 0.40 --q-scale 22.0 --time-discount 0.995
+    --dirichlet-mix 0.40 --q-scale 22.0 --time-discount 1.0 \
+    --eval-games 1024 --checkpoint-every 100
+
+# Disable optimizations if debugging numerical issues:
+#   --no-amp --no-compile-net
 ```
 
 ## Hyperparameter Tuning
@@ -214,4 +260,5 @@ The `GameSession` constructor accepts `initial_state_override` to reproduce the 
 | Training replays | `agent/training_replays/` |
 | Optuna databases | `agent/runs/optuna_<study>.db` |
 | Tuning scripts | `agent/scripts/tune.py`, `agent/scripts/arch_comparison.py` |
+| Profiling script | `agent/scripts/profile_selfplay.py` |
 | Flag game script | `agent/scripts/flag_game.py` |

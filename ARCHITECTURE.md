@@ -87,35 +87,41 @@ The network (`model.py`) has two architecture variants:
 
 **Attention architecture (production, `arch="attn"`):**
 1. **Global trunk**: MLP over a flat global feature vector (player tokens, gem pool, points, etc.) → hidden vector `h_g`
-2. **Card embeddings**: Per-card MLP over card features (cost, bonus, points, availability) → `h_c` of shape `(B, N_cards, H)`
-3. **Cross-attention**: Multi-head attention with `h_g` as query and `h_c` as keys/values → `h_attn`
-4. **Policy head**: MLP over `concat(h_g, h_attn)` → 57 logits (masked by legal actions)
-5. **Value head**: MLP over `concat(h_g, h_attn)` → per-seat placement predictions
+2. **Player-count embedding**: Learned embedding (3×H) added to `h_g` based on the one-hot PC index in global_feat. Conditions the representation on game mode before attention.
+3. **Card embeddings**: Per-card MLP over card features (cost, bonus, points, availability) → `h_c` of shape `(B, N_cards, H)`
+4. **Cross-attention**: Multi-head attention with `h_g` as query and `h_c` as keys/values → `h_attn`
+5. **Per-PC policy heads**: Three separate MLPs (one per player count: 2p/3p/4p) over `concat(h_g, h_attn)` → 57 logits (masked by legal actions). Routed by PC index.
+6. **Per-PC value heads**: Three separate MLPs over `concat(h_g, h_attn)` → per-seat placement predictions. Routed by PC index.
+
+The per-PC heads allow each player count to develop specialized strategy without interference. The shared trunk learns game fundamentals (card valuation, gem efficiency) that transfer across all PCs.
 
 **Flat architecture (faster convergence, lower ceiling, `arch="flat"`):**
-- Concatenates global + flattened card features → single MLP trunk → policy/value heads
+- Concatenates global + flattened card features → single MLP trunk → per-PC policy/value heads
 
 ### Encoder
 
-The encoder (`encoder.py`) converts raw engine tensors into the feature vectors consumed by the network. It handles seat rotation (current player is always "seat 0" from the network's perspective) and normalizes features.
+The encoder (`encoder.py`) converts raw engine tensors into the feature vectors consumed by the network. It handles seat rotation (current player is always "seat 0" from the network's perspective) and normalizes features. Player count is encoded as a 3-dim one-hot (2p/3p/4p) in the global feature vector.
+
+### Checkpoint Migration
+
+Old checkpoints (shared heads, scalar num_players) are auto-migrated on load via `_migrate_state_dict()` in `checkpointing.py`. This handles:
+- Expanding `g_trunk.0.weight` for the one-hot PC input (+2 columns)
+- Adding `pc_embed.weight` (initialized to zeros)
+- Replicating shared `policy_head`/`value_head` into per-PC `policy_heads`/`value_heads`
+
+The migration script (`agent/scripts/migrate_checkpoint.py`) can also be used explicitly to create a seed checkpoint for a new run.
 
 ### Scale
 
-Two production model sizes exist:
+Three production model generations exist:
 
-| Variant | Hidden | Heads | Params | Status |
-|---------|--------|-------|--------|--------|
-| `attn/192` | 192 | 4 | ~407K | Current league champion |
-| `attn/256` | 256 | 5 | ~700K | New, in training |
+| Variant | Hidden | Heads | Per-PC Heads | Params | Status |
+|---------|--------|-------|--------------|--------|--------|
+| `attn/192` | 192 | 4 | No (shared) | ~407K | Legacy league entries |
+| `attn/256` v1-v3 | 256 | 4 | No (shared) | ~700K | Superseded |
+| `attn/256` v4+ | 256 | 4 | Yes (3×policy, 3×value) | ~900K | Active training |
 
-The `attn/256` model was created via **output-gated expansion** (`agent/scripts/expand_model.py`) from a trained `attn/192` checkpoint. The expansion strategy:
-
-1. All layers are widened to the new hidden dimension
-2. New neurons are initialized with small random weights (std=0.01) and replicated LayerNorm statistics
-3. The final output layers (policy and value heads) have **zero weights** for all new input dimensions — this gates the new capacity so the model starts at approximately the same playing strength
-4. Gradient flow during training activates the dormant neurons
-
-This avoids training from scratch while giving the model more representational capacity. The expanded model starts near the original's strength and is expected to surpass it as training progresses. Both variants coexist in the league and are rated on the same scale.
+The v4 architecture adds per-player-count policy and value heads to address the 3p performance gap. The shared trunk (g_trunk, c_embed, attention) is identical to v1-v3 and warm-starts from the same checkpoints via migration.
 
 ---
 
@@ -161,9 +167,10 @@ graph TD
 - Runs `num_games` (typically 1024–4096) games in parallel on GPU
 - Uses temperature scheduling: hot early (exploration), cold late (exploitation)
 - Records every position's encoded state, legal mask, and improved policy from MCTS
-- Value targets are assigned retroactively: +1 for winner, -1 for losers
-- **Time discount**: `0.995^(game_end - sample_step)` — positions closer to the end get stronger signal, pressuring the agent to finish games quickly
+- Value targets are assigned retroactively: +1 for winner, -1 for losers (zero-mean normalized by player count)
+- **Time discount**: Disabled (`time_discount=1.0`). The stall penalty alone handles "don't dawdle" pressure. Previous versions used `0.995^(game_end - sample_step)` which was found to crush 3p/4p value signal due to longer game lengths.
 - **Stall penalty**: Games that don't finish within `max_turns` get -1 for all active seats
+- **Per-PC max_turns**: `selfplay_turns_per_player=50` → cap = 50×N (100/150/200 for 2p/3p/4p). Prevents 4p games from hitting the cap prematurely while tightening 2p.
 
 ### League Self-Play (`league_selfplay.py`)
 

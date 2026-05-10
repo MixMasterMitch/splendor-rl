@@ -192,6 +192,10 @@ class League:
         Only the most recent ``keep_recent`` plus the best-rated older entries
         (up to ``max_entries`` total) retain their files on disk. Pruned entries
         remain in the JSON so their pairwise results continue to inform ratings.
+
+        Preservation criterion: an entry is kept if it is in the top-K by
+        *any* per-PC rating (rating_2p, rating_3p, rating_4p) OR by combined
+        rating. This preserves diversity in the self-play opponent pool.
         """
         if self.max_entries is None:
             return
@@ -202,9 +206,32 @@ class League:
         recent = entries[-keep_recent:] if keep_recent > 0 else []
         older = entries[:-keep_recent] if keep_recent > 0 else entries
         keep_best = max(self.max_entries - len(recent), 0)
-        best = sorted(older, key=self._entry_strength_key, reverse=True)[:keep_best]
+
+        # Build per-PC top-K sets: keep entries that are best at *any* PC.
+        # Allocate slots across combined + per-PC ratings.
+        per_pc_slots = max(keep_best // 4, 1)  # slots per dimension
+        combined_slots = keep_best  # combined also gets full budget (overlap is fine)
+
+        keep_set: set[str] = set()
+
+        # Top-K by combined rating
+        by_combined = sorted(older, key=self._entry_strength_key, reverse=True)
+        for entry in by_combined[:combined_slots]:
+            keep_set.add(entry["path"])
+
+        # Top-K by each per-PC rating
+        for pc_key in ("rating_2p", "rating_3p", "rating_4p"):
+            by_pc = sorted(
+                older,
+                key=lambda e, k=pc_key: float(e.get(k, 0.0)),
+                reverse=True,
+            )
+            for entry in by_pc[:per_pc_slots]:
+                keep_set.add(entry["path"])
+
         keep_paths = {entry["path"] for entry in recent}
-        keep_paths.update(entry["path"] for entry in best)
+        keep_paths.update(keep_set)
+
         # Delete checkpoint files for entries we no longer need on disk,
         # but keep the entries themselves in the manifest for rating history.
         for entry in entries:

@@ -129,7 +129,9 @@ def device_info(device: str) -> Dict[str, object]:
 def configure_device(device: str) -> Dict[str, object]:
     """One-time device setup.
 
-    For CUDA devices: enables ``cudnn.benchmark`` and clears the CUDA cache.
+    For CUDA devices: enables cudnn.benchmark, TF32 matmul precision, and
+    clears the CUDA cache. TF32 gives ~10% throughput gain on Ampere+ GPUs
+    with negligible precision loss for RL training.
     For CPU: configures thread pools via :func:`configure_cpu_threads`.
 
     Returns the result of :func:`device_info` merged with any setup metadata.
@@ -138,8 +140,14 @@ def configure_device(device: str) -> Dict[str, object]:
 
     if device.startswith("cuda"):
         torch.backends.cudnn.benchmark = True
+        # Enable TF32 for matmul — uses tensor cores for ~3x throughput on
+        # float32 matrix multiplications with negligible precision loss.
+        torch.set_float32_matmul_precision("high")
+        torch.backends.cuda.matmul.allow_tf32 = True
+        torch.backends.cudnn.allow_tf32 = True
         torch.cuda.empty_cache()
         info["cudnn_benchmark"] = True
+        info["tf32_enabled"] = True
     else:
         thread_info = configure_cpu_threads()
         info.update(thread_info)

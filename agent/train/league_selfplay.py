@@ -63,6 +63,7 @@ def _choose_seat_actions(
     path_list: list[str],
     num_sims: int,
     precomputed: tuple[torch.Tensor, torch.Tensor, torch.Tensor],
+    opponent_sims: int = 0,
 ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor | None]:
     device_t = engine.device
     g, c, legal = precomputed
@@ -127,6 +128,7 @@ def _choose_seat_actions(
 
     opponent_games = alive & ~is_main
     if opponent_games.any():
+        opp_num_sims = opponent_sims if opponent_sims > 0 else num_sims
         active_opponents = active_path_idx[opponent_games]
         active_opponents = active_opponents[active_opponents >= 0]
         for path_idx in torch.unique(active_opponents).tolist():
@@ -142,7 +144,7 @@ def _choose_seat_actions(
                 opp_actions, _ = G.gumbel_root_act(
                     opp_engine,
                     opp,
-                    num_sims=num_sims,
+                    num_sims=opp_num_sims,
                     precomputed=(opp_g, opp_c, opp_legal),
                 )
             actions.index_copy_(0, opp_idx, opp_actions)
@@ -161,11 +163,22 @@ def run_league_selfplay(
     num_sims: int = 4,
     seed: int = 0,
     league_prob: float = 0.5,
-    time_discount: float = 0.995,
+    time_discount: float = 1.0,
+    opponent_sims: int = 0,
+    max_distinct_opponents: int = 4,
 ) -> dict:
     """Runs games where each game randomly has 0, 1, or more seats filled by
     past-league opponents (with probability `league_prob` per seat). Only the
     main-agent seats contribute records to the buffer.
+
+    ``opponent_sims`` controls MCTS depth for league opponents (0 = use same
+    as main agent). Lower values dramatically reduce wall time on league iters
+    since each distinct opponent runs a separate MCTS expansion.
+
+    ``max_distinct_opponents`` caps how many unique opponent networks are used
+    per episode. Fewer distinct opponents = larger per-opponent batch sizes =
+    better GPU utilization. Diversity is maintained across iterations via random
+    sampling. Default 4 gives each opponent ~256 games in a 1024-game batch.
     """
     device_t = torch.device(device)
     main_net.eval().to(device_t)
@@ -177,13 +190,30 @@ def run_league_selfplay(
 
     t_start = time.monotonic()
 
+    # Pre-sample a small pool of distinct opponents for this episode.
+    # This ensures large per-opponent batch sizes for good GPU utilization.
+    league_entries = league.list_entries()
+    opponent_pool: list[Optional[dict]] = []
+    if league_entries:
+        for _ in range(max_distinct_opponents):
+            e = league.sample_opponent(rng)
+            if e is not None:
+                opponent_pool.append(e)
+        # Deduplicate by path
+        seen_paths: set[str] = set()
+        deduped: list[dict] = []
+        for e in opponent_pool:
+            if e and e["path"] not in seen_paths:
+                seen_paths.add(e["path"])
+                deduped.append(e)
+        opponent_pool = deduped
+
     # For each (game, seat), decide whether to use main_net (None) or a league entry
     seat_net_path: dict[tuple[int, int], Optional[str]] = {}
-    league_entries = league.list_entries()
     for b in range(num_games):
         for p in range(num_players):
-            if league_entries and rng.random() < league_prob:
-                e = league.sample_opponent(rng)
+            if opponent_pool and rng.random() < league_prob:
+                e = rng.choice(opponent_pool)
                 seat_net_path[(b, p)] = e["path"] if e else None
             else:
                 seat_net_path[(b, p)] = None
@@ -215,6 +245,7 @@ def run_league_selfplay(
             path_list,
             num_sims,
             precomputed=(g, c, legal),
+            opponent_sims=opponent_sims,
         )
         if main_improved is not None and main_idx.numel() > 0:
             rec_global.append(g.index_select(0, main_idx).to(storage_device))
