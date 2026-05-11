@@ -23,13 +23,10 @@ from . import active_batching as AB
 from .replay_buffer import ReplayBuffer
 
 
-def _final_rank_values(engine: BE.BatchedEngine) -> torch.Tensor:
-    """For each game, return (B, MAX_PLAYERS) where inactive seats are 0 and
-    active seats carry zero-mean normalized rewards based on ranking.
+def _final_rank_values_binary(engine: BE.BatchedEngine) -> torch.Tensor:
+    """Binary win/loss reward: winner = +(n-1)/n, loser = -1/n.
 
-    Normalization: win = +(n-1)/n, loss = -1/n, where n = number of active
-    players. This ensures the expected value of a random policy is 0.0
-    regardless of player count, giving balanced gradient signal across 2p/3p/4p.
+    Zero-mean per game. The original reward function.
     """
     B = engine.batch_size
     pts = engine.points.to(torch.int32)
@@ -41,17 +38,72 @@ def _final_rank_values(engine: BE.BatchedEngine) -> torch.Tensor:
     best = score.max(dim=-1).values.unsqueeze(-1)
     winners = (score == best) & engine.active_mask
 
-    # Number of active players per game (B,)
-    n_players = engine.active_mask.sum(dim=-1, dtype=torch.float32).unsqueeze(-1)  # (B, 1)
-    # Zero-mean rewards: win = +(n-1)/n, loss = -1/n
-    win_reward = (n_players - 1.0) / n_players   # (B, 1)
-    loss_reward = -1.0 / n_players                # (B, 1)
+    n_players = engine.active_mask.sum(dim=-1, dtype=torch.float32).unsqueeze(-1)
+    win_reward = (n_players - 1.0) / n_players
+    loss_reward = -1.0 / n_players
 
     values = torch.where(winners, win_reward, loss_reward)
     values = torch.where(
         engine.active_mask, values, torch.zeros_like(values, dtype=torch.float32)
     )
     return values
+
+
+def _final_rank_values_score_scaled(engine: BE.BatchedEngine) -> torch.Tensor:
+    """Score-scaled reward: winner = +1, loser = -1/(n-1) + (score/winner_score)^2.
+
+    The squared ratio gives losers a smooth gradient based on how close they
+    got to the winner. A loser with 14 points against a 15-point winner gets
+    nearly 0 total reward; a loser with 0 points gets the full -1/(n-1)
+    penalty. This teaches the value head to distinguish "close second" from
+    "dead last" — critical for 3p/4p strategic depth.
+
+    The winner always gets +1 regardless of their score, keeping the "did I
+    win?" signal clean and unconditional.
+
+    Note: this is NOT zero-mean per game. The sum across seats varies with
+    the score distribution. The value head absorbs this bias naturally.
+    """
+    B = engine.batch_size
+    pts = engine.points.to(torch.int32)
+    bonuses = engine.bonuses.sum(dim=-1).to(torch.int32)
+    score = pts * 1000 - bonuses
+    score = torch.where(
+        engine.active_mask, score, torch.full_like(score, -(10**9))
+    )
+    best = score.max(dim=-1).values.unsqueeze(-1)
+    winners = (score == best) & engine.active_mask
+
+    n_players = engine.active_mask.sum(dim=-1, dtype=torch.float32).unsqueeze(-1)
+
+    winner_pts = pts.to(torch.float32)
+    winner_pts_max = (winner_pts * winners.to(torch.float32)).max(dim=-1).values.unsqueeze(-1)
+    winner_pts_safe = winner_pts_max.clamp_min(1.0)
+
+    ratio = (pts.to(torch.float32) / winner_pts_safe) ** 2
+
+    loss_base = -1.0 / (n_players - 1.0).clamp_min(1.0)
+
+    loser_reward = loss_base + ratio
+    values = torch.where(winners, torch.ones_like(ratio), loser_reward)
+    values = torch.where(
+        engine.active_mask, values, torch.zeros_like(values, dtype=torch.float32)
+    )
+    return values
+
+
+# Supported reward modes for the --reward-mode flag.
+REWARD_MODES = ("binary", "score_scaled")
+
+
+def _final_rank_values(engine: BE.BatchedEngine, reward_mode: str = "score_scaled") -> torch.Tensor:
+    """Dispatch to the appropriate reward function based on mode."""
+    if reward_mode == "binary":
+        return _final_rank_values_binary(engine)
+    elif reward_mode == "score_scaled":
+        return _final_rank_values_score_scaled(engine)
+    else:
+        raise ValueError(f"Unknown reward_mode={reward_mode!r}. Choose from {REWARD_MODES}.")
 
 
 def _rotate_for_cp(values: torch.Tensor, cp: torch.Tensor) -> torch.Tensor:
@@ -89,6 +141,7 @@ def run_selfplay(
     dirichlet_alpha: float = 0.3,
     dirichlet_mix: float = 0.25,
     q_scale: float = 10.0,
+    reward_mode: str = "score_scaled",
 ) -> dict:
     """Play `num_games` games in parallel to completion. Writes samples to the
     buffer. Returns simple metrics.
@@ -213,7 +266,7 @@ def run_selfplay(
         prev_ended = cur_ended
         turn += 1
 
-    final_values = _final_rank_values(engine).to(storage_device)  # (B, P)
+    final_values = _final_rank_values(engine, reward_mode=reward_mode).to(storage_device)  # (B, P)
     wall_s = time.monotonic() - t_start
 
     # For games that did NOT finish within max_turns, assign -1 to every

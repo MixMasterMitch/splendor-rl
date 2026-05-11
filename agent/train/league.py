@@ -28,6 +28,38 @@ from . import checkpointing as CK
 from . import ranking as R
 
 
+# Fixed-strategy anchors used for stable per-PC winrate tracking.
+# Independent of the ML-vs-ML rating graph.
+_ANCHOR_BOTS = ("random", "heuristic", "heuristic_opus")
+
+
+def _record_anchor_winrates(
+    entry: dict,
+    entity: str,
+    results: list[dict],
+) -> None:
+    """Populate per-PC winrate-vs-anchor fields on a league entry (or floating
+    entity dict).
+
+    Adds keys like ``winrate_2p_vs_random`` (float in [0, 1]) and
+    ``games_2p_vs_random`` (int) for each (pc, anchor) pair that has recorded
+    games. Ties count as 0.5 per side, consistent with the BT fit.
+    """
+    for pc in R.PLAYER_COUNTS:
+        for anchor in _ANCHOR_BOTS:
+            score, total = R.winrate_vs_anchor(results, entity, anchor, pc)
+            games_key = f"games_{pc}p_vs_{anchor}"
+            wr_key = f"winrate_{pc}p_vs_{anchor}"
+            if total > 0:
+                entry[games_key] = int(total)
+                entry[wr_key] = round(score / total, 4)
+            else:
+                # Clear stale fields (e.g. if results were pruned) so
+                # consumers don't read outdated winrates.
+                entry.pop(games_key, None)
+                entry.pop(wr_key, None)
+
+
 class League:
     def __init__(
         self,
@@ -457,6 +489,13 @@ class League:
                     cal_key = f"calibrated_{pc}p"
                     if cal_key in data:
                         entry[f"rating_{pc}p"] = round(data[cal_key])
+            # Stable reference: per-PC winrate vs fixed-strategy anchors.
+            # These don't depend on the ML-vs-ML rating graph so they are a
+            # clean measure of absolute skill against known strategies and
+            # don't drift as the league pool rotates.
+            _record_anchor_winrates(
+                entry, entity, self.manifest["results"]
+            )
 
         # Persist fitted ratings for floating entities (non-anchor, non-checkpoint
         # participants like heuristic_opus that appear in results).
@@ -473,6 +512,9 @@ class League:
                     cal_key = f"calibrated_{pc}p"
                     if cal_key in data:
                         floating[entity][f"rating_{pc}p"] = round(data[cal_key])
+                _record_anchor_winrates(
+                    floating[entity], entity, self.manifest["results"]
+                )
         if floating:
             self.manifest["floating_entities"] = floating
         self.manifest["rating_system"] = "anchored_bt_per_pc"

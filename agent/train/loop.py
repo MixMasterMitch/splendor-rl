@@ -86,6 +86,9 @@ class LoopConfig:
     time_discount: float = 1.0
     q_scale: float = 22.0
     use_amp: bool = False
+    # Reward shaping mode for value targets. "binary" = classic win/loss,
+    # "score_scaled" = winner +1, loser -1/(n-1) + (score/winner_score)^2.
+    reward_mode: str = "score_scaled"
     # Number of recent archive checkpoints to keep. 0 = keep all.
     keep_recent_checkpoints: int = 3
     # Mixed player-count training. Selfplay rotates through these counts.
@@ -516,6 +519,7 @@ def run_loop(run: Run, cfg: LoopConfig, explicit_fields: set[str] | None = None)
                     time_discount=cfg.time_discount,
                     opponent_sims=cfg.league_opponent_sims,
                     max_distinct_opponents=cfg.league_distinct_opponents,
+                    reward_mode=cfg.reward_mode,
                 )
             run.event("league_selfplay_done", {"iter": cur_iter, "num_players": iter_num_players, **sp_metrics})
         else:
@@ -533,6 +537,7 @@ def run_loop(run: Run, cfg: LoopConfig, explicit_fields: set[str] | None = None)
                     dirichlet_alpha=cfg.dirichlet_alpha,
                     dirichlet_mix=cfg.dirichlet_mix,
                     q_scale=cfg.q_scale,
+                    reward_mode=cfg.reward_mode,
                 )
             run.event("selfplay_done", {"iter": cur_iter, "num_players": iter_num_players, **sp_metrics})
 

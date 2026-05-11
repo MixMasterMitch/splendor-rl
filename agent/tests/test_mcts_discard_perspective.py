@@ -77,15 +77,37 @@ class TestMCTSDiscardPerspective:
         parent_cp = torch.tensor([0, 1, 0], dtype=torch.long)
         child_cp = torch.tensor([0, 1, 1], dtype=torch.long)
         result = G._root_value_index(parent_cp, child_cp, num_players=2)
-        # First two: same player → index 0; third: different → index 1
-        assert result.tolist() == [0, 0, 1]
+        # Same-player: index 0; advance from cp=0 to cp=1 in 2p:
+        # encoder rotates by MAX_PLAYERS=4, so root player (abs seat 0)
+        # sits at slot (0-1) % 4 = 3 in the child's rotated view.
+        assert result.tolist() == [0, 0, 3]
 
     def test_value_index_3_player(self):
-        """3-player game: advanced player should use index 2."""
+        """3-player game: value index depends on MAX_PLAYERS rotation.
+
+        parent_cp=0, child_cp=0 → same player, slot 0.
+        parent_cp=2, child_cp=0 → wrap-around, slot (2-0)%4 = 2.
+        """
         parent_cp = torch.tensor([0, 2], dtype=torch.long)
         child_cp = torch.tensor([0, 0], dtype=torch.long)
         result = G._root_value_index(parent_cp, child_cp, num_players=3)
         assert result.tolist() == [0, 2]
+
+    def test_value_index_3p_normal_advance(self):
+        """Regression guard: root at parent_cp=0, child_cp=1 in 3p must map to
+        slot 3 (MAX_PLAYERS-1). Prior code returned num_players-1=2, which
+        read the opponent's value and silently corrupted 3p training."""
+        parent_cp = torch.tensor([0, 1], dtype=torch.long)
+        child_cp = torch.tensor([1, 2], dtype=torch.long)
+        result = G._root_value_index(parent_cp, child_cp, num_players=3)
+        assert result.tolist() == [3, 3]
+
+    def test_value_index_4p_advance_unchanged(self):
+        """At 4p the fix is a no-op: num_players-1 == MAX_PLAYERS-1 == 3."""
+        parent_cp = torch.tensor([0, 1, 2, 3], dtype=torch.long)
+        child_cp = torch.tensor([1, 2, 3, 0], dtype=torch.long)
+        result = G._root_value_index(parent_cp, child_cp, num_players=4)
+        assert result.tolist() == [3, 3, 3, 3]
 
     def test_discard_phase_does_not_advance_player(self):
         """Verify that entering discard phase keeps current_player unchanged."""

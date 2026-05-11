@@ -74,6 +74,16 @@ python -m agent.scripts.status --run-id my_run
 python -m agent.scripts.league_table --run-id real30_v9
 ```
 
+### Clean inactive agents from the league
+
+```bash
+python -m agent.scripts.clean_league [--league-root agent/runs/league] [--dry-run]
+```
+
+Removes all inactive ML entries from `league.json`, deletes their checkpoint
+files, prunes their pairwise records, and recomputes ratings. Use `--dry-run`
+to preview what would be removed without making changes.
+
 ## Building on prior progress
 
 Each `--run-id` has its own checkpoint directory; re-running the same run-id

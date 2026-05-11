@@ -245,6 +245,26 @@ To recreate a DDB game with the local server, you need:
 
 The `GameSession` constructor accepts `initial_state_override` to reproduce the exact same board. The checkpoint must be available locally (check `agent/runs/league/` or download from S3 bucket in `seat_models._s3_bucket`/`_s3_key`).
 
+## League Maintenance
+
+### Cleaning inactive agents
+
+Over time the league accumulates inactive checkpoints that no longer participate
+in self-play but still inflate the results table and slow down rating fits.
+
+```bash
+# Preview what would be removed
+python -m agent.scripts.clean_league --dry-run
+
+# Actually clean (backs up to league.json.bak first)
+python -m agent.scripts.clean_league
+```
+
+This removes all entries with `"active": false`, deletes their `.pt` files from
+disk, prunes pairwise records involving those entries, and recomputes ratings
+from the remaining data. Anchors (random, heuristic, heuristic_opus) and
+floating entities (e.g. bedrock_claude_sonnet) are always preserved.
+
 ## Known Issues
 
 - **Token hoarding**: The agent sometimes takes tokens when at 10, forcing a discard. This is a training data gap — the agent rarely sees 10-token states in selfplay. Flagging bad games via replay injection helps.
@@ -262,3 +282,4 @@ The `GameSession` constructor accepts `initial_state_override` to reproduce the 
 | Tuning scripts | `agent/scripts/tune.py`, `agent/scripts/arch_comparison.py` |
 | Profiling script | `agent/scripts/profile_selfplay.py` |
 | Flag game script | `agent/scripts/flag_game.py` |
+| Clean league script | `agent/scripts/clean_league.py` |

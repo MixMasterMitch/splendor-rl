@@ -126,6 +126,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="Rotate selfplay through these player counts (e.g. --mixed-players 2 3 4). Overrides --num-players for selfplay.",
     )
     p.add_argument(
+        "--reward-mode",
+        choices=["binary", "score_scaled"],
+        default="score_scaled",
+        help="Value target reward shaping. 'binary' = classic win/loss. "
+             "'score_scaled' = winner +1, loser -1/(n-1) + (score/winner_score)^2 (default).",
+    )
+    p.add_argument(
         "--league-selfplay-every",
         type=int,
         default=3,
@@ -226,6 +233,7 @@ def main(argv: list[str] | None = None) -> int:
         explicit_fields.add("compile_net")
     if args.mixed_players:
         loop_kwargs["mixed_players"] = args.mixed_players
+    loop_kwargs["reward_mode"] = args.reward_mode
     cfg = LoopConfig(**loop_kwargs)
     try:
         result = run_loop(run, cfg, explicit_fields=explicit_fields)

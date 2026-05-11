@@ -273,3 +273,67 @@ Extend the existing script to print:
   re-fit `CALIBRATION_SCALE` from the league every N iters and log the
   drift. Still doesn't disentangle game-structure from training-bias,
   but at least makes the assumption visible. Consider after Phase 3.
+
+
+## 6. Post-Phase-1 findings (2026-05-11)
+
+After 2800 iters (attn256_v5, iter 3500→6300) with Phase 1 fixes plus a 1:2:1
+`mixed_players=[2,3,3,4]` ratio, 3p remained stuck and actually drifted down
+from 0.35 → 0.28 vs the eval panel. All 26 active league checkpoints over
+that window share the same 3p rating within noise (range ~2265–2513), and
+every one of them has winrate <0.20 vs `heuristic_opus` at 3p.
+
+### Two changes landed from this analysis
+
+1. **Per-PC winrate-vs-anchor fields on league entries.** `league.py`
+   `recompute_ratings` now writes `winrate_{pc}p_vs_random`,
+   `winrate_{pc}p_vs_heuristic`, and `winrate_{pc}p_vs_heuristic_opus` (plus
+   matching `games_{pc}p_vs_*` counts) on every entry and floating entity.
+   These measurements are independent of the ML-vs-ML rating graph and
+   don't drift as the league pool rotates, so they are the right primary
+   metric for "is 3p really improving?"
+
+   Backfilled retroactively from existing pairwise records — no retraining
+   or replay needed.
+
+2. **MCTS value-index routing bug (`_root_value_index`).** The encoder
+   rotates seats by `MAX_PLAYERS=4`, but the prior formula assumed rotation
+   by `num_players`. The root player's slot in the child's rotated view
+   should be `(parent_cp - child_cp) % MAX_PLAYERS`, not `num_players - 1`.
+
+   Impact by player count:
+   - 4p: no-op (the two formulas coincidentally agree when nP == MAX_PLAYERS).
+   - 3p: 2 of 3 turn-advance transitions routed to the wrong seat. One read
+     an empty (zero-supervised) slot; the other read the **opponent's**
+     predicted value, so the MCTS Q-backup was maximizing against the
+     agent. The eval-time gumbel_root_act used this same routing.
+   - 2p: half of turn-advance transitions routed to an empty seat.
+
+   Symptom match: 3p strength plateaus across thousands of iters and every
+   checkpoint is below-random vs heuristic_opus at 3p. 2p is less damaged
+   because the wrong slot is zero rather than the opponent's value, which
+   "only" adds noise.
+
+   Fix: `(parent_cp - child_cp) % MAX_PLAYERS`. This is a code-path fix —
+   past training happened with the buggy routing, so the checkpoints need
+   to be retrained (or at least fine-tuned) to realize the benefit.
+
+### Revised next-step plan
+
+- [x] Sanity-check 3p absolute skill (done via backfill; weakness localized
+      to play-vs-strong-opponents, not a foundational bug).
+- [x] Add stable per-PC winrate tracking independent of the rating graph.
+- [x] Fix `_root_value_index`.
+- [ ] Warm-start a fresh run from `ckpt_02699_i1200.pt` with the fix in
+      place. Keep `mixed_players=[2,3,3,4]` for now. Train 300 iters and
+      watch `winrate_3p_vs_heuristic_opus` on the league entries. Decision
+      point: if this metric rises past 0.30 within 300 iters, the routing
+      bug was the dominant cause; if not, pursue the rank-based value
+      target (section 5 hypothesis 2).
+- [ ] If the fix alone doesn't close the gap: implement rank-based terminal
+      rewards in `_final_rank_values` (1st=+1, last=-1, mid positions
+      linearly interpolated, zero-mean).
+- [ ] Regardless of outcome, the fixed routing should raise 2p strength
+      slightly too — watch `winrate_2p_vs_heuristic_opus` as a bonus
+      validation signal.
+

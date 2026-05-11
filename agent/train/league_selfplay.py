@@ -166,6 +166,7 @@ def run_league_selfplay(
     time_discount: float = 1.0,
     opponent_sims: int = 0,
     max_distinct_opponents: int = 4,
+    reward_mode: str = "score_scaled",
 ) -> dict:
     """Runs games where each game randomly has 0, 1, or more seats filled by
     past-league opponents (with probability `league_prob` per seat). Only the
@@ -270,7 +271,7 @@ def run_league_selfplay(
         prev_ended = cur_ended
         turn += 1
 
-    final_values = _final_rank_values(engine).to(storage_device)
+    final_values = _final_rank_values(engine, reward_mode=reward_mode).to(storage_device)
     ended_mask = engine.ended.to(storage_device)
     active_mask = engine.active_mask.to(storage_device)
     unfinished = ~ended_mask

@@ -125,6 +125,49 @@ def add_match_result(
     results.append(new_row)
 
 
+def winrate_vs_anchor(
+    results: Sequence[dict],
+    entity: str,
+    anchor: str,
+    pc: int,
+) -> tuple[float, int]:
+    """Return ``(entity_score, total_games)`` for ``entity`` vs ``anchor`` at
+    player count ``pc``.
+
+    ``entity_score`` is raw wins for ``entity`` plus 0.5 per tie (the same
+    fractional-score convention used by the Bradley-Terry fit). ``total_games``
+    is the number of pairwise contests (wins + losses + ties) between the two
+    entities at this player count; it is raw pairwise count, not physical game
+    count, but that is the correct denominator for winrate.
+
+    The result table stores matches in canonical order (``a <= b``); this
+    helper handles both storage orders transparently.
+    """
+    if entity == anchor:
+        return (0.0, 0)
+    key_a = f"wins_a_{pc}p"
+    key_b = f"wins_b_{pc}p"
+    key_t = f"ties_{pc}p"
+    entity_score = 0.0
+    total = 0
+    for row in results:
+        a = row.get("a")
+        b = row.get("b")
+        if a == entity and b == anchor:
+            wa = int(row.get(key_a, 0))
+            wb = int(row.get(key_b, 0))
+            ties = int(row.get(key_t, 0))
+            entity_score += wa + 0.5 * ties
+            total += wa + wb + ties
+        elif a == anchor and b == entity:
+            wa = int(row.get(key_a, 0))
+            wb = int(row.get(key_b, 0))
+            ties = int(row.get(key_t, 0))
+            entity_score += wb + 0.5 * ties
+            total += wa + wb + ties
+    return (entity_score, total)
+
+
 def _extract_pc_results(
     results: Sequence[dict], pc: int
 ) -> list[MatchResult]:

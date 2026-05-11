@@ -172,20 +172,28 @@ def _root_value_index(
 ) -> torch.Tensor:
     """Determine the correct value-head index for the root player in each child state.
 
-    The value head outputs are rotated so seat 0 = the child's current player.
-    - If current_player advanced (normal end-of-turn), the root player is at
-      seat (num_players - 1) in the child's rotated view.
-    - If current_player did NOT advance (discard phase, noble-pick phase),
-      the root player is still seat 0 in the child's rotated view.
+    The value head outputs are rotated so seat 0 = the child's current player,
+    using a rotation over ``MAX_PLAYERS`` (the encoder rotates by MAX_PLAYERS,
+    not ``num_players``, to keep tensor shapes constant). In the child's
+    rotated view, the seat holding the root player (parent's current player)
+    sits at index ``(parent_cp - child_cp) % MAX_PLAYERS``. This works
+    uniformly for the same-player case (discard/noble-pick, parent_cp ==
+    child_cp → 0), normal advance (e.g. parent_cp=0, child_cp=1 → MAX_PLAYERS-1),
+    and wrap-around (parent_cp=nP-1, child_cp=0 → nP-1).
+
+    Historical note: previous versions returned ``num_players - 1`` for the
+    "advanced" case, which coincidentally works at 4p (= MAX_PLAYERS) but
+    systematically reads either an empty seat (zero-supervised) or, worse,
+    the opponent's predicted value at 2p/3p — maximizing the opponent's
+    position instead of the root's. This manifested as a persistent plateau
+    in 3p strength across thousands of training iterations.
 
     Returns a (N,) long tensor of column indices to gather from value output.
     """
-    same_player = parent_cp == child_cp
-    return torch.where(
-        same_player,
-        torch.zeros_like(parent_cp, dtype=torch.long),
-        torch.full_like(parent_cp, num_players - 1, dtype=torch.long),
-    )
+    from ..env import batched_engine as _BE
+
+    diff = parent_cp.to(torch.long) - child_cp.to(torch.long)
+    return diff.remainder(_BE.MAX_PLAYERS)
 
 
 def _evaluate_root_children_sequential(
