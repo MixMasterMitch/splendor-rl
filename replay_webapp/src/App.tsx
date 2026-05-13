@@ -29,7 +29,7 @@ export default function App() {
             whiteSpace: "nowrap",
           }}
         >
-          Splendor
+          Splendor RL
         </span>
       </div>
       <div style={{ flex: 1, overflow: "hidden" }}>

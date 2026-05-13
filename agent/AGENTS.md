@@ -5,10 +5,11 @@ This file is intended for AI assistants and developers working on the project.
 
 ## Current Model
 
-- **Architecture**: attn/256 with per-PC heads (attention-based, 256 hidden, ~900K params)
-- **Best checkpoint**: `agent/runs/league/ckpt_02699_i1200.pt` (league rating 3224, shared-head era)
-- **Active training run**: `attn256_v4` (per-PC heads, warm-started from peak via migration)
+- **Architecture**: attn/384 with per-PC heads (attention-based, 384 hidden, ~1.5M params)
+- **Best checkpoint**: `agent/runs/league/ckpt_02952_i4400.pt` (league rating ~4867, highest-rated active entry)
+- **Active training run**: `attn256_v5` (per-PC heads, 384 hidden, at iteration 7950+)
 - **Shared league**: `agent/runs/league/` (shared across all runs, auto-migrates old checkpoints)
+- **League size**: ~25 active checkpoints, all attn/384 architecture
 
 ## GPU Training
 
@@ -79,26 +80,26 @@ for 4p/1024 games).
 ```bash
 # Create a migrated checkpoint for a new architecture version
 python3 -m agent.scripts.migrate_checkpoint \
-    --input agent/runs/league/ckpt_02699_i1200.pt \
-    --output agent/runs/attn256_v4/checkpoints/iter_000000.pt
+    --input agent/runs/league/ckpt_02952_i4400.pt \
+    --output agent/runs/attn256_v6/checkpoints/iter_000000.pt
 
-# Start training with per-PC heads (v4+)
+# Start training (v5 example, attn/384 with per-PC heads)
 # AMP, torch.compile, and TF32 are auto-enabled on CUDA.
 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True python3 -m agent.scripts.train \
-    --run-id attn256_v4 --device cuda --arch attn \
-    --max-iters 1000 --max-wall-minutes 240 \
+    --run-id attn256_v5 --device cuda --arch attn \
+    --max-iters 10000 --max-wall-minutes 600 \
     --selfplay-games 1024 --selfplay-sims 32 \
     --learner-batch 4096 --learner-steps-per-iter 64 \
     --replay-capacity 820000 --lr 2e-5 \
     --entropy-bonus 0.015 --dirichlet-alpha 0.15 \
     --dirichlet-mix 0.40 --q-scale 22.0 --time-discount 1.0 \
     --eval-games 1024 --checkpoint-every 100 \
-    --init-from agent/runs/attn256_v4/checkpoints/iter_000000.pt
+    --init-from agent/runs/attn256_v5/checkpoints/iter_000000.pt
 
 # Resume an existing run (picks up from latest_resume.pt automatically)
 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True python3 -m agent.scripts.train \
-    --run-id attn256_v4 --device cuda --arch attn \
-    --max-iters 1000 --max-wall-minutes 240 \
+    --run-id attn256_v5 --device cuda --arch attn \
+    --max-iters 10000 --max-wall-minutes 600 \
     --selfplay-games 1024 --selfplay-sims 32 \
     --learner-batch 4096 --learner-steps-per-iter 64 \
     --replay-capacity 820000 --lr 2e-5 \
@@ -155,7 +156,7 @@ Runs flat×{128,192,256} and attn×{128,192,256} for 1 hour each with periodic e
 | attn_128 | 18.6% | 8.0% | Diverged (lr too high) |
 | attn_192 | 23.2% | 8.6% | Diverged (lr too high) |
 
-**Conclusion**: flat_192 converges fastest. attn_256 has higher ceiling but needs lower lr and more time. Current production model is attn/192 (from v9 training).
+**Conclusion**: flat_192 converges fastest. attn_256 has higher ceiling but needs lower lr and more time. Current production model is attn/384 (from v5 training, scaled up from attn/256 v4).
 
 ## Training Replay Injection
 

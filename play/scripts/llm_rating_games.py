@@ -69,15 +69,15 @@ def _find_latest_ml_bot(league: LG.League) -> dict[str, Any] | None:
     entries = league.list_entries()
     if not entries:
         return None
-    # Only consider checkpoints whose file actually exists on disk
+    # Only consider active checkpoints whose file actually exists on disk
     eligible = [
         e for e in entries
-        if league._resolve_path(e["path"]).exists()
+        if e.get("active", False) and league._resolve_path(e["path"]).exists()
     ]
     if not eligible:
         return None
-    # Always use the largest index (most recent checkpoint)
-    return max(eligible, key=lambda e: int(e.get("idx", 0)))
+    # Always use the highest-rated checkpoint
+    return max(eligible, key=lambda e: float(e.get("rating", 0)))
 
 
 def _make_ml_policy(league: LG.League, entry: dict) -> POL.PlayerPolicy:

@@ -1,10 +1,11 @@
-# Exclude training runs but keep league (checkpoints baked into image)
-agent/runs/attn256_v1
-agent/runs/real30_v10
-agent/runs/real30_v11
-agent/runs/real30_v12
-agent/runs/optuna_gpu-tune-cold.db
+# Exclude all training runs except league (checkpoints baked into image)
+agent/runs/attn*
+agent/runs/real*
+agent/runs/optuna_*
 agent/runs/league_eval_full.log
+# Keep agent/runs/league/ (not matched by patterns above)
+agent/training_replays
+agent/tests
 replay_webapp/node_modules
 .venv
 .git

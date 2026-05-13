@@ -263,21 +263,23 @@ def expand_full(
         new_net.attn = _expand_mha(old_net.attn, new_hidden, new_num_heads, init_scale)
         new_net.post_attn = _expand_layernorm(old_net.post_attn, new_hidden)
 
-        # Policy head
-        new_net.policy_head[0] = _expand_head_first_layer(
-            old_net.policy_head[0], old_hidden, new_hidden, new_hidden, init_scale
-        )
-        new_net.policy_head[2] = _expand_head_last_layer(
-            old_net.policy_head[2], new_hidden
-        )
+        # Per-PC policy heads (3×)
+        for pc_key in ("0", "1", "2"):
+            new_net.policy_heads[pc_key][0] = _expand_head_first_layer(
+                old_net.policy_heads[pc_key][0], old_hidden, new_hidden, new_hidden, init_scale
+            )
+            new_net.policy_heads[pc_key][2] = _expand_head_last_layer(
+                old_net.policy_heads[pc_key][2], new_hidden
+            )
 
-        # Value head
-        new_net.value_head[0] = _expand_head_first_layer(
-            old_net.value_head[0], old_hidden, new_hidden, new_hidden, init_scale
-        )
-        new_net.value_head[2] = _expand_head_last_layer(
-            old_net.value_head[2], new_hidden
-        )
+        # Per-PC value heads (3×)
+        for pc_key in ("0", "1", "2"):
+            new_net.value_heads[pc_key][0] = _expand_head_first_layer(
+                old_net.value_heads[pc_key][0], old_hidden, new_hidden, new_hidden, init_scale
+            )
+            new_net.value_heads[pc_key][2] = _expand_head_last_layer(
+                old_net.value_heads[pc_key][2], new_hidden
+            )
 
     return new_net
 
@@ -364,7 +366,7 @@ def main(argv: list[str] | None = None) -> int:
     old_net.eval()
     new_net.eval()
     from ..net import encoder as ENC
-    num_actions = old_net.policy_head[2].out_features
+    num_actions = old_net.policy_heads["0"][2].out_features
 
     with torch.no_grad():
         B = 16

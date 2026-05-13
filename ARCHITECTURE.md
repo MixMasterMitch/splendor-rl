@@ -117,11 +117,12 @@ Three production model generations exist:
 
 | Variant | Hidden | Heads | Per-PC Heads | Params | Status |
 |---------|--------|-------|--------------|--------|--------|
-| `attn/192` | 192 | 4 | No (shared) | ~407K | Legacy league entries |
+| `attn/192` | 192 | 4 | No (shared) | ~407K | Legacy (inactive) |
 | `attn/256` v1-v3 | 256 | 4 | No (shared) | ~700K | Superseded |
-| `attn/256` v4+ | 256 | 4 | Yes (3×policy, 3×value) | ~900K | Active training |
+| `attn/256` v4 | 256 | 4 | Yes (3×policy, 3×value) | ~900K | Superseded |
+| `attn/384` v5 | 384 | 4 | Yes (3×policy, 3×value) | ~1.5M | Active training |
 
-The v4 architecture adds per-player-count policy and value heads to address the 3p performance gap. The shared trunk (g_trunk, c_embed, attention) is identical to v1-v3 and warm-starts from the same checkpoints via migration.
+The v4 architecture added per-player-count policy and value heads to address the 3p performance gap. The v5 generation scaled hidden dimension to 384, providing additional capacity. The shared trunk (g_trunk, c_embed, attention) warm-starts from prior checkpoints via migration. The current league is entirely attn/384 checkpoints (ratings 4700–4870).
 
 ---
 
@@ -266,7 +267,7 @@ The league is a persistent directory (`agent/runs/league/`) containing:
 - Checkpoint `.pt` files (network weights + config including `hidden` and `arch`)
 - `league.json` manifest with entries, pairwise results, and fitted ratings
 
-Each entry stores architecture metadata (`hidden`, `arch`) alongside its rating, enabling heterogeneous leagues where `attn/192` and `attn/256` checkpoints compete on the same scale.
+Each entry stores architecture metadata (`hidden`, `arch`) alongside its rating, enabling heterogeneous leagues where different model generations compete on the same scale.
 
 **Operations:**
 - `add_checkpoint()` — Saves a new checkpoint with arch metadata, prunes old entries if over capacity
@@ -402,7 +403,7 @@ Each human player has a persistent `HumanRatingStore` that maintains:
 A standalone script plays rated games with Claude Sonnet against the opponent pool:
 
 1. Creates an `LLMBedrockPolicy` instance
-2. For each game: randomly picks player count (2/3/4), random seat, random opponents from {random, heuristic, heuristic_opus, top ML bot}
+2. For each game: randomly picks player count (2/3/4), random seat, random opponents from {random, heuristic, heuristic_opus, highest-rated active ML bot}
 3. Plays the game to completion using the batched engine
 4. Records pairwise results directly into the league's results table
 5. After all games, calls `league.recompute_ratings()` to update all ratings
@@ -422,7 +423,7 @@ Entity ID normalization maps between formats:
 - League uses `ckpt:2649`
 - The `_normalize_entity()` function bridges these
 
-The result: humans, ML bots (both `attn/192` and `attn/256`), heuristic bots, and Claude Sonnet all appear on one leaderboard with per-PC and combined ratings on the same scale.
+The result: humans, ML bots, heuristic bots, and Claude Sonnet all appear on one leaderboard with per-PC and combined ratings on the same scale.
 
 ### Storage & Sync
 
@@ -487,9 +488,9 @@ Checkpoints are uploaded to S3 during CDK deploy. A `manifest.json` in the model
 graph LR
     SP["Self-play games"] --> RB["Replay buffer"]
     RB --> LU["Learner updates"]
-    LU --> NC["New checkpoint<br/>(attn/192 or attn/256)"]
+    LU --> NC["New checkpoint<br/>(attn/384)"]
     NC --> League["Added to league<br/>(with arch metadata)"]
-    League --> UE["Unified eval<br/>(512 games × 2p/3p/4p)"]
+    League --> UE["Unified eval<br/>(1024 games × 2p/3p/4p)"]
     UE --> PR["Per-PC pairwise results"]
     PR --> RR["league.recompute_ratings()<br/>(fit per-PC, calibrate, combine)"]
     RR --> LJ["league.json updated"]
@@ -523,4 +524,4 @@ graph LR
 
 ### Key Invariant
 
-All ratings — ML checkpoints (both `attn/192` and `attn/256`), heuristic bots, LLM agents, and human players — are computed on the **same per-player-count Bradley-Terry scale** anchored to `random=1000`. Per-PC ratings are calibrated and combined into a single number weighted by actual game distribution. A checkpoint rated 2500 is expected to dominate random play and compete strongly against heuristic bots across all player counts.
+All ratings — ML checkpoints (currently `attn/384`), heuristic bots, LLM agents, and human players — are computed on the **same per-player-count Bradley-Terry scale** anchored to `random=1000`. Per-PC ratings are calibrated and combined into a single number weighted by actual game distribution. The top ML checkpoints are rated ~4800–4870, dominating all heuristic opponents across all player counts.

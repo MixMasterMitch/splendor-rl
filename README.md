@@ -5,7 +5,7 @@ A full-stack system for training, evaluating, and deploying a Splendor-playing A
 ## Features
 
 - **GPU Training** — Gumbel AlphaZero self-play with a fully vectorized PyTorch game engine
-- **Model Expansion** — Output-gated expansion from `attn/192` (~407K params) to `attn/256` (~700K params) for increased capacity
+- **Model Expansion** — Scaled from `attn/192` (~407K params) through `attn/256` (~900K) to current `attn/384` (~1.5M params) with per-player-count heads
 - **League System** — Persistent pool of checkpoints rated via per-player-count anchored Bradley-Terry
 - **Web Play** — Flask/Lambda server for human and LLM games against trained agents
 - **Unified Ratings** — ML bots, heuristic bots, Claude Sonnet, and humans on one leaderboard with per-PC decomposition
