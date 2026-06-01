@@ -285,7 +285,7 @@ def _build_human_per_pc_results(
 
     For each game in history:
     - Determine player count from len(ranks) or len(opponents)+1
-    - Human wins: record 1/(p-1) wins against each losing opponent
+    - Human wins: record 1 win against each losing opponent
     - Human loses: record 1 loss against the winner only
 
     Handles legacy entries that lack ``ranks`` but have ``opponents[].score``
@@ -314,17 +314,15 @@ def _build_human_per_pc_results(
             continue
         human_rank = int(entry.get("human_rank", -1))
 
-        # Weight per pairwise comparison: 1/(p-1) keeps total weight = 1 per game
-        weight = 1.0 / (pc - 1)
-
         if human_rank == 0:
-            # Human won: record weight wins against each opponent
+            # Human won the table: in the BT encoding, the winner beat each
+            # losing opponent once.
             for opp in opponents:
                 entity = _normalize_entity(str(opp["entity_id"]))
                 key = (pc, entity)
                 if key not in accum:
                     accum[key] = [0.0, 0.0]
-                accum[key][0] += weight
+                accum[key][0] += 1.0
         elif ranks:
             # Human lost and we have full rank info: record 1 loss against
             # the winner (rank 0) only.
@@ -364,6 +362,27 @@ def _build_human_per_pc_results(
     return per_pc
 
 
+def _count_human_physical_games_per_pc(blob: dict[str, Any]) -> dict[int, float]:
+    """Count physical games in a human history by player count."""
+    counts: dict[int, float] = {pc: 0.0 for pc in PLAYER_COUNTS}
+    for entry in blob.get("history", []):
+        if entry.get("legacy"):
+            continue
+        opponents = entry.get("opponents", [])
+        if not opponents:
+            continue
+
+        ranks = entry.get("ranks")
+        if ranks:
+            pc = len(ranks)
+        else:
+            pc = len(opponents) + 1
+
+        if pc in counts:
+            counts[pc] += 1.0
+    return counts
+
+
 def _compute_human_ratings(
     blob: dict[str, Any],
     bot_anchors_per_pc: dict[int, dict[str, float]],
@@ -374,6 +393,7 @@ def _compute_human_ratings(
               "games_2p": ..., "games_3p": ..., "games_4p": ...}
     """
     per_pc_results = _build_human_per_pc_results(blob)
+    games_per_pc = _count_human_physical_games_per_pc(blob)
 
     calibrated_sum = 0.0
     weight_sum = 0.0
@@ -389,8 +409,12 @@ def _compute_human_ratings(
             continue
         cal = calibrate_rating(raw, pc)
         out[f"rating_{pc}p"] = cal
-        # Weight by number of games at this PC
-        games_at_pc = sum(wh + wo for _, wh, wo in results)
+        # Weight combined ratings by physical games, not by expanded BT
+        # pairwise mass. A 4p table win now contributes three BT wins but is
+        # still one played game.
+        games_at_pc = games_per_pc.get(pc, 0.0)
+        if games_at_pc <= 0:
+            games_at_pc = sum(wh + wo for _, wh, wo in results)
         out[f"games_{pc}p"] = games_at_pc
         calibrated_sum += cal * games_at_pc
         weight_sum += games_at_pc
